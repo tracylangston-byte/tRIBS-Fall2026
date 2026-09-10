@@ -63,9 +63,9 @@ In this sandbox, you will  explore **physically-based distributed hydrology** us
     working, then press `Ctrl+Shift+P` (Windows) or `Cmd+Shift+P` (Mac), run
     **"Developer: Reload Window"**, and open the notebook again. If you answer *yes* you
     get the notebook's raw JSON, which looks broken but is not.
-*   **Slow or unusable network:** Read-only HTML copies of the notebooks, figures included,
-    are in [`docs/notebooks/`](docs/notebooks/). They need only a browser, so you can follow
-    the lab even if the Codespace will not load.
+*   **Slow or unusable network:** Read-only copies of the notebooks, figures included, are
+    published at **<https://tribs-model.github.io/tRIBS-Workshop-Sandbox/>**. They need only
+    a browser, so you can follow the lab even if the Codespace will not load.
 *   **Kernel Not Found:** If prompted for a kernel, select **"Python 3.11.x"** (the Recommended version).
 *   **Model Build Issues:** If `!tRIBS` does not return a help message in the notebook, try rebuilding the container:
     1. Press `Ctrl+Shift+P` (Windows) or `Cmd+Shift+P` (Mac).
