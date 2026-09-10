@@ -57,6 +57,15 @@ In this sandbox, you will  explore **physically-based distributed hydrology** us
 
 ## 🛠 Troubleshooting
 
+*   **"Don't know how to open this / open as a text file?":** Click **no**. This means the
+    notebook editor has not finished loading in your browser yet, usually on a slow or
+    congested network. The notebook itself is fine. Wait for the Extensions panel to stop
+    working, then press `Ctrl+Shift+P` (Windows) or `Cmd+Shift+P` (Mac), run
+    **"Developer: Reload Window"**, and open the notebook again. If you answer *yes* you
+    get the notebook's raw JSON, which looks broken but is not.
+*   **Slow or unusable network:** Read-only HTML copies of the notebooks, figures included,
+    are in [`docs/notebooks/`](docs/notebooks/). They need only a browser, so you can follow
+    the lab even if the Codespace will not load.
 *   **Kernel Not Found:** If prompted for a kernel, select **"Python 3.11.x"** (the Recommended version).
 *   **Model Build Issues:** If `!tRIBS` does not return a help message in the notebook, try rebuilding the container:
     1. Press `Ctrl+Shift+P` (Windows) or `Cmd+Shift+P` (Mac).
@@ -64,3 +73,10 @@ In this sandbox, you will  explore **physically-based distributed hydrology** us
 *   **Storage:** Large simulation results are ignored by Git to keep the repo fast. Be sure to save your plots (PNGs) if you need them for your report!
 
 ---
+
+## Maintainer notes
+
+*   **Refreshing the offline HTML:** run both lab notebooks end to end in a codespace, save
+    them, then `bash tools/export_notebooks.sh` and commit `docs/notebooks/*.html`. See
+    [`docs/notebooks/README.md`](docs/notebooks/README.md) for why the notebooks must be run
+    first.
