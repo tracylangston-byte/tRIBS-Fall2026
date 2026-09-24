@@ -8,3 +8,5 @@ venv/
 /workspaces/SMF/lab/results/*
 /workspaces/SMF/lab/*.in
 /workspaces/SMF/lab/*.log
+workspaces/SMF/calibration_work/01_run_inputs/
+workspaces/SMF/calibration_work/02_results/
