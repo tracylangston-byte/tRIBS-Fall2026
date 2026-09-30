@@ -11,6 +11,10 @@ Usage (run from the lab/ directory, one level below project_root):
     python build_sensitivity_run.py --param flowexp              --value 0.5
     python build_sensitivity_run.py --param channelroughness     --value 0.08
     python build_sensitivity_run.py --param channelwidthcoeff    --value 1.5
+    python build_sensitivity_run.py --param channelconductivity_mmhr --value 70
+        (also requires overrides={"optpercolation": 1, ...} when called as a
+        library function -- OPTPERCOLATION defaults to 0 in BASELINE and is
+        not yet exposed as its own CLI override flag; see Series 110 scripts)
     python build_sensitivity_run.py --param thetaS_mult          --value 1.1
     python build_sensitivity_run.py --param As_value             --value 5.0
     python build_sensitivity_run.py --param Au_value             --value 5.0
@@ -36,6 +40,11 @@ Naming convention (no decimal points):
     flowexp          -> series 63 -> SMF_20140812_63_r0p50
     channelroughness -> series 64 -> SMF_20140812_64_n0p080
     channelwidthcoeff-> series 65 -> SMF_20140812_65_cw1p5
+    channelconductivity_mmhr -> series 110 -> SMF_20140812_110_cc70p0
+        (Series 110 = channel-loss (cc) identifiability work; see
+        Handoff_ChannelLossCalibration_v1.md. Not in the 59-69 single-param
+        block since it's new work with its own dedicated series number, not
+        a slot in the original Ivanov-hierarchy single-param sweep set.)
     psiB_mult        -> series 59 -> SMF_20140812_59_psiB1p25x
     thetaS_mult      -> series 67 -> SMF_20140812_67_thS1p10x
     As_value         -> series 68 -> SMF_20140812_68_As5p0
@@ -106,6 +115,12 @@ PARAM_CONFIG = {
     "As_value":          {"series": "68", "prefix": "As",   "suffix": "",   "type": "absolute"},
     "Au_value":          {"series": "69", "prefix": "Au",   "suffix": "",   "type": "absolute"},
     "AsAu_value":        {"series": "66", "prefix": "AsAu", "suffix": "",   "type": "absolute"},
+    # Series 110 = channel-loss (cc) identifiability work (new, 2026-09-24).
+    # get_run_category() special-cases n==110 -> "110_channel_conductivity",
+    # its own dedicated folder (see get_run_category() below), matching the
+    # Series 100/101 precedent of LHS/sweep work getting its own category
+    # rather than landing in the generic "40_multivariable" bucket.
+    "channelconductivity_mmhr": {"series": "110", "prefix": "cc", "suffix": "", "type": "absolute"},
 }
 
 # Fixed simulation settings
@@ -158,6 +173,8 @@ def get_run_category(series_str):
     n = int(series_str)
     if 59 <= n <= 69:   # 59 = psiB_mult; 60-69 = other single-param sweeps
         return "60_sensitivity"
+    if n == 110:        # channel-loss (cc) identifiability work
+        return "110_channel_conductivity"
     return "40_multivariable"
 
 
@@ -353,7 +370,15 @@ def build_input_file(param_name, value, overrides=None, tag="", gauge_sdf=None):
 
     # Channel loss
     model.optpercolation['value']      = optpercolation
-    model.channelconductivity['value'] = channelconductivity_mmhr / 3.6e6
+    # FIX (2026-09-24, per Josh): CHANNELCONDUCTIVITY's .in field wants
+    # mm/hr directly -- see the field's own in-file comment,
+    # "Conductivity in channel for all methods (mm/hr)". The previous
+    # `/ 3.6e6` here was an unnecessary mm/hr->m/s conversion that wrote
+    # a near-zero value into an already-mm/hr field (e.g. 70 mm/hr became
+    # 1.94e-05 in a field expecting 70), which is why cc=0.01/10/70/1000
+    # all produced bit-identical output in the Stage 0 smoke tests -- all
+    # four collapsed to effectively-zero conductivity once mis-converted.
+    model.channelconductivity['value'] = channelconductivity_mmhr
     model.channelporosity['value']     = channelporosity
 
     # Routing
