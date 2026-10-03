@@ -1,0 +1,51 @@
+{
+  "script": "run_cc_storm_110.py",
+  "created_local": "2026-10-03T16:03:55",
+  "rain_scale": 1.25,
+  "label": "storm125",
+  "what_this_is": "Rain gauge forcing with the rainfall RATE column multiplied by a constant; Y/M/D/H unchanged; NO_DATA flags unchanged; whole record scaled.",
+  "row_hours_assumed_for_totals": 0.25,
+  "source_sdf": {
+    "file": "Master_Precip.sdf",
+    "md5": "dca53ac5aa05e7b854161927af40535e"
+  },
+  "scaled_sdf": {
+    "file": "Master_Precip_storm125.sdf",
+    "md5": "3734de170f81b5be941d7f479d530715"
+  },
+  "stations": [
+    {
+      "source": "precip_SMF_2014-2014.mdf",
+      "scaled": "precip_SMF_2014-2014_storm125.mdf",
+      "scaled_md5": "a81776b4a4beb4d6f079e4b0daf3b394",
+      "rows": 8740,
+      "peak_mm_hr": [
+        81.28,
+        101.6
+      ],
+      "total_mm": [
+        231.394,
+        289.24250000000006
+      ],
+      "no_data_rows_unscaled": 0
+    },
+    {
+      "source": "precip_SMPHQ_2014-2014.mdf",
+      "scaled": "precip_SMPHQ_2014-2014_storm125.mdf",
+      "scaled_md5": "65e608d62d9d5461a4d2e458eff5dff1",
+      "rows": 8740,
+      "peak_mm_hr": [
+        98.55199999999999,
+        123.19
+      ],
+      "total_mm": [
+        232.66400000000004,
+        290.82999999999976
+      ],
+      "no_data_rows_unscaled": 0
+    }
+  ],
+  "python": "3.11.16",
+  "pandas": "3.0.5",
+  "numpy": "2.4.6"
+}

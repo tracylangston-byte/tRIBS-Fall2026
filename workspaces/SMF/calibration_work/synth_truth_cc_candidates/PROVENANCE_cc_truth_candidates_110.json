@@ -1,0 +1,127 @@
+{
+  "script": "run_cc_truth_candidates_110.py",
+  "created_local": "2026-10-02T07:15:36",
+  "what_this_is": "Candidate cc-ON synthetic truths (outlet .qout) at the standard truth values, one per cc value.",
+  "truth_values": {
+    "Ks_mult": 7.0,
+    "f_RS_abs": 0.012,
+    "kinemvelcoef": 4.5,
+    "flowexp": 0.24,
+    "channelroughness": 0.026
+  },
+  "optpercolation": 1,
+  "optsnow": 0,
+  "cc_units": "mm/hr (assigned directly to CHANNELCONDUCTIVITY)",
+  "run_tag": "cctruth",
+  "cc_grid_mmhr": [
+    45.0,
+    57.8,
+    74.1,
+    95.1,
+    122.0,
+    157.0,
+    201.0,
+    258.0,
+    331.0,
+    425.0,
+    545.0,
+    700.0
+  ],
+  "stage2_cc_box_mmhr": [
+    30.0,
+    1000.0
+  ],
+  "reference_truth_ccoff": {
+    "file": "SMF_20140812_60_Ks7p0x_truthcheck_Outlet.qout",
+    "md5": "4a433e441359313b6629734510f27813"
+  },
+  "anchor_status": "CANDIDATES ONLY -- none chosen, none confirmed by Josh",
+  "rechecked_local": "2026-10-02T07:32:54",
+  "updated_local": "2026-10-02T07:32:54",
+  "files": {
+    "SMF_20140812_110_cc45p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 45.0,
+      "md5": "ef6ba5d758686e60a27e100e81037eb1",
+      "bytes": 163882,
+      "run_id": "SMF_20140812_110_cc45p0_cctruth",
+      "flags": "WEAK_EFFECT"
+    },
+    "SMF_20140812_110_cc57p8_cctruth_Outlet.qout": {
+      "cc_mmhr": 57.8,
+      "md5": "f06ccfad2cb09107687642eb2501550c",
+      "bytes": 163882,
+      "run_id": "SMF_20140812_110_cc57p8_cctruth",
+      "flags": "WEAK_EFFECT"
+    },
+    "SMF_20140812_110_cc74p1_cctruth_Outlet.qout": {
+      "cc_mmhr": 74.1,
+      "md5": "2010622b39eb9055c2f0a2586faf9dc2",
+      "bytes": 163882,
+      "run_id": "SMF_20140812_110_cc74p1_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc95p1_cctruth_Outlet.qout": {
+      "cc_mmhr": 95.1,
+      "md5": "232632abda1a7b3edd7ba5d95ea94f98",
+      "bytes": 163882,
+      "run_id": "SMF_20140812_110_cc95p1_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc122p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 122.0,
+      "md5": "750034e448c8445f9dae5f3cb79c8068",
+      "bytes": 163882,
+      "run_id": "SMF_20140812_110_cc122p0_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc157p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 157.0,
+      "md5": "c49f51a54f72cf914953f901a71dc693",
+      "bytes": 163882,
+      "run_id": "SMF_20140812_110_cc157p0_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc201p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 201.0,
+      "md5": "013097a414def7b59aca731f9665f632",
+      "bytes": 163881,
+      "run_id": "SMF_20140812_110_cc201p0_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc258p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 258.0,
+      "md5": "8af92e7c2c02fb3fae68de45f466040f",
+      "bytes": 163881,
+      "run_id": "SMF_20140812_110_cc258p0_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc331p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 331.0,
+      "md5": "ce1966ae3c301af6cf882f6c64e57af2",
+      "bytes": 163881,
+      "run_id": "SMF_20140812_110_cc331p0_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc425p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 425.0,
+      "md5": "62c3222f3bcb3bc7044e336513e48572",
+      "bytes": 163881,
+      "run_id": "SMF_20140812_110_cc425p0_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc545p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 545.0,
+      "md5": "780d217c5b3fa4fd0915582ff6893ee9",
+      "bytes": 163880,
+      "run_id": "SMF_20140812_110_cc545p0_cctruth",
+      "flags": ""
+    },
+    "SMF_20140812_110_cc700p0_cctruth_Outlet.qout": {
+      "cc_mmhr": 700.0,
+      "md5": "e65a0e04c91e2b538422e0e4ad6b6ce0",
+      "bytes": 163880,
+      "run_id": "SMF_20140812_110_cc700p0_cctruth",
+      "flags": ""
+    }
+  }
+}
