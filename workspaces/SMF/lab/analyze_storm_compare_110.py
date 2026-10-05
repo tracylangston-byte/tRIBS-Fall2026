@@ -71,7 +71,7 @@ OUTPUTS   (calibration_work/03_comparisons/summary_tables/storm_compare_110/)
   storm_compare_input_checks_110.csv
   fig_stormcmp_cell_slopes_110.png  cc slope per cell, per storm; ON beside control
   fig_stormcmp_pooled_slopes_110.png  pooled slope of cc, Ks and f against storm size
-  fig_stormcmp_cc_recovery_110.png  best-run cc against true cc, one panel per storm
+  fig_stormcmp_cc_recovery_110.png  best-run cc against true cc, one panel per storm (grey band = chance range)
   PROVENANCE_storm_compare_110.json
 
 USAGE (run from the lab/ directory)
@@ -115,7 +115,7 @@ _NEED = {
     "analyze_truth_location_110": (L, ["KEY_COLS", "RS_DIRNAME", "LONG_NAME", "RS_PROV", "truth_list", "truth_coords", "find_cells",
                                        "cell_name", "track", "ci", "PCOL", "PAR", "cut_label", "iv", "param_err_fmt", "box_pos",
                                        "_setup_log_axis"]),
-    "analyze_cc_recovery_110": (R, ["top_index", "slope_of", "fcc", "ffactor", "CENTER_LOG", "LOG_LO", "LOG_HI"]),
+    "analyze_cc_recovery_110": (R, ["top_index", "slope_of", "fcc", "ffactor", "LOG_LO", "LOG_HI"]),
     "analyze_cc_tests_110": (T, ["n_top_for", "make_perm_matrix", "fmt_p", "_style", "COL_NULL", "INK", "INK2", "GRID", "SURFACE"]),
     "analyze_cc_pca_110": (P, ["Checks", "print_checks", "generate_lhs_samples", "LHS_PARAMS", "DESIGN_SEED", "PARAMS", "md5_of",
                                "SER_ON", "SER_OFF", "STAGE2_NAME", "CONTROL_NAME", "NULL_RHO", "KEY_METRICS", "C_KS", "C_F", "C_CC"]),
@@ -908,7 +908,23 @@ def fig_pooled(SL, entries, fracs, path):
     plt.close(fig)
 
 
-def fig_recovery(pt, SL, entries, truths, tx, keys_cells, cells, frac, path):
+def chance_band(null, key, frac):
+    """Where the best runs' median cc lands by chance: the middle 95% of the shuffled medians (cc shuffled among the runs).
+    Uses the cc-ON shuffles, or the control's if there are none. None if there are no shuffles for this storm."""
+    for s in (SER_ON, SER_OFF):
+        a = null.get((key, s, frac))
+        if a is None:
+            continue
+        v = np.asarray(a)[:, :, 2]
+        v = v[np.isfinite(v)]
+        if v.size:
+            lo_, hi_ = np.percentile(v, [2.5, 97.5])
+            return 10 ** lo_, 10 ** hi_
+    return None
+
+
+def fig_recovery(pt, SL, entries, truths, tx, keys_cells, cells, frac, path, null=None):
+    null = null or {}
     plt = _plt()
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
@@ -922,15 +938,15 @@ def fig_recovery(pt, SL, entries, truths, tx, keys_cells, cells, frac, path):
         for ti in cells[k]:
             rank[ti] = ri
     nk = max(1, len(keys_cells) - 1)
-    sty = storm_styles(entries)
+    have_band = False
     for ax, e in zip(axes[0], entries):
         T._style(ax)
-        ax.axhspan(10 ** (R.LOG_LO + 0.1 * (R.LOG_HI - R.LOG_LO)), 10 ** (R.LOG_LO + 0.9 * (R.LOG_HI - R.LOG_LO)),
-                   color=NULLC, alpha=0.16, linewidth=0, zorder=1)
-        ax.axhline(10 ** R.CENTER_LOG, color=NULLC, linestyle=":", linewidth=1.1, zorder=2)
+        band = chance_band(null, e["key"], frac)
+        if band is not None:
+            have_band = True
+            ax.axhspan(band[0], band[1], color=NULLC, alpha=0.16, linewidth=0, zorder=1)
         ax.plot(lim, lim, color=INK, linestyle="--", linewidth=1.0, zorder=2)
-        for s, col, sh, mk, filled in ((SER_OFF, NULLC, +0.012, "s", False), (SER_ON, sty[e["key"]][SER_ON] if e["key"] != COMB_KEY
-                                                                              else INK, -0.012, "o", True)):
+        for s, col, sh, mk, filled in ((SER_OFF, NULLC, +0.012, "s", False), (SER_ON, P.C_CC, -0.012, "o", True)):
             if (e["key"], s, frac) not in pt:
                 continue
             med = pt[(e["key"], s, frac)]["med"][:, 2]
@@ -953,9 +969,10 @@ def fig_recovery(pt, SL, entries, truths, tx, keys_cells, cells, frac, path):
     handles = [Line2D([0], [0], color=P.C_CC, marker="o", markersize=5.2, linestyle="none", label="channel loss ON (one dot per truth)"),
                Line2D([0], [0], color=NULLC, marker="s", markersize=5.2, markerfacecolor=SURFACE, markeredgewidth=1.3,
                       linestyle="none", label="control (cc inert)"),
-               Line2D([0], [0], color=INK, linestyle="--", linewidth=1.0, label="perfect recovery"),
-               Patch(facecolor=NULLC, alpha=0.16, label="no information: middle 80% of the sampled range")]
-    fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False, fontsize=8, labelcolor=INK2)
+               Line2D([0], [0], color=INK, linestyle="--", linewidth=1.0, label="perfect recovery")]
+    if have_band:
+        handles.append(Patch(facecolor=NULLC, alpha=0.16, label="chance range (middle 95% of shuffles of cc among the runs)"))
+    fig.legend(handles=handles, loc="lower center", ncol=len(handles), frameon=False, fontsize=8, labelcolor=INK2)
     fig.suptitle("Where do the best runs put cc, storm by storm?  (best %s of runs; 27 truths per panel, 9 per true-cc column)"
                  % L.cut_label(frac), color=INK, fontsize=10, x=0.01, ha="left")
     fig.tight_layout(rect=(0, 0.1, 1, 0.94))
@@ -1076,7 +1093,7 @@ def main():
         for name, fn in (
                 ("fig_stormcmp_cell_slopes_110.png", lambda p: fig_cell_slopes(SL, entries, keys, main_frac, p)),
                 ("fig_stormcmp_pooled_slopes_110.png", lambda p: fig_pooled(SL, entries, fracs, p)),
-                ("fig_stormcmp_cc_recovery_110.png", lambda p: fig_recovery(pt, SL, entries, truths, tx, keys, cells, main_frac, p))):
+                ("fig_stormcmp_cc_recovery_110.png", lambda p: fig_recovery(pt, SL, entries, truths, tx, keys, cells, main_frac, p, null))):
             try:
                 fn(out_dir / name)
             except Exception as ex:

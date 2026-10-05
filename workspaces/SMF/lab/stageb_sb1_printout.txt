@@ -1,0 +1,193 @@
+
+==============================================================================
+Series 110, STAGE B -- channel loss ON against OFF, f held fixed, real gauge (version 1)
+label sb1, margin 0.05, python 3.11.16, pandas 3.0.5, numpy 2.4.6
+arms: filled, asis   (primary: filled)
+==============================================================================
+synthetic truth (read-only, used only for gate 2): SMF_20140812_60_Ks7p0x_truthcheck_Outlet.qout
+designs: lhs_design_lowf_sb1_OFF_110.json and lhs_design_lowf_sb1_ON_110.json
+f held at 0.0007.  OFF: Ks 5.5 - 8.5, n 30.  ON: Ks 3.5 - 8.5, cc 30 - 1000, n 120.
+
+Loading the results tables:
+  [sb1 OFF] lhs_results_lowf_sb1_OFF_110.csv: 30 runs
+  [sb1 ON] lhs_results_lowf_sb1_ON_110.csv: 120 runs
+
+Loading compare CSVs (run membership = the run_id rows of the results tables):
+  150/150 loaded
+
+Reading the real gauge workbook (the whole 1993-2025 record is read, as the scorer does; this can take a minute) ...
+
+--------------------------------------------------------------------------------------------------------------
+GATES
+--------------------------------------------------------------------------------------------------------------
+  NOTE  workbook                           SMF_Observations_1993-2025.xlsx  (md5 a5c29cdaeb65, 44871 rows)
+  PASS  duplicate timestamps               none inside the window (0 elsewhere in the record)
+  PASS  discharge values                   no missing or negative cfs inside the window
+  PASS  peak (scale check)                 1586 cfs = 44.9 m3/s at 2014-08-12 18:44:38; the stored runs' median simulated peak is 43.9 m3/s, so the real peak is the same order of magnitude (a units and event check, not a fit)
+  NOTE  raw record                         37 records in the window; median step 2.7 min, 4 step(s) over 15 min, longest 648 min (1 silence(s) over 3 h)
+  NOTE  as-is 5-minute points              23 of the 241 grid points in the window hold a record after the scorer's resampling; the scorer's .dropna() removes the other 218
+  WARN  event-triggered record             the logger writes on change, so the as-is series keeps only 23 of 241 grid points and is blind to simulated flow in the other 218 bins (false early flow, dry hours). The filled arm scores all 241 points; see --gauge_mode and --primary_arm
+  WARN  as-is window coverage              only 23 scorable as-is points (--min_points is 30): thin for KGE and NSE; read the as-is arm with that in mind
+  NOTE  filled arm bins                    241 bins: 23 record (the scorer's own values), 14 line (gap <= 60 min), 204 hold (silence > 60 min, last reading <= 24 h old), 0 uncovered
+  NOTE  filled arm start                   the last reading before the window is 0.00 cfs at 2014-08-12 13:59:39 (2.0 h before 16:00); it is held until the first reading inside the window
+  PASS  filled arm coverage                241 scorable filled points of 241
+  PASS  filled = as-is at records          identical at all 23 bins that hold a record
+  PASS  filled arm volume                  filled volume 91623 m3 (74.3 acre-ft) vs the raw records' trapezoid sum 90923 m3: differ by 0.8%; the 23 as-is bins alone hold 96% of the filled volume
+  PASS  design files                       same label sb1, same pinned f 0.0007, same routing in both; ON cc box is the standard 30 - 1000
+  PASS  run ids                            no run id is in both series
+  PASS  f held fixed (OFF)                 all 30 runs have f = 0.0007
+  PASS  f held fixed (ON)                  all 120 runs have f = 0.0007
+  PASS  runs inside the box (OFF)          all 30 runs lie inside Ks 5.5-8.5
+  PASS  runs inside the box (ON)           all 120 runs lie inside Ks 3.5-8.5 and cc 30-1000
+  PASS  GATE 2A synthetic Observed         150/150 compare CSVs match the synthetic truth as read here (worst abs diff 7.11e-15 m3/s)
+  PASS  GATE 2B stored metrics             150/150 runs reproduce their stored metrics (worst abs deviation 2.91e-11 in sim_volume_m3)
+  PASS  GATE 4 same grid                   all 150 stored Simulated series share one grid of 241 points (2014-08-12 16:00:00 to 2014-08-13 12:00:00)
+  PASS  GATE 4 regular 5 minutes           every step is exactly 5 minutes
+  PASS  GATE 4 spans the window            the stored grid runs from 2014-08-12 16:00:00 to 2014-08-13 12:00:00
+  PASS  GATE 4 real bins on grid           all 241 real bins in the window are on the stored grid
+  GATE 3 (gauge-mode fidelity): NOT REPEATED here: PASSED on 2026-10-04 (Stage 0) for this pipeline; the scorer, builder and gauge reading are unchanged
+
+##############################################################################################################
+ARM: FILLED   (PRIMARY: fixed before the run)
+     241 real 5-minute points scored.  f held at 0.0007.  Ks box: OFF 5.5 - 8.5, ON 3.5 - 8.5.  cc box (ON): 30 - 1000.
+     filled: all 5-minute bins, gaps filled from the record (line, then hold)
+##############################################################################################################
+
+==============================================================================================================
+HEAD TO HEAD, FILLED ARM: the best run of each series (each series free in Ks)
+==============================================================================================================
+                                              cc ON         cc OFF     ON - OFF
+best KGE_2012                                0.8921         0.8403      +0.0519
+runs in the series                              120             30             
+mean KGE_2012 of the best 10% (12 / 3)         0.8839         0.8400      +0.0440
+median KGE_2012, all runs                    0.7579         0.8149      -0.0569
+
+Best run in each series:
+  series run_id (SMF_20140812_110_...)     Ks        cc |  PBIAS%      r   beta  gamma peak err%  peak hr
+  ON     cc159p472486_sb1on           6.03       159 |     1.7  0.901  1.017  1.039       1.5     0.08
+  OFF    cc904p84419_sb1off           7.02     inert |     3.6  0.865  1.036  0.923      -9.2     0.17
+  (r, beta, gamma are the three parts of KGE; 1 is perfect. peak hr = simulated peak time minus real peak time; positive = the model peaks late.)
+  OFF runs within 0.02 KGE of the best OFF run cover Ks 6.28 - 7.46.
+
+==============================================================================================================
+BY BAND OF cc (ON runs; equal widths in log cc), FILLED ARM
+==============================================================================================================
+  band        cc from - to    n |  best KGE    median | cc of best  Ks best   PBIAS% | best - OFF best
+     1         30.0 - 60.5   24 |    0.8855    0.7787 |      46.1    6.335      3.3 |      +0.0453
+     2          60.5 - 122   24 |    0.8858    0.7403 |      62.4    6.304      2.7 |      +0.0456
+     3           122 - 246   24 |    0.8921    0.8168 |       159    6.028      1.7 |      +0.0519
+     4           246 - 496   24 |    0.8801    0.7706 |       353    5.470      1.7 |      +0.0399
+     5          496 - 1000   24 |    0.8672    0.6233 |       682    4.627      5.7 |      +0.0270
+  (a negative last column means that band's best ON run is worse than the best OFF run.)
+  Spread of the band bests (highest minus lowest): 0.0249.  (Flat within 0.02 would mean the event does not pin cc; a larger spread can also come from the sparse sampling of the ridge.)
+
+==============================================================================================================
+WHERE DO THE BEST cc-ON RUNS PUT cc, FILLED ARM?   (chance puts one third in each third of the log cc range)
+==============================================================================================================
+   best | lowest middle highest | at floor at ceil. | cc min / median / max     span |  p lowest p highest
+     12 |      5      6      1 |        0        0 | 40.5 / 162 / 353          0.62 |     0.368     0.992   <- used for the reading below
+  lowest third = cc up to 96.5 mm/hr; the 'at floor' count is within 2 mm/hr of 30 mm/hr. Share of ALL runs in the lowest third: 0.33 (chance 0.33); highest third: 0.33.
+  span = how much of the log cc box the best runs cover (1 = all of it; small = they agree). p = chance of at least that many in that third if cc were irrelevant (binomial; the best runs are not independent, so a guide only).
+
+==============================================================================================================
+THE Ks-cc TRADE-OFF (ON runs), FILLED ARM
+==============================================================================================================
+  Volume: at a fixed Ks, every tenfold rise in cc changes PBIAS by -27.2 points, and every +1 in Ks by -17.7 points (straight-line fit to 120 ON runs, R2 0.97).
+  The old 500-run sweep (f 0.004 - 0.03) gave -26.9 points per tenfold rise in cc.
+  The Ks that would give PBIAS 0 falls from 7.27 at cc 30 to 4.94 at cc 1000.
+  Best 24 ON runs: Ks changes by -1.36 per tenfold rise in cc (rank correlation -0.78, p <0.001). A negative value means the best Ks falls as cc rises: the ridge. A guide only: the best runs are not independent.
+  Consistency: the 8 ON runs with cc up to 42.6 (the lowest tenth of the range) and Ks inside the OFF range differ from the OFF curve at the same Ks by a median of -0.010 KGE (range -0.015 to +0.040).
+
+==============================================================================================================
+READING (rule fixed before the run), FILLED ARM   (margin 0.05 KGE_2012; ALPHA 0.05, STABLE_SPAN 0.5, floor within 2 mm/hr)
+==============================================================================================================
+  Best ON minus best OFF                         : +0.0519   -> row 3
+  Mean of best 10% (ON 12, OFF 3) ON minus OFF   : +0.0440   -> row 5
+  Best 12 ON runs: lowest third p = 0.368, highest third p = 0.992, span 0.62 of the log cc range
+  (The wider location check is used only when the gap is within the margin.)
+
+  Row 3: ON better than OFF by more than the margin, but the best ON runs sit in an edge third of the cc range or are spread across it: extra flexibility, not a clear process signal. Do not claim it; check another storm first.
+
+  STABILITY: the readings do NOT agree (best run row 3, mean of the best 10% row 5). Treat the answer as UNSETTLED. The other row(s):
+        row 5: ON about equal to OFF, but the best ON runs are NOT crowded at low cc: the real gauge cannot tell whether channel loss is present. Usually this is because a lower Ks makes up the water that cc removes (a Ks-cc ridge); it can also mean cc has no effect on the fit. Report cc as not identifiable from this event; read the ridge figure and the trade-off section.
+
+  Caveats: one event; routing pinned at the synthetic-truth values; the SMPHQ rainfall artifact is in every run; gauge error is not quantified; the filled arm assumes a silent logger means no change; f held at one value (0.0007).
+
+##############################################################################################################
+ARM: ASIS   (sensitivity arm)
+     23 real 5-minute points scored.  f held at 0.0007.  Ks box: OFF 5.5 - 8.5, ON 3.5 - 8.5.  cc box (ON): 30 - 1000.
+     as-is: the scorer's own reading, only the 5-minute bins that hold a record
+##############################################################################################################
+
+==============================================================================================================
+HEAD TO HEAD, ASIS ARM: the best run of each series (each series free in Ks)
+==============================================================================================================
+                                              cc ON         cc OFF     ON - OFF
+best KGE_2012                                0.8293         0.8065      +0.0228
+runs in the series                              120             30             
+mean KGE_2012 of the best 10% (12 / 3)         0.8238         0.8052      +0.0186
+median KGE_2012, all runs                    0.7006         0.7594      -0.0588
+
+Best run in each series:
+  series run_id (SMF_20140812_110_...)     Ks        cc |  PBIAS%      r   beta  gamma peak err%  peak hr
+  ON     cc159p472486_sb1on           6.03       159 |     4.0  0.836  1.040  1.026       1.5     0.08
+  OFF    cc746p08515_sb1off           6.28     inert |     7.9  0.826  1.079  0.973       0.4     0.08
+  (r, beta, gamma are the three parts of KGE; 1 is perfect. peak hr = simulated peak time minus real peak time; positive = the model peaks late.)
+  OFF runs within 0.02 KGE of the best OFF run cover Ks 6.10 - 6.69.
+
+==============================================================================================================
+BY BAND OF cc (ON runs; equal widths in log cc), ASIS ARM
+==============================================================================================================
+  band        cc from - to    n |  best KGE    median | cc of best  Ks best   PBIAS% | best - OFF best
+     1         30.0 - 60.5   24 |    0.8185    0.6915 |      54.0    6.107      7.3 |      +0.0120
+     2          60.5 - 122   24 |    0.8114    0.6828 |      62.4    6.304      3.8 |      +0.0048
+     3           122 - 246   24 |    0.8293    0.7458 |       159    6.028      4.0 |      +0.0228
+     4           246 - 496   24 |    0.8283    0.7121 |       353    5.470      5.1 |      +0.0218
+     5          496 - 1000   24 |    0.8285    0.5750 |       682    4.627     10.1 |      +0.0220
+  (a negative last column means that band's best ON run is worse than the best OFF run.)
+  Spread of the band bests (highest minus lowest): 0.0179.  That is within 0.02: the best fit is about the same at every cc, so this event does not pin cc.
+
+==============================================================================================================
+WHERE DO THE BEST cc-ON RUNS PUT cc, ASIS ARM?   (chance puts one third in each third of the log cc range)
+==============================================================================================================
+   best | lowest middle highest | at floor at ceil. | cc min / median / max     span |  p lowest p highest
+     12 |      2      5      5 |        0        0 | 47.4 / 217 / 886          0.83 |     0.946     0.368   <- used for the reading below
+     24 |      7     10      7 |        0        0 | 40.5 / 189 / 886          0.88 |     0.737     0.737
+  lowest third = cc up to 96.5 mm/hr; the 'at floor' count is within 2 mm/hr of 30 mm/hr. Share of ALL runs in the lowest third: 0.33 (chance 0.33); highest third: 0.33.
+  span = how much of the log cc box the best runs cover (1 = all of it; small = they agree). p = chance of at least that many in that third if cc were irrelevant (binomial; the best runs are not independent, so a guide only).
+
+==============================================================================================================
+THE Ks-cc TRADE-OFF (ON runs), ASIS ARM
+==============================================================================================================
+  Volume: at a fixed Ks, every tenfold rise in cc changes PBIAS by -25.3 points, and every +1 in Ks by -19.0 points (straight-line fit to 120 ON runs, R2 0.97).
+  The old 500-run sweep (f 0.004 - 0.03) gave -26.9 points per tenfold rise in cc.
+  The Ks that would give PBIAS 0 falls from 7.23 at cc 30 to 5.20 at cc 1000.
+  Best 24 ON runs: Ks changes by -1.23 per tenfold rise in cc (rank correlation -0.81, p <0.001). A negative value means the best Ks falls as cc rises: the ridge. A guide only: the best runs are not independent.
+  Consistency: the 8 ON runs with cc up to 42.6 (the lowest tenth of the range) and Ks inside the OFF range differ from the OFF curve at the same Ks by a median of -0.010 KGE (range -0.014 to +0.001).
+
+==============================================================================================================
+READING (rule fixed before the run), ASIS ARM   (margin 0.05 KGE_2012; ALPHA 0.05, STABLE_SPAN 0.5, floor within 2 mm/hr)
+==============================================================================================================
+  Best ON minus best OFF                         : +0.0228   -> row 5
+  Mean of best 10% (ON 12, OFF 3) ON minus OFF   : +0.0186   -> row 5
+  Best 12 ON runs: lowest third p = 0.946, highest third p = 0.368, span 0.83 of the log cc range
+  Best 24 ON runs (location check): lowest third p = 0.737, highest third p = 0.737, span 0.88   -> row 5
+
+  Row 5: ON about equal to OFF, but the best ON runs are NOT crowded at low cc: the real gauge cannot tell whether channel loss is present. Usually this is because a lower Ks makes up the water that cc removes (a Ks-cc ridge); it can also mean cc has no effect on the fit. Report cc as not identifiable from this event; read the ridge figure and the trade-off section.
+
+  STABILITY: the best run, the mean of the best 10%% and the wider location check all point to row 5.
+
+  Caveats: one event; routing pinned at the synthetic-truth values; the SMPHQ rainfall artifact is in every run; gauge error is not quantified; the filled arm assumes a silent logger means no change; f held at one value (0.0007).
+
+==============================================================================================================
+ARM AGREEMENT   (primary arm, fixed before the run: FILLED;  margin 0.05 KGE_2012)
+==============================================================================================================
+  arm      points |   best ON  best OFF  ON - OFF | top-N gap | row best row mean
+  filled      241 |    0.8921    0.8403   +0.0519 |   +0.0440 |        3        5   <- primary
+  asis         23 |    0.8293    0.8065   +0.0228 |   +0.0186 |        5        5
+
+  THE ARMS DISAGREE: filled (primary) points to row 3, asis to row 5. The primary arm's row is the answer you fixed beforehand, but report the disagreement with it: the answer depends on how the gaps in the gauge are handled.
+
+Saved to: /workspaces/tRIBS-Fall2026/workspaces/SMF/calibration_work/03_comparisons/summary_tables/stageb_real_gauge_110/sb1
+  top folder: stageb_gates_110.csv   PROVENANCE_stageb_110.json
+  per arm (filled/, asis/): stageb_long_110.csv   stageb_summary_110.csv   stageb_top_runs_110.csv   stageb_cc_bands_110.csv   stageb_cc_location_110.csv   stageb_ridge_110.csv   stageb_verdict_110.csv   fig_stageb_*.png
