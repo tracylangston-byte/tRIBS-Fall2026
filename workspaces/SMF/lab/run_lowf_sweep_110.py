@@ -1,8 +1,24 @@
 """
-run_lowf_sweep_110.py   (version 1.2)
+run_lowf_sweep_110.py   (version 1.3)
 ===================================
 Series 110 -- LOW-f sweep. One script for both series (channel loss OFF and ON).
 Run it from the lab/ directory, like every other tribs6 script.
+
+WHAT CHANGED IN VERSION 1.3 (for the multi-storm runs: one long window, storms cut out afterwards)
+----------------------------------------------------------------------------------------------------
+  * --runtime_hours H   runs every sample over a window of H hours from 1 Aug 2014 00:00 instead of the builder's
+                  450 (to 19 Aug 18:00). 1464 hours reaches 1 Oct 2014 00:00 and so takes in 12 Aug, 19 Aug, 8 Sep
+                  and 27 Sep. The Outlet .qout is written every 5 minutes for the whole window and is KEPT for
+                  every run, so any storm in the window can be scored later without a new tRIBS run. The run is
+                  still scored on the 12 Aug window (compare CSV and result row), exactly as before.
+  * With --runtime_hours: the per-run timeout and the free-disk limit scale with the window (an explicit --timeout or
+                  --min_free_gb still wins), the time estimate scales (an assumption: the first run prints the real
+                  figure), and every run's Outlet .qout must reach the end of the window. A run whose .qout stops
+                  early (tRIBS can end part-way and still exit cleanly) is reported FAILED and its raw folder is
+                  kept; --skip_existing re-runs it.
+  * The design file records the window, so a label cannot be reused with a different window by mistake.
+  * Without --runtime_hours nothing changes (450 hours, timeout 300 s, no end-of-window check).
+  * Not checked by this script: that the rainfall and weather forcing files run at least as long as the window.
 
 WHAT CHANGED IN VERSION 1.2 (for Stage B, the ON-versus-OFF comparison)
 ------------------------------------------------------------------------
@@ -72,14 +88,17 @@ USAGE (from lab/)
     python run_lowf_sweep_110.py --mode off --label sb1 --f_fixed 0.0007 --ks_lo 5.5 --ks_hi 8.5 --n 30 --skip_existing
     python run_lowf_sweep_110.py --mode on  --label sb1 --f_fixed 0.0007 --ks_lo 3.5 --ks_hi 8.5 --n 120 --skip_existing
     # (a Codespace can stop a run if the tab is closed; the same command with --skip_existing picks up where it stopped)
+    # Multi-storm window (version 1.3), a timing trial of one run, then the same command without --limit:
+    python run_lowf_sweep_110.py --mode on --label sbl --f_fixed 0.0007 --ks_lo 3.5 --ks_hi 8.5 --n 120 --runtime_hours 1464 --limit 1
 
 DO NOT run any other tRIBS build/run script in lab/ while this runs: all sweep scripts share
 calibration_work/current_run_config.json with no locking. Scoring scripts that only read CSVs
 (score_lowf_real_110.py, rescore_real_gauge_110.py) are safe to run during a sweep.
 
 TIME: an estimate only, until the first run reports its own. Measured on this project's runs (build,
-tRIBS and scoring together): 66 to 69 s per run. 30 runs is about 34 minutes; 100 runs about 1.9 hours;
-120 runs about 2.3 hours; 250 runs about 4.7 hours.
+tRIBS and scoring together) for the default 450-hour window: 66 to 69 s per run. 30 runs is about 34 minutes;
+100 runs about 1.9 hours; 120 runs about 2.3 hours; 250 runs about 4.7 hours. For a longer window the script
+scales that figure in proportion to the window (an assumption, not a measurement).
 
 OUTPUT (calibration_work/03_comparisons/summary_tables/)
     lhs_results_lowf_<label>_<OFF|ON>_110.csv          one row per finished run
@@ -130,10 +149,20 @@ DEFAULT_BOX = {
     "cc_lo": 30.0,  "cc_hi": 1000.0,
 }
 
-EST_SEC_PER_RUN = 68.0        # measured on this project's runs: 66 to 69 s including the input-file build
+EST_SEC_PER_RUN = 68.0        # measured on this project's runs: 66 to 69 s including the input-file build (450 h window)
 MIN_FREE_GB_DEFAULT = 3.0     # one run needs about 0.3 GB while it runs; failed runs keep theirs
+RAW_GB_PER_RUN = 0.3          # raw folder of one run in the 450-hour window (measured 272 MB)
+BASE_TIMEOUT_SEC = 300        # per-run hard timeout for the 450-hour window
 MATCH_RTOL = 1e-3             # tolerance when matching points to the other series
 LABEL_RE = re.compile(r"^[A-Za-z0-9]{1,12}$")
+
+# The builder's own window, read before any --runtime_hours override (450 in the real builder).
+BASE_RUNTIME_HOURS = float(getattr(builder, "RUNTIME_HOURS", 450))
+# A kept Outlet .qout must reach to within this many hours of the end of a --runtime_hours window.
+COVER_TOL_H = 2.0
+# Storm dates inside the 2014 forcing file (from Handoff_ChannelLossRealData_v7.md); only used to tell the user
+# which of them a window takes in. Not used for any scoring.
+KNOWN_STORM_DATES = [("12 Aug", "2014-08-12"), ("19 Aug", "2014-08-19"), ("8 Sep", "2014-09-08"), ("27 Sep", "2014-09-27")]
 
 
 # ------------------------------------------------------------------
@@ -170,8 +199,9 @@ def generate_lhs_samples(n, params, seed=None):
 
 
 def make_params(args):
-    if args.f_fixed is not None:
-        f_param = {"lo": args.f_fixed, "hi": args.f_fixed, "scale": "fixed"}
+    f_fixed = getattr(args, "f_fixed", None)
+    if f_fixed is not None:
+        f_param = {"lo": f_fixed, "hi": f_fixed, "scale": "fixed"}
     else:
         f_param = {"lo": args.f_lo, "hi": args.f_hi, "scale": "log"}
     return {
@@ -235,22 +265,77 @@ def csv_already_exists(run_id, csv_dir):
     return (csv_dir / ("%s_compare_obs_sim.csv" % run_id)).exists()
 
 
-def kept_qout_ok(run_id, keep_dir):
+def window_start():
+    """Start of the model run (the builder's START_DATE, 1 Aug 2014 00:00)."""
+    try:
+        return pd.to_datetime(getattr(builder, "START_DATE", "08/01/2014/00/00"), format="%m/%d/%Y/%H/%M")
+    except Exception:
+        return pd.Timestamp("2014-08-01 00:00")
+
+
+def event_end_hour():
+    """Hours from the start of the run to the end of the 12 Aug scoring window (300 for 13 Aug 12:00)."""
+    try:
+        return (pd.Timestamp(getattr(builder, "EVENT_END", "2014-08-13 12:00")) - window_start()).total_seconds() / 3600.0
+    except Exception:
+        return 300.0
+
+
+def qout_last_hour(path):
+    """Time (hours from the start of the run) in the last data row of an Outlet .qout, or None if it cannot be
+    read. Only the end of the file is read."""
+    try:
+        size = path.stat().st_size
+        with open(str(path), "rb") as fh:
+            fh.seek(max(0, size - 4096))
+            tail = fh.read().decode("utf-8", errors="ignore")
+    except OSError:
+        return None
+    for line in reversed(tail.splitlines()):
+        parts = [p for p in re.split(r"[,\s]+", line.strip()) if p]
+        if not parts:
+            continue
+        try:
+            return float(parts[0])
+        except ValueError:
+            return None
+    return None
+
+
+def qout_coverage_problem(path, window_hours):
+    """'' if the Outlet .qout reaches the end of the window (within COVER_TOL_H), else a sentence saying why not."""
+    last = qout_last_hour(path)
+    if last is None:
+        return "could not read the last time in %s" % path.name
+    if last < window_hours - COVER_TOL_H:
+        return "the Outlet .qout stops at hour %.1f of the %g-hour window (tRIBS ended early)" % (last, window_hours)
+    return ""
+
+
+def kept_qout_ok(run_id, keep_dir, window_hours=None):
+    """The kept Outlet .qout exists and is not empty; with window_hours, it must also reach the end of the window."""
     p = keep_dir / ("%s_Outlet.qout" % run_id)
     try:
-        return p.exists() and p.stat().st_size > 0
+        if not (p.exists() and p.stat().st_size > 0):
+            return False
     except OSError:
         return False
+    if window_hours is not None and qout_coverage_problem(p, window_hours):
+        return False
+    return True
 
 
-def run_is_done(run_id, csv_dir, keep_dir, summary_dir, existing_ids, no_keep_qout):
+def run_is_done(run_id, csv_dir, keep_dir, summary_dir, existing_ids, no_keep_qout, window_hours=None):
     """A run is DONE only if all three things are in place: its compare CSV, its kept Outlet .qout (unless
     --no_keep_qout), and its row in the results (or the metrics file the row is rebuilt from). Version 1.1 looked
     at the compare CSV alone, so a run cut off after that file was written (before the .qout copy) was skipped
-    on resume and lost its .qout. Returns (done, reason_if_not)."""
+    on resume and lost its .qout. With --runtime_hours (window_hours), the kept .qout must also reach the end of
+    the window. Returns (done, reason_if_not)."""
     if not csv_already_exists(run_id, csv_dir):
         return False, "no compare CSV"
-    if not no_keep_qout and not kept_qout_ok(run_id, keep_dir):
+    if not no_keep_qout and not kept_qout_ok(run_id, keep_dir, window_hours):
+        if window_hours is not None and kept_qout_ok(run_id, keep_dir):
+            return False, "compare CSV exists but the kept Outlet .qout does not reach the end of the window"
         return False, "compare CSV exists but the Outlet .qout was not kept"
     if run_id not in existing_ids and not (summary_dir / ("%s_metrics_summary.csv" % run_id)).exists():
         return False, "compare CSV exists but there is no result row and no metrics file"
@@ -282,16 +367,18 @@ def match_to_other(points_df, other_df, rtol=MATCH_RTOL):
 
 
 def design_dict(args, params):
+    rt = getattr(args, "runtime_hours", None)
     return {
         "script": Path(__file__).name,
-        "version": "1.2",
+        "version": "1.3",
         "label": args.label,
         "mode": args.mode,
         "series": series_name(args.mode),
         "optpercolation": 1 if args.mode == "on" else 0,
         "n": int(args.n),
         "seed": int(args.seed),
-        "f_fixed": None if args.f_fixed is None else float(args.f_fixed),
+        "f_fixed": None if getattr(args, "f_fixed", None) is None else float(args.f_fixed),
+        "runtime_hours": None if rt is None else int(rt),
         "box": {k: {"lo": float(v["lo"]), "hi": float(v["hi"]), "scale": v["scale"]} for k, v in params.items()},
         "routing_pinned": ROUTING_TRUTH,
         "run_tag": run_tag(args.label, args.mode),
@@ -299,7 +386,7 @@ def design_dict(args, params):
 
 
 def same_design(a, b):
-    keys = ["label", "mode", "n", "seed", "box", "routing_pinned", "optpercolation"]
+    keys = ["label", "mode", "n", "seed", "box", "routing_pinned", "optpercolation", "runtime_hours"]
     return all(a.get(k) == b.get(k) for k in keys)
 
 
@@ -312,8 +399,8 @@ def same_design_but_mode(a, b):
 # ------------------------------------------------------------------
 # Keeping the Outlet .qout, then removing the bulky raw folder
 # ------------------------------------------------------------------
-def keep_outlet_qout(run_id, calib_dir, keep_dir):
-    """Copy <run_id>_Outlet.qout to keep_dir. Returns (destination or None, problem text)."""
+def find_raw_outlet_qout(run_id, calib_dir):
+    """The run's Outlet .qout in its raw results folder. Returns (path or None, problem text)."""
     raw_dir = calib_dir / "02_results" / RUN_CATEGORY / run_id
     src = raw_dir / ("%s_Outlet.qout" % run_id)
     if not src.exists():
@@ -321,6 +408,14 @@ def keep_outlet_qout(run_id, calib_dir, keep_dir):
         if len(cands) != 1:
             return None, "no single *_Outlet.qout in the raw folder (found %d)" % len(cands)
         src = cands[0]
+    return src, ""
+
+
+def keep_outlet_qout(run_id, calib_dir, keep_dir):
+    """Copy <run_id>_Outlet.qout to keep_dir. Returns (destination or None, problem text)."""
+    src, problem = find_raw_outlet_qout(run_id, calib_dir)
+    if src is None:
+        return None, problem
     size = src.stat().st_size
     if size == 0:
         return None, "the Outlet .qout is empty"
@@ -451,6 +546,34 @@ def run_checks(args, calib_dir, summary_dir, csv_dir, keep_dir, samples, params,
     if f_top >= 0.0301:
         ck.add("WARN", "f range", "f above 0.030 is outside anything run so far in this series")
 
+    # run window (version 1.3)
+    win = getattr(args, "runtime_hours", None)
+    scale = (win / BASE_RUNTIME_HOURS) if win else 1.0
+    if win is not None:
+        ev_end = event_end_hour()
+        start = window_start()
+        end = start + pd.Timedelta(hours=win)
+        if win <= ev_end + 1:
+            ck.add("FAIL", "run window", "%d h ends before the 12 Aug scoring window finishes (hour %g); use at least %d"
+                   % (win, ev_end, int(ev_end) + 2))
+        else:
+            ck.add("PASS", "run window", "%d h: %s to %s" % (win, start.strftime("%d %b %Y %H:%M"), end.strftime("%d %b %Y %H:%M")))
+            parts = []
+            for lab, d in KNOWN_STORM_DATES:
+                d0 = pd.Timestamp(d)
+                d1 = d0 + pd.Timedelta(days=1)
+                parts.append("%s %s" % (lab, "inside" if d1 <= end else ("not in" if d0 >= end else "partly in")))
+            ck.add("NOTE", "storms in the window", "; ".join(parts))
+            if win > 2400:
+                ck.add("WARN", "run window", "%d h is longer than anything planned (about 100 days); check --runtime_hours" % win)
+            ck.add("NOTE", "forcing coverage", "NOT checked here: the rainfall and weather files must run at least to %s"
+                   % end.strftime("%d %b %Y %H:%M"))
+            ck.add("NOTE", "time and disk",
+                   "timeout %d s per run%s; free-disk limit %.1f GB; about %.0f s per run if run time grows in proportion "
+                   "to the window (an assumption, the first run prints the real figure)"
+                   % (args.timeout, " (scaled to the window)" if getattr(args, "timeout_scaled", False) else "",
+                      args.min_free_gb, EST_SEC_PER_RUN * scale))
+
     # kept-qout folder must not sit inside synth_truth
     kd, sd = keep_dir.resolve(), synth_dir.resolve()
     if kd == sd or sd in kd.parents:
@@ -463,7 +586,7 @@ def run_checks(args, calib_dir, summary_dir, csv_dir, keep_dir, samples, params,
     if gb < args.min_free_gb:
         ck.add("FAIL", "free disk space", "%.1f GB free, below --min_free_gb %.1f" % (gb, args.min_free_gb))
     else:
-        ck.add("PASS", "free disk space", "%.1f GB free (a run needs about 0.3 GB while it runs)" % gb)
+        ck.add("PASS", "free disk space", "%.1f GB free (a run needs about %.1f GB while it runs)" % (gb, RAW_GB_PER_RUN * scale))
 
     # design collisions with an earlier design of the same label and mode
     design = design_dict(args, params)
@@ -497,7 +620,7 @@ def run_checks(args, calib_dir, summary_dir, csv_dir, keep_dir, samples, params,
     elif existing:
         old_df = load_csv_if_any(paths["results"])
         old_ids = set(old_df["run_id"].values) if not old_df.empty else set()
-        done = sum(1 for rid in ids if run_is_done(rid, csv_dir, keep_dir, summary_dir, old_ids, args.no_keep_qout)[0])
+        done = sum(1 for rid in ids if run_is_done(rid, csv_dir, keep_dir, summary_dir, old_ids, args.no_keep_qout, win)[0])
         redo = existing - done
         txt = "%d of %d already done; --skip_existing will skip them" % (done, len(ids))
         if redo:
@@ -525,9 +648,12 @@ def print_design(samples, ids, args, n_run):
         print("  (series OFF: cc is sampled and written into the .in file, but with OPTPERCOLATION=0 it has no effect)")
     if args.f_fixed is not None:
         print("  (f is FIXED at %g for every run)" % args.f_fixed)
-    hours = n_run * EST_SEC_PER_RUN / 3600.0
-    print("\n  This invocation would run %d of %d samples: about %.1f hours at %.0f s per run (an estimate; the "
-          "first run prints the real figure)." % (n_run, args.n, hours, EST_SEC_PER_RUN))
+    rt = getattr(args, "runtime_hours", None)
+    est = EST_SEC_PER_RUN * ((rt / BASE_RUNTIME_HOURS) if rt else 1.0)
+    hours = n_run * est / 3600.0
+    print("\n  This invocation would run %d of %d samples: about %.1f hours at %.0f s per run (an estimate%s; the "
+          "first run prints the real figure)." % (n_run, args.n, hours, est,
+                                                  ", scaled to the window in proportion: unmeasured" if rt else ""))
 
 
 # ------------------------------------------------------------------
@@ -565,13 +691,19 @@ def main():
     parser.add_argument("--skip_existing", action="store_true",
                         help="Skip samples whose compare CSV already exists (resume). Without it, the script "
                              "refuses to start if any run of the design already exists.")
-    parser.add_argument("--timeout", type=int, default=300, help="Per-run hard timeout in seconds (default 300)")
+    parser.add_argument("--runtime_hours", type=int, default=None,
+                        help="Run every sample over this many hours from 1 Aug 2014 00:00 instead of the builder's "
+                             "450 (1464 reaches 1 Oct 2014 and takes in 12 Aug, 19 Aug, 8 Sep and 27 Sep). The Outlet "
+                             ".qout of the whole window is kept; scoring stays on the 12 Aug window.")
+    parser.add_argument("--timeout", type=int, default=None,
+                        help="Per-run hard timeout in seconds (default 300; with --runtime_hours, 300 scaled to the window)")
     parser.add_argument("--no_cleanup", action="store_true",
                         help="Keep every raw per-run folder (about 270 MB each) instead of deleting it after the run")
     parser.add_argument("--no_keep_qout", action="store_true",
                         help="Do not copy the Outlet .qout before cleanup (not recommended)")
-    parser.add_argument("--min_free_gb", type=float, default=MIN_FREE_GB_DEFAULT,
-                        help="Stop if free disk space falls below this many GB (default %g)" % MIN_FREE_GB_DEFAULT)
+    parser.add_argument("--min_free_gb", type=float, default=None,
+                        help="Stop if free disk space falls below this many GB (default %g; with --runtime_hours, four "
+                             "runs' worth of raw output if that is more)" % MIN_FREE_GB_DEFAULT)
     parser.add_argument("--check_only", action="store_true", help="Run the checks and stop; builds and runs nothing")
     parser.add_argument("--dry_run", action="store_true",
                         help="Run the checks, print the design and the time estimate, and stop; writes nothing")
@@ -591,8 +723,21 @@ def main():
         parser.error("--n must be at least 5.")
     if args.limit is not None and args.limit < 1:
         parser.error("--limit must be at least 1.")
+    if args.runtime_hours is not None and args.runtime_hours < 1:
+        parser.error("--runtime_hours must be a positive whole number of hours.")
+    # window scaling (version 1.3): without --runtime_hours these resolve to the old defaults (300 s, 3.0 GB)
+    scale = (args.runtime_hours / BASE_RUNTIME_HOURS) if args.runtime_hours else 1.0
+    args.timeout_scaled = False
+    if args.timeout is None:
+        args.timeout = int(round(BASE_TIMEOUT_SEC * max(1.0, scale)))
+        args.timeout_scaled = bool(args.runtime_hours) and scale > 1.0
+    if args.min_free_gb is None:
+        args.min_free_gb = max(MIN_FREE_GB_DEFAULT, round(4.0 * RAW_GB_PER_RUN * scale, 1)) if args.runtime_hours \
+            else MIN_FREE_GB_DEFAULT
     if args.timeout < 30:
         parser.error("--timeout must be at least 30 seconds.")
+    if args.runtime_hours is not None:
+        builder.RUNTIME_HOURS = int(args.runtime_hours)    # the builder reads this when it writes each input file
 
     script_dir = Path.cwd()
     project_root = script_dir.parent
@@ -620,11 +765,14 @@ def main():
     paths = result_paths(summary_dir, args.label, args.mode)
 
     print("\n" + "=" * 78)
-    print("Series %s -- LOW-f sweep (version 1.2) -- label %s, series %s"
+    print("Series %s -- LOW-f sweep (version 1.3) -- label %s, series %s"
           % (LHS_SERIES, args.label, series_name(args.mode)))
     print("python %s, pandas %s, numpy %s" % (sys.version.split()[0], pd.__version__, np.__version__))
     print("  %d samples, seed %d, timeout %d s, cleanup %s, keep Outlet .qout %s"
           % (args.n, args.seed, args.timeout, "off" if args.no_cleanup else "on", "off" if args.no_keep_qout else "on"))
+    if args.runtime_hours is not None:
+        print("  RUN WINDOW: %d hours from %s (builder default %g); every Outlet .qout must reach the end of it"
+              % (args.runtime_hours, window_start().strftime("%d %b %Y %H:%M"), BASE_RUNTIME_HOURS))
     for pname, p in params.items():
         if p["scale"] == "fixed":
             print("  %-26s %g  (FIXED for every run)" % (pname, p["lo"]))
@@ -700,7 +848,8 @@ def main():
                   % (i + 1, n_run, ks_val, f_val, cc_val, " (inert)" if args.mode == "off" else "", run_id))
 
             if args.skip_existing:
-                done, why_not = run_is_done(run_id, csv_dir, keep_dir, summary_dir, existing_ids, args.no_keep_qout)
+                done, why_not = run_is_done(run_id, csv_dir, keep_dir, summary_dir, existing_ids, args.no_keep_qout,
+                                            args.runtime_hours)
                 if done:
                     print("  SKIP (compare CSV exists)")
                     skipped += 1
@@ -713,13 +862,13 @@ def main():
                             m.setdefault("channelconductivity_mmhr", cc_val)
                             m["optpercolation"] = 1 if args.mode == "on" else 0
                             m["design_label"] = args.label
-                            m["qout_kept"] = bool(kept_qout_ok(run_id, keep_dir))
+                            m["qout_kept"] = bool(kept_qout_ok(run_id, keep_dir, args.runtime_hours))
                             results.append(m)
                             existing_ids.add(run_id)
                         except Exception as exc:
                             print("  (could not read %s: %s)" % (metrics_file.name, exc))
                     # a finished run whose raw folder was left behind (cut off after the copy): tidy it up
-                    if (not args.no_cleanup and not args.no_keep_qout and kept_qout_ok(run_id, keep_dir)
+                    if (not args.no_cleanup and not args.no_keep_qout and kept_qout_ok(run_id, keep_dir, args.runtime_hours)
                             and cleanup_raw_results(run_id, calib_dir)):
                         cleaned += 1
                         print("  (removed the raw folder left behind by an earlier cut-off run)")
@@ -731,7 +880,9 @@ def main():
             gb = free_gb(calib_dir)
             if gb < args.min_free_gb:
                 print("  STOPPING: %.1f GB free, below --min_free_gb %.1f. Free some space (failed runs keep about "
-                      "270 MB each in 02_results/%s/), then resume with --skip_existing." % (gb, args.min_free_gb, RUN_CATEGORY))
+                      "%.0f MB each in 02_results/%s/), then resume with --skip_existing."
+                      % (gb, args.min_free_gb, 270 * ((args.runtime_hours / BASE_RUNTIME_HOURS) if args.runtime_hours else 1.0),
+                         RUN_CATEGORY))
                 stopped_for_disk = True
                 break
 
@@ -773,6 +924,12 @@ def main():
                 status, reason = "FAILED", "scorer finished but wrote no metrics file"
             else:
                 status, reason = "SUCCESS", ""
+                if args.runtime_hours is not None:
+                    # a long window: the Outlet .qout must reach the end of it, or the later storms are silently lost
+                    raw_q, raw_problem = find_raw_outlet_qout(run_id, calib_dir)
+                    short = raw_problem if raw_q is None else qout_coverage_problem(raw_q, args.runtime_hours)
+                    if short:
+                        status, reason = "FAILED", short
 
             if status == "SUCCESS":
                 metrics = pd.read_csv(metrics_file).iloc[0].to_dict()
@@ -843,7 +1000,11 @@ def main():
             files = list(keep_dir.glob("*_Outlet.qout"))
             tot = sum(f.stat().st_size for f in files) / 1e6
             print("Kept Outlet .qout files: %d in %s (%.1f MB)" % (len(files), keep_dir, tot))
-        if args.f_fixed is not None:
+        if args.runtime_hours is not None:
+            print("Next: the kept Outlet .qout files cover the whole %d-hour window. The runs are scored on 12 Aug only "
+                  "so far; scoring the other storms from the kept files needs a storm-by-storm scorer (not written yet)."
+                  % args.runtime_hours)
+        elif args.f_fixed is not None:
             print("Next: when BOTH series of label %s are finished (ON and OFF):  python score_stageb_110.py --label %s"
                   "   (scores them against the REAL gauge and compares ON with OFF)" % (args.label, args.label))
         else:
