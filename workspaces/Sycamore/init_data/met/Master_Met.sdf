@@ -1,0 +1,4 @@
+ID,DataFile,Northing,Easting,Elevation
+1,../init_data/met/met_NLDAS_1_2016-2017.mdf,3730800.7,450970.2,657
+2,../init_data/met/met_NLDAS_2_2016-2017.mdf,3741416.2,458992.2,1247
+3,../init_data/met/met_NLDAS_3_2016-2017.mdf,3754435.2,457187.2,1435
