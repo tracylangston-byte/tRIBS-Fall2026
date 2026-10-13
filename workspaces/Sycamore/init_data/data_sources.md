@@ -99,7 +99,7 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
   -3 is the only negative value and means no coverage. Cells at the gauge read 0.0 (dry hour).
 - Not yet downloaded for any water year.
 - Open items:
-  - Time label (start vs end of the hour) is unconfirmed; check against a gauge on a real storm.
+  - Time label (start vs end of the hour): the archive stamp is assumed to mark the END of the accumulation hour (the GRIB metadata does not say). tRIBS reads the hour in a rain file name as the past hour (Josh Cederstrom, 2026-10-13), so the WY2017 files are labeled by the end of the hour (see the WY2017 entry below). Still to confirm against a gauge on a real storm.
   - GaugeCorr folder absent on 2015-01-15, present on 2015-07-20; start date unknown, so use WY2016 onward.
   - 2014-10-15 returned a 404.
   - Spot-checked 2015-07-20, 2017-08-15 and 2019-07-20: all had 24 of 24 hours. Not a completeness guarantee.
@@ -113,19 +113,29 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 ### Radar rainfall, hourly gridded (WY2017)
 - Product: NCEP MRMS hourly rain accumulation `GaugeCorr_QPE_01H_00.00` (mm), from the Iowa State Mesonet MTArchive copy. This is the older, locally gauge-corrected algorithm. SRP uses the current MRMS product (available from 2020-10-14), and the two have not been spliced.
 - URL pattern: https://mtarchive.geol.iastate.edu/YYYY/MM/DD/mrms/ncep/GaugeCorr_QPE_01H/GaugeCorr_QPE_01H_00.00_YYYYMMDD-HH0000.grib2.gz
-- Pulled 2026-10-09 with build_mrms_radar_rainfall_tribs6.py v1.1: `download`, then `all` (process + audit). Settings: --source iem --bbox -111.64 33.62 -111.31 34.06 --buffer-km 0 --start "2016-10-01 00:00" --end "2017-09-30 23:00". Working folder: ~/mrms_wk_wy2017
-- Period: 8,760 hourly files, labelled 2016-10-01 00:00 to 2017-09-30 23:00 Arizona time (MST, UTC-7). Archive file stamps run 2016-10-01 08:00 to 2017-10-01 07:00 UTC.
+- Pulled 2026-10-09 with build_mrms_radar_rainfall_tribs6.py v1.1: `download`, then `all` (process + audit). Re-labeled 2026-10-13 by re-running `process` and `audit` only (no re-download) with `--stamp-convention end`. Settings of the current files: --source iem --bbox -111.64 33.62 -111.31 34.06 --buffer-km 0 --start "2016-10-01 01:00" --end "2017-10-01 00:00" --stamp-convention end. Working folder: ~/mrms_wk_wy2017
+- Period: 8,760 hourly files, labeled 2016-10-01 01:00 to 2017-10-01 00:00 Arizona time (MST, UTC-7). The label is the END of the hour, so radar_1001201601.asc is the rain from 00:00 to 01:00 on 10/01/2016 and the last file, radar_1001201700.asc, is 23:00 to 24:00 on 09/30/2017. Archive file stamps run 2016-10-01 08:00 to 2017-10-01 07:00 UTC.
 - Grid: 32 x 49 cells of 1,000 m, EPSG:26912, x 440,000-472,000, y 3,720,000-3,769,000. Area-average resampling. Units mm/hr (an hourly accumulation in mm is numerically mm/hr), no conversion.
-- Files: ~/mrms_wk_wy2017/rain/radar_MMDDYYYYHH.asc [copy to the model folder: path]. Also kept in the same folder: manifest.csv, download_log.csv, audit/audit_report.txt, run_all.log
-- Hour-label convention: start (default, unchanged). Tested 2026-10-09 with FCDMC reports ending 17:00, 18:00 and 19:00 MST on 07/23/17: all three Sycamore gauges peaked 17:00-18:00 MST, the hour the radar file labeled 17:00 covers. One storm, hourly resolution; rules out a one-hour shift only.
+- Files: ~/mrms_wk_wy2017/rain/radar_MMDDYYYYHH.asc (HH = the hour that ENDS, 00-23; the hour ending at midnight is written as 00 of the next day, and whether tRIBS expects that or 24 is untested) [copy to the model folder: path]. Also kept in the same folder: manifest.csv, download_log.csv, audit/audit_report.txt, run_all.log. The earlier start-labeled grids are in ~/mrms_wk_wy2017/rain_start_label_OLD/ (to delete after a successful tRIBS run).
+- Hour-label convention: END of the hour (changed 2026-10-13). Rule from Josh Cederstrom, relayed by Tracy (secondhand; the tRIBS documentation pages checked do not state it): in tRIBS the rainfall hour in a file name means the past hour. The MRMS archive stamp is assumed to mark the end of its accumulation hour (the GRIB metadata does not say). The first build (2026-10-09) used start-of-hour labels and was re-labeled; the rain amounts did not change, only the file names. Check of 2026-10-09: FCDMC reports ending 17:00, 18:00 and 19:00 MST on 07/23/17 showed all three Sycamore gauges peaking 17:00-18:00 MST, the hour now in the file labeled 18:00. One storm, hourly resolution; rules out a one-hour shift only.
 - Missing from the archive (HTTP 404): 17 of 8,760 hours (0.19%), written as all-zero grids and flagged filled_zero_missing_hour in manifest.csv. Archive stamps (UTC): 2016-10-11 16:00-17:00; 2016-11-06 01:00; 2016-12-06 17:00-23:00; 2017-04-27 12:00-13:00; 2017-05-09 18:00; 2017-05-11 21:00-22:00; 2017-05-14 21:00; 2017-07-31 18:00. None fall in January-March.
-- Audit: PASS with 1 warning (the zero-filled hours). All 8,760 files present and parse, one shared header, no NaN or negative values.
-- Totals over the whole grid (not basin-only): 550.6 mm (21.7 in) for the year. Monthly (mm): Oct 17.3, Nov 39.5, Dec 89.1, Jan 111.5, Feb 81.4, Mar 10.2, Apr 1.2, May 7.1, Jun 0.6, Jul 147.3, Aug 31.4, Sep 14.1. Wettest winter hour: 2017-01-20 20:00 (6.17 mm/hr). Wettest hour: 2017-07-23 17:00 (8.17 mm/hr).
+- Audit: PASS with 1 warning (the zero-filled hours), also after the 2026-10-13 relabel. All 8,760 files present and parse, one shared header, no NaN or negative values.
+- Totals over the whole grid (not basin-only): 550.6 mm (21.7 in) for the year. Monthly (mm): Oct 17.3, Nov 39.5, Dec 88.7, Jan 111.9, Feb 81.4, Mar 10.2, Apr 1.2, May 7.1, Jun 0.6, Jul 147.3, Aug 31.4, Sep 14.1. Wettest winter hour: 2017-01-20 21:00 (6.17 mm/hr). Wettest hour: 2017-07-23 18:00 (8.17 mm/hr). December and January differ slightly from the first build because the relabel moves the last hour of each month into the next month.
 - Plausibility check against FCDMC ALERT gauges (Mt. Ord 2000, Sycamore Cr Upper 82200, Iron Dike 83000), using five by-hand historic reports (12/24/16, 12/31/16, 01/20/17, 07/14/17, 07/24/17 at 23:59 MST, from alert.fcd.maricopa.gov/php/prpt_hist.php): radar grid-mean 72-hr totals were 69-87% of the mean of the three gauges in four widespread storms; 07/14/17 was a localized storm (only 82200 recorded notable rain). Mt. Ord read ~0 on 01/20/17 (outage or unmelted snow; left out of that comparison). Comparison used the whole-grid mean, not radar at the gauge cells.
 - Known limits: tRIBS 6.0.0 reads gridded rain hourly only, which smooths convective peaks. The statistics above use the whole grid, not a basin outline.
 
 ## Other weather
-Not yet pulled.
+
+### Other weather: NLDAS-2 point stations (written 2026-10-13)
+- Source: NLDAS-2 hourly primary forcing (NLDAS_FORA0125_H v2.0, 0.125 degree), NASA GES DISC, retrieved through the Giovanni time-series service with pytRIBS Met.get_nldas_point (pytRIBS 1.0.0).
+- Variables: air temperature, specific humidity, surface pressure, 10 m wind (u and v), downward shortwave radiation. NLDAS rain was also downloaded but is NOT used (rain comes from the MRMS/IEM radar grids).
+- Window: 2016-10-01 00:00 to 2017-09-30 23:00 Arizona time (UTC-7); requested 2016-09-30 to 2017-10-01 UTC. Timestamp shift: gmt = -8 (LABEL_SHIFT_HOURS = -1; start-versus-end-of-hour meaning NOT yet confirmed).
+- Conversion: pytRIBS convert_and_write_nldas_timeseries (Pa to hPa, K to C, specific humidity to RH, 10 m wind to 2 m, UTC to local). Gaps up to 3 hours filled by linear interpolation.
+- Stations (nearest-station rule, no extra lapse-rate correction; station elevation = NLDAS cell mean elevation):
+  - NLDAS_1 (south-west cell): easting 450970.2, northing 3730800.7, elevation 657 m, lat 33.7161, lon -111.5292
+  - NLDAS_2 (middle-east cell): easting 458992.2, northing 3741416.2, elevation 1247 m, lat 33.8122, lon -111.4431
+  - NLDAS_3 (north-east cell): easting 457187.2, northing 3754435.2, elevation 1435 m, lat 33.9295, lon -111.4632
+- Files: ../init_data/met/Master_Met.sdf and the met_NLDAS_*.mdf files beside it. NLDAS rain files written outside the repo (~/nldas_unused_precip/Precip_NLDAS_unused.sdf) and not used.
 
 ## Soils
 Not yet pulled.
