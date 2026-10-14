@@ -1,0 +1,64 @@
+VALUE,EVT_NAME,EVT_PHYS,EVT_LF,EVT_GP_N,TRIBS_ID,TRIBS_CLASS,ASSIGNED_BY,GRID_CELLS,BASIN_CELLS
+7023,Madrean Encinal,Conifer-Hardwood,Tree,Juniper-Oak,1,Woodland,value,1171315,316327
+7024,Madrean Lower Montane Pine-Oak Forest and Woodland,Conifer-Hardwood,Tree,Conifer-Oak Forest and Woodland,1,Woodland,value,434095,78831
+7025,Madrean Pinyon-Juniper Woodland,Conifer,Tree,Pinyon-Juniper Woodland,1,Woodland,value,4545357,1577175
+7026,Madrean Upper Montane Conifer-Oak Forest and Woodland,Conifer-Hardwood,Tree,Conifer-Oak Forest and Woodland,1,Woodland,value,5939,1749
+7051,Southern Rocky Mountain Dry-Mesic Montane Mixed Conifer Forest and Woodland,Conifer,Tree,Douglas-fir-Ponderosa Pine-Lodgepole Pine Forest and Woodland,1,Woodland,value,288,9
+7054,Southern Rocky Mountain Ponderosa Pine Woodland,Conifer,Tree,"Ponderosa Pine Forest, Woodland and Savanna",1,Woodland,value,67560,8953
+7116,Madrean Juniper Savanna,Conifer,Tree,Juniper Woodland and Savanna,1,Woodland,value,6473,1032
+7117,Southern Rocky Mountain Ponderosa Pine Savanna,Conifer,Tree,"Ponderosa Pine Forest, Woodland and Savanna",1,Woodland,rule: physiognomy,62,0
+7087,Sonora-Mojave Creosotebush-White Bursage Desert Scrub,Shrubland,Shrub,Creosotebush Desert Scrub,2,Desert scrub,value,40094,15411
+7088,Sonora-Mojave Mixed Salt Desert Scrub,Shrubland,Shrub,Salt Desert Scrub,2,Desert scrub,rule: physiognomy,18,0
+7090,Sonoran Granite Outcrop Desert Scrub,Shrubland,Shrub,Desert Scrub,2,Desert scrub,rule: group,20,0
+7091,Sonoran Mid-Elevation Desert Scrub,Shrubland,Shrub,Desert Scrub,2,Desert scrub,value,205967,67047
+7109,Sonoran Paloverde-Mixed Cacti Desert Scrub,Shrubland,Shrub,Desert Scrub,2,Desert scrub,value,5321469,1362273
+9310,North American Warm Desert Ruderal & Planted Scrub,Exotic Tree-Shrub,Shrub,Introduced Upland Vegetation-Shrub,2,Desert scrub,value,149912,57646
+7104,Mogollon Chaparral,Shrubland,Shrub,Chaparral,3,Chaparral and oak shrub,value,1067548,435877
+7107,Rocky Mountain Gambel Oak-Mixed Montane Shrubland,Shrubland,Shrub,Deciduous Shrubland,3,Chaparral and oak shrub,value,3826,432
+7108,Sonora-Mojave Semi-Desert Chaparral,Shrubland,Shrub,Chaparral,3,Chaparral and oak shrub,value,8685,663
+9018,Rocky Mountain Cliff Canyon and Massive Bedrock,Sparsely Vegetated,Sparse,Sparse Vegetation,4,Bare rock,rule: physiognomy,493,0
+9147,North American Warm Desert Bedrock Cliff and Outcrop,Sparsely Vegetated,Sparse,Sparse Vegetation,4,Bare rock,value,525595,121291
+9150,North American Warm Desert Pavement,Sparsely Vegetated,Sparse,Sparse Vegetation,4,Bare rock,value,2059,19
+7192,Recently Logged-Shrub Cover,Shrubland,Shrub,Transitional Shrub Vegetation,5,Recently burned or logged,value,9,9
+7193,Recently Logged-Tree Cover,Conifer,Tree,Transitional Forest Vegetation,5,Recently burned or logged,value,18,18
+7195,Recently Burned-Herb and Grass Cover,Grassland,Herb,Transitional Herbaceous Vegetation,5,Recently burned or logged,value,14894,3947
+7196,Recently Burned-Shrub Cover,Shrubland,Shrub,Transitional Shrub Vegetation,5,Recently burned or logged,value,23030,15653
+7197,Recently Burned-Tree Cover,Conifer,Tree,Transitional Forest Vegetation,5,Recently burned or logged,value,126580,90454
+7296,Developed-Low Intensity,Developed-Low Intensity,Developed,Developed-Low Intensity,6,Developed,value,5143,2632
+7297,Developed-Medium Intensity,Developed-Medium Intensity,Developed,Developed-Medium Intensity,6,Developed,value,528,242
+7298,Developed-High Intensity,Developed-High Intensity,Developed,Developed-High Intensity,6,Developed,value,91,64
+7299,Developed-Roads,Developed-Roads,Developed,Developed-Roads,6,Developed,value,34178,19880
+7910,Western Warm Temperate Urban Deciduous Forest,Developed,Tree,Developed-Upland Deciduous Forest,6,Developed,value,4615,3193
+7911,Western Warm Temperate Urban Evergreen Forest,Developed,Tree,Developed-Upland Evergreen Forest,6,Developed,value,6925,2805
+7912,Western Warm Temperate Urban Mixed Forest,Developed,Tree,Developed-Upland Mixed Forest,6,Developed,value,1885,1064
+7913,Western Warm Temperate Urban Herbaceous,Developed,Herb,Developed-Upland Herbaceous,6,Developed,value,1206,788
+7914,Western Warm Temperate Urban Shrubland,Developed,Shrub,Developed-Upland Shrubland,6,Developed,value,4548,3353
+7926,Western Warm Temperate Developed Ruderal Evergreen Forest,Developed,Tree,Developed-Upland Evergreen Forest,6,Developed,rule: physiognomy,1223,0
+7928,Western Warm Temperate Developed Ruderal Shrubland,Developed,Shrub,Developed-Upland Shrubland,6,Developed,rule: physiognomy,1601,0
+7929,Western Warm Temperate Developed Ruderal Grassland,Developed,Herb,Developed-Upland Herbaceous,6,Developed,rule: physiognomy,736,0
+7945,Western Warm Temperate Developed Ruderal Deciduous Forested Wetland,Developed,Tree,Developed-Wetland Mixed Forest,6,Developed,rule: physiognomy,183,0
+7948,Western Warm Temperate Developed Ruderal Shrub Wetland,Developed,Shrub,Developed-Wetland Shrubland,6,Developed,rule: physiognomy,18,0
+7949,Western Warm Temperate Developed Ruderal Herbaceous Wetland,Developed,Herb,Developed-Wetland Herbaceous,6,Developed,rule: physiognomy,136,0
+7292,Open Water,Open Water,Water,Open Water,7,Riparian and water,value,81255,54
+9011,North American Arid West Emergent Marsh,Riparian,Herb,Freshwater Marsh,7,Riparian and water,value,95,27
+9019,Rocky Mountain Lower Montane-Foothill Riparian Woodland,Riparian,Tree,Western Riparian Woodland and Shrubland,7,Riparian and water,value,27,27
+9034,North American Warm Desert Riparian Woodland,Riparian,Tree,Western Riparian Woodland and Shrubland,7,Riparian and water,value,13646,4874
+9035,North American Warm Desert Lower Montane Riparian Woodland,Riparian,Tree,Western Riparian Woodland and Shrubland,7,Riparian and water,value,3981,1805
+9148,North American Warm Desert Cienega,Riparian,Herb,Western Herbaceous Wetland,7,Riparian and water,value,269,90
+9152,North American Warm Desert Riparian Mesquite Bosque Woodland,Riparian,Tree,Western Riparian Woodland and Shrubland,7,Riparian and water,value,12150,5808
+9327,Interior West Ruderal Riparian Forest,Riparian,Tree,Introduced Riparian Vegetation,7,Riparian and water,rule: physiognomy,1024,0
+9329,Western North American Ruderal Wet Shrubland,Riparian,Shrub,Introduced Woody Wetland Vegetation,7,Riparian and water,value,265,194
+9533,North American Warm Desert Riparian Herbaceous,Riparian,Herb,Western Herbaceous Wetland,7,Riparian and water,value,2153,767
+9534,North American Warm Desert Riparian Shrubland,Riparian,Shrub,Western Riparian Woodland and Shrubland,7,Riparian and water,value,6517,1415
+9652,North American Warm Desert Riparian Mesquite Bosque Shrubland,Riparian,Shrub,Western Riparian Woodland and Shrubland,7,Riparian and water,value,26050,14360
+9654,North American Warm Desert Wash Shrubland,Riparian,Shrub,Western Riparian Woodland and Shrubland,7,Riparian and water,rule: physiognomy,277,0
+9827,Interior West Ruderal Riparian Scrub,Riparian,Shrub,Introduced Riparian Vegetation,7,Riparian and water,rule: physiognomy,9,0
+9829,Western North American Ruderal Wet Meadow & Marsh,Riparian,Herb,Introduced Herbaceous Wetland Vegetation,7,Riparian and water,value,512,154
+7121,Apacherian-Chihuahuan Semi-Desert Shrub-Steppe,Shrubland,Shrub,Grassland and Steppe,8,Grassland,value,34043,12985
+7145,Rocky Mountain Subalpine-Montane Mesic Meadow,Grassland,Herb,"Alpine Dwarf-Shrubland, Fell-field and Meadow",8,Grassland,rule: physiognomy,36,0
+7256,Apacherian-Chihuahuan Semi-Desert Grassland,Grassland,Herb,Grassland and Steppe,8,Grassland,value,29605,7408
+7985,Western Warm Temperate Close Grown Crop,Agricultural,Agriculture,Agricultural-Close Grown Crop,8,Grassland,rule: physiognomy,645,0
+7986,Western Warm Temperate Fallow/Idle Cropland,Agricultural,Herb,Agricultural-Fallow/Idle Cropland,8,Grassland,rule: physiognomy,25,0
+7987,Western Warm Temperate Pasture and Hayland,Agricultural,Herb,Agricultural-Pasture and Hayland,8,Grassland,rule: physiognomy,75,0
+9810,North American Warm Desert Ruderal & Planted Grassland,Exotic Herbaceous,Herb,Introduced Perennial Grassland and Forbland,8,Grassland,value,48608,7348
+9828,Interior Western North American Temperate Ruderal Grassland,Exotic Herbaceous,Herb,Introduced Perennial Grassland and Forbland,8,Grassland,rule: group,27,0

@@ -87,8 +87,8 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 - **Open items:** retry 2017-03-12 (try format=json if rdb keeps failing). Join the pieces into one file in m3/s with the gaps marked. Confirm the time zone and tally the quality codes across all files.
 
 ## Rainfall
-
 ### Radar rainfall, pre-Oct 2020 (candidate)
+
 - Source: Iowa Environmental Mesonet MTArchive (NCEP MRMS files)
 - URL pattern: https://mtarchive.geol.iastate.edu/YYYY/MM/DD/mrms/ncep/GaugeCorr_QPE_01H/GaugeCorr_QPE_01H_00.00_YYYYMMDD-HH0000.grib2.gz
 - Product: Local Gauge Bias Corrected radar QPE, 1-hour, mm (older MRMS algorithm,
@@ -106,11 +106,13 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
   - IEM has said it will cut retention of its hourly zip files; the per-date folders above were still up when checked.
 
 ### Radar rainfall, Oct 2020 onward (candidate, untested)
+
 - Source: NOAA AWS bucket noaa-mrms-pds (MultiSensor_QPE_01H_Pass2)
 - Archive starts 2020-10-14 (MRMS v12.0). The first usable date should be confirmed from the bucket listing.
 - build_mrms_radar_rainfall_tribs6.py has not been run against the real bucket.
 
 ### Radar rainfall, hourly gridded (WY2017)
+
 - Product: NCEP MRMS hourly rain accumulation `GaugeCorr_QPE_01H_00.00` (mm), from the Iowa State Mesonet MTArchive copy. This is the older, locally gauge-corrected algorithm. SRP uses the current MRMS product (available from 2020-10-14), and the two have not been spliced.
 - URL pattern: https://mtarchive.geol.iastate.edu/YYYY/MM/DD/mrms/ncep/GaugeCorr_QPE_01H/GaugeCorr_QPE_01H_00.00_YYYYMMDD-HH0000.grib2.gz
 - Pulled 2026-10-09 with build_mrms_radar_rainfall_tribs6.py v1.1: `download`, then `all` (process + audit). Re-labeled 2026-10-13 by re-running `process` and `audit` only (no re-download) with `--stamp-convention end`. Settings of the current files: --source iem --bbox -111.64 33.62 -111.31 34.06 --buffer-km 0 --start "2016-10-01 01:00" --end "2017-10-01 00:00" --stamp-convention end. Working folder: ~/mrms_wk_wy2017
@@ -125,8 +127,8 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 - Known limits: tRIBS 6.0.0 reads gridded rain hourly only, which smooths convective peaks. The statistics above use the whole grid, not a basin outline.
 
 ## Other weather
-
 ### Other weather: NLDAS-2 point stations (written 2026-10-13)
+
 - Source: NLDAS-2 hourly primary forcing (NLDAS_FORA0125_H v2.0, 0.125 degree), NASA GES DISC, retrieved through the Giovanni time-series service with pytRIBS Met.get_nldas_point (pytRIBS 1.0.0).
 - Variables: air temperature, specific humidity, surface pressure, 10 m wind (u and v), downward shortwave radiation. NLDAS rain was also downloaded but is NOT used (rain comes from the MRMS/IEM radar grids).
 - Window: 2016-10-01 00:00 to 2017-09-30 23:00 Arizona time (UTC-7); requested 2016-09-30 to 2017-10-01 UTC. Timestamp shift: gmt = -8 (LABEL_SHIFT_HOURS = -1; start-versus-end-of-hour meaning NOT yet confirmed).
@@ -138,13 +140,34 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 - Files: ../init_data/met/Master_Met.sdf and the met_NLDAS_*.mdf files beside it. NLDAS rain files written outside the repo (~/nldas_unused_precip/Precip_NLDAS_unused.sdf) and not used.
 
 ## Soils
-Not yet pulled.
+## SOLUS100 soil properties and bedrock depth
+
+- Source: SOLUS100 (Soil Landscapes of the United States, 100 m), read from the public `solus100pub` Google Cloud bucket through pytRIBS (`Soil.get_solus_grids`, `Soil.get_solus_bedrock`).
+- Variables: sand, silt, clay, bulk density at 0-5, 5-15 and 15-30 cm; depth to bedrock.
+- Accessed: 2026-10-13. Cell size 100 m; downloaded in a larger upright box with zero padding outside the basin.
+- Processing: `Soil.run_soil_workflow(source='SOLUS')`. Ks, thetaS, thetaR, m and PsiB come from the Rosetta v3 pedotransfer function, f from a fit of Ks over 0-30 cm.
+- Used with optsoiltype = 1 (gridded). Josh says SRP uses SOLUS.
+- Citation: add once confirmed (ask Josh).
 
 ## Bedrock depth and initial groundwater
 Not yet pulled.
 
 ## Land cover
-Not yet pulled (plan: LANDFIRE).
+### Land cover: LANDFIRE 2016 Remap, Existing Vegetation Type (EVT)
+
+- **Product:** LANDFIRE 2016 Remap, Existing Vegetation Type (EVT), CONUS, 30 m. Base map circa 2016 (imagery about 2013-2017).
+- **Source:** LANDFIRE data viewer (landfire.gov); the download arrived as an emailed zip.
+- **Pulled:** 2026-10-13.
+- **Why this version:** its date fits WY2017 and predates the June 2020 Bush Fire.
+- **Download box (EPSG 3857):** x -12,440,073.9 to -12,373,957.6, y 3,965,047.9 to 4,038,942.6. It is larger than the DEM.
+- **Raw files:** `Sycamore_GIS\landcover_raw\` on the local computer (`.tif`, `.tif.vat.dbf`, `.tif.ovr`, `.tfw`, `.dbf`, GeoJSON of the box). The script reads copies in `init_data/landcover_raw/`. If `.tif` files are git-ignored, those copies are not in the repo; re-download from the viewer.
+- **CRS of the raw file:** NAD83 Contiguous USA Albers (EPSG 5070).
+- **Processing:**
+  1. ArcGIS Pro, to count classes only: Project Raster to EPSG 26912 (nearest neighbour, 10 m, snapped to the DEM), Clip Raster to the DEM extent, Extract by Mask with the StreamStats basin, Export Table. Result: 45 EVT types, 4,243,489 cells = 424.35 km2 in the basin.
+  2. `lab/make_sycamore_landuse_map.py` (adapted from Josh Cederstrom's `make_landuse_map.py`): reads the raw EVT `.tif` and `.tif.vat.dbf`, resamples by nearest neighbour onto the 10 m DEM grid (`Sycamore_DEM.tif`), groups the EVT types into 8 classes, and writes `init_data/LandUse.asc` (NODATA -9999) and `init_data/LandUse_crosswalk.csv`. This is the step the model uses.
+- **Classes (share of basin, ArcGIS counts inside the StreamStats polygon):** 1 woodland 46.7%, 2 desert scrub 35.4%, 3 chaparral and oak shrub 10.3%, 4 bare rock 2.9%, 5 recently burned or logged 2.6%, 6 developed 0.8%, 7 riparian and water 0.7%, 8 grassland 0.7%.
+- **Limits:** the 30 m source is resampled to 10 m, so cells are blocky and add no detail. The grouping is by vegetation type and has not been tested for hydrologic effect. The 2.6% mapped as recently burned or logged in the 2016 base map has not been checked against fire history before 2017. The land use parameter table (`land_use_params.ldt`) is not built yet.
+- **Open questions for Josh:** must land cover match the DEM cell size (10 m is the working guess)? What vegetation values for woodland, chaparral and the smaller classes?
 
 ## Fire history
 Not yet pulled.

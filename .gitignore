@@ -17,3 +17,6 @@ control_110.log
 workspaces/Sycamore/init_data/Sycamore_DEM.tif
 control_110.log
 workspaces/Sycamore/init_data/Sycamore_DEM.tif
+/workspaces/Sycamore/lab/data/*
+workspaces/Sycamore/init_data/landcover_raw/
+workspaces/Sycamore/init_data/solus/*.tif

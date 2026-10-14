@@ -1,0 +1,8 @@
+Variable,BasePath,FileExtension
+KS,../init_data/solus/Ks_0-5cm,asc
+TR,../init_data/solus/theta_r_0-5cm,asc
+TS,../init_data/solus/theta_s_0-5cm,asc
+PB,../init_data/solus/psib_0-5cm,asc
+PI,../init_data/solus/m_0-5cm,asc
+FD,../init_data/solus/f,asc
+PO,../init_data/solus/theta_s_0-5cm,asc
