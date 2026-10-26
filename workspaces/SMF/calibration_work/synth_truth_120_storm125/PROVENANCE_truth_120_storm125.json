@@ -1,0 +1,66 @@
+{
+  "script": "run_lhs_Ks_f_120_storms_tribs6.py",
+  "created_local": "2026-10-25T16:55:09",
+  "what_this_is": "Synthetic truth for the storm125 storm leg of Series 120: tRIBS outlet hydrograph at Ks_mult 7, f_RS_abs 0.012, routing at truth, optpercolation 0, under rain scaled by 1.25.",
+  "storm_label": "storm125",
+  "rain_scale": 1.25,
+  "truth_parameters": {
+    "Ks_mult": 7.0,
+    "f_RS_abs": 0.012,
+    "routing": {
+      "kinemvelcoef": 4.5,
+      "flowexp": 0.24,
+      "channelroughness": 0.026
+    },
+    "optpercolation": 0,
+    "optsnow": "0 (hard-coded in the builder)"
+  },
+  "gauge_sdf": "../init_data/met/Master_Precip_storm125.sdf",
+  "files_md5": {
+    "precip_SMF_2014-2014_storm125.mdf": "a81776b4a4beb4d6f079e4b0daf3b394",
+    "precip_SMPHQ_2014-2014_storm125.mdf": "65e608d62d9d5461a4d2e458eff5dff1",
+    "Master_Precip_storm125.sdf": "3734de170f81b5be941d7f479d530715"
+  },
+  "original_1p0_truth": {
+    "file": "SMF_20140812_60_Ks7p0x_truthcheck_Outlet.qout",
+    "md5": "4a433e441359313b6629734510f27813"
+  },
+  "truth": {
+    "file": "SMF_20140812_120_Ks7p0x_f0p012_truth_st125_Outlet.qout",
+    "md5": "352934d7ebe18857a247453055912d6f",
+    "bytes": 163885,
+    "run_id": "SMF_20140812_120_Ks7p0x_f0p012_truth_st125",
+    "rows": 7200,
+    "peak_m3s": 101.0647,
+    "tpeak_hr": 282.75,
+    "volume_m3": 222561.94500000004
+  },
+  "direction_check": {
+    "peak_ratio_vs_1p0": 1.5295776225300273,
+    "volume_ratio_vs_1p0": 1.576497471014723,
+    "old_build_peak_ratio": 1.69,
+    "obs_peak_m3s": 66.0736,
+    "sim_peak_m3s": 101.0647
+  },
+  "verify": {
+    "run_id": "SMF_20140812_120_Ks7p0x_f0p012_verify_st125",
+    "when": "2026-10-25T16:56:06",
+    "passed": true,
+    "status": "SUCCESS",
+    "reason": "",
+    "pbias_pct": 6.140392204545153e-16,
+    "kge_2012": 1.0,
+    "obs_mode": "synth",
+    "elapsed_min": 0.9384869972864787
+  },
+  "python": "3.11.16",
+  "pandas": "3.0.5",
+  "numpy": "2.4.6",
+  "pytRIBS": "1.0.0",
+  "updated_local": "2026-10-25T16:56:07",
+  "series110_crosscheck": {
+    "file": "SMF_20140812_110_cc201p0_ref_st125_Outlet.qout",
+    "md5": "352934d7ebe18857a247453055912d6f",
+    "status": "identical (bytes)"
+  }
+}
