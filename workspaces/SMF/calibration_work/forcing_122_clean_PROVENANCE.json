@@ -1,0 +1,231 @@
+{
+  "script": "run_cc_clean_122_tribs6.py",
+  "created_local": "2026-10-27T08:21:46",
+  "what_this_is": "Rain gauge forcing for the Series 122 clean runs: the rainfall RATE column multiplied by a constant, Y/M/D/H unchanged, NO_DATA flags unchanged, whole record scaled. Same method as run_lhs_Ks_f_120_storms_tribs6.py.",
+  "row_hours_assumed_for_totals": 0.25,
+  "scales": {
+    "0.9": {
+      "source_sdf": {
+        "file": "Master_Precip.sdf",
+        "md5": "dca53ac5aa05e7b854161927af40535e"
+      },
+      "scaled_sdf": {
+        "file": "Master_Precip_rain0p9.sdf",
+        "md5": "a78f35e6a36f6550e97f87ab73a7d0f1"
+      },
+      "stations": [
+        {
+          "source": "precip_SMF_2014-2014.mdf",
+          "source_md5": "c4b99e33b55b0e13ad4cfe298fc88754",
+          "scaled": "precip_SMF_2014-2014_rain0p9.mdf",
+          "scaled_md5": "760925e15941bf4af041db679dac4d50",
+          "rows": 8740,
+          "peak_mm_hr": [
+            81.28,
+            73.152
+          ],
+          "total_mm": [
+            231.394,
+            208.25460000000007
+          ],
+          "no_data_rows_unscaled": 0
+        },
+        {
+          "source": "precip_SMPHQ_2014-2014.mdf",
+          "source_md5": "ec25db7cc20c5edd4b3801b5ef1e5fe2",
+          "scaled": "precip_SMPHQ_2014-2014_rain0p9.mdf",
+          "scaled_md5": "686d81341483f28d636a69b2ad475007",
+          "rows": 8740,
+          "peak_mm_hr": [
+            98.55199999999999,
+            88.6968
+          ],
+          "total_mm": [
+            232.66400000000004,
+            209.39760000000004
+          ],
+          "no_data_rows_unscaled": 0
+        }
+      ]
+    },
+    "0.93": {
+      "source_sdf": {
+        "file": "Master_Precip.sdf",
+        "md5": "dca53ac5aa05e7b854161927af40535e"
+      },
+      "scaled_sdf": {
+        "file": "Master_Precip_rain0p93.sdf",
+        "md5": "68c56ceb3bec9d60e1d4a3e24efe5c97"
+      },
+      "stations": [
+        {
+          "source": "precip_SMF_2014-2014.mdf",
+          "source_md5": "c4b99e33b55b0e13ad4cfe298fc88754",
+          "scaled": "precip_SMF_2014-2014_rain0p93.mdf",
+          "scaled_md5": "d30c13405d0a6fc6abeaea7747c81173",
+          "rows": 8740,
+          "peak_mm_hr": [
+            81.28,
+            75.5904
+          ],
+          "total_mm": [
+            231.394,
+            215.19642000000005
+          ],
+          "no_data_rows_unscaled": 0
+        },
+        {
+          "source": "precip_SMPHQ_2014-2014.mdf",
+          "source_md5": "ec25db7cc20c5edd4b3801b5ef1e5fe2",
+          "scaled": "precip_SMPHQ_2014-2014_rain0p93.mdf",
+          "scaled_md5": "50f94f26e004a00979cc74287b2a064c",
+          "rows": 8740,
+          "peak_mm_hr": [
+            98.55199999999999,
+            91.65335999999999
+          ],
+          "total_mm": [
+            232.66400000000004,
+            216.37752000000012
+          ],
+          "no_data_rows_unscaled": 0
+        }
+      ]
+    },
+    "0.95": {
+      "source_sdf": {
+        "file": "Master_Precip.sdf",
+        "md5": "dca53ac5aa05e7b854161927af40535e"
+      },
+      "scaled_sdf": {
+        "file": "Master_Precip_rain0p95.sdf",
+        "md5": "5d9a1b777a5ab262a59dd93b46b464b8"
+      },
+      "stations": [
+        {
+          "source": "precip_SMF_2014-2014.mdf",
+          "source_md5": "c4b99e33b55b0e13ad4cfe298fc88754",
+          "scaled": "precip_SMF_2014-2014_rain0p95.mdf",
+          "scaled_md5": "cc20176c0928d35a4aa5e5dc767154bf",
+          "rows": 8740,
+          "peak_mm_hr": [
+            81.28,
+            77.216
+          ],
+          "total_mm": [
+            231.394,
+            219.82430000000002
+          ],
+          "no_data_rows_unscaled": 0
+        },
+        {
+          "source": "precip_SMPHQ_2014-2014.mdf",
+          "source_md5": "ec25db7cc20c5edd4b3801b5ef1e5fe2",
+          "scaled": "precip_SMPHQ_2014-2014_rain0p95.mdf",
+          "scaled_md5": "02793870ee75a7f38e40db9ff642f90f",
+          "rows": 8740,
+          "peak_mm_hr": [
+            98.55199999999999,
+            93.6244
+          ],
+          "total_mm": [
+            232.66400000000004,
+            221.03079999999977
+          ],
+          "no_data_rows_unscaled": 0
+        }
+      ]
+    },
+    "0.97": {
+      "source_sdf": {
+        "file": "Master_Precip.sdf",
+        "md5": "dca53ac5aa05e7b854161927af40535e"
+      },
+      "scaled_sdf": {
+        "file": "Master_Precip_rain0p97.sdf",
+        "md5": "adef1be4308076d83827854108d7c2d5"
+      },
+      "stations": [
+        {
+          "source": "precip_SMF_2014-2014.mdf",
+          "source_md5": "c4b99e33b55b0e13ad4cfe298fc88754",
+          "scaled": "precip_SMF_2014-2014_rain0p97.mdf",
+          "scaled_md5": "1c3ede181ab47012a8397a262510adbe",
+          "rows": 8740,
+          "peak_mm_hr": [
+            81.28,
+            78.8416
+          ],
+          "total_mm": [
+            231.394,
+            224.45217999999997
+          ],
+          "no_data_rows_unscaled": 0
+        },
+        {
+          "source": "precip_SMPHQ_2014-2014.mdf",
+          "source_md5": "ec25db7cc20c5edd4b3801b5ef1e5fe2",
+          "scaled": "precip_SMPHQ_2014-2014_rain0p97.mdf",
+          "scaled_md5": "16d746c283b7b9d5bffddb2b600af74c",
+          "rows": 8740,
+          "peak_mm_hr": [
+            98.55199999999999,
+            95.59544
+          ],
+          "total_mm": [
+            232.66400000000004,
+            225.6840799999999
+          ],
+          "no_data_rows_unscaled": 0
+        }
+      ]
+    },
+    "0.99": {
+      "source_sdf": {
+        "file": "Master_Precip.sdf",
+        "md5": "dca53ac5aa05e7b854161927af40535e"
+      },
+      "scaled_sdf": {
+        "file": "Master_Precip_rain0p99.sdf",
+        "md5": "81083ea60b2aebe8a23f594372b4ee5f"
+      },
+      "stations": [
+        {
+          "source": "precip_SMF_2014-2014.mdf",
+          "source_md5": "c4b99e33b55b0e13ad4cfe298fc88754",
+          "scaled": "precip_SMF_2014-2014_rain0p99.mdf",
+          "scaled_md5": "09bce544a22945592ac97b1a90aee01a",
+          "rows": 8740,
+          "peak_mm_hr": [
+            81.28,
+            80.4672
+          ],
+          "total_mm": [
+            231.394,
+            229.08006000000017
+          ],
+          "no_data_rows_unscaled": 0
+        },
+        {
+          "source": "precip_SMPHQ_2014-2014.mdf",
+          "source_md5": "ec25db7cc20c5edd4b3801b5ef1e5fe2",
+          "scaled": "precip_SMPHQ_2014-2014_rain0p99.mdf",
+          "scaled_md5": "cbb5e95120714c81316c59c73b579ae3",
+          "rows": 8740,
+          "peak_mm_hr": [
+            98.55199999999999,
+            97.56648
+          ],
+          "total_mm": [
+            232.66400000000004,
+            230.33736
+          ],
+          "no_data_rows_unscaled": 0
+        }
+      ]
+    }
+  },
+  "python": "3.11.16",
+  "pandas": "3.0.5",
+  "numpy": "2.4.6"
+}
