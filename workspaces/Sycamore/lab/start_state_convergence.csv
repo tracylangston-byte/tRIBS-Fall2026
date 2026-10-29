@@ -1,0 +1,7 @@
+tag,changed,run_id,converge_day_all,converge_day_before_flood,days_outside_tolerance,max_abs_diff_m3s,octdec_vol_Mm3,flood_peak_m3s,flood_vol_Mm3,octdec_vol_vs_base_pct,flood_peak_vs_base_pct,flood_vol_vs_base_pct
+gw0p70,water table 0.70 of bedrock,W3_ks0p2_cv6_psib0p5_gw0p70_nocl,never,0,1,0.218,2.507,189.4,7.479,0.4,0.1,-0.3
+gw0p82,water table 0.82 of bedrock,W3_ks0p2_cv6_psib0p5_gw0p82_nocl,never,0,1,0.228,2.501,189.3,7.475,0.1,0.0,-0.3
+gw1p00,water table 1.00 of bedrock,W3_ks0p2_cv6_psib0p5_gw1p00_nocl,never,0,1,0.225,2.502,189.3,7.473,0.2,0.0,-0.3
+bed0p0,bedrock +0 m (and its water table),W3_ks0p2_cv6_psib0p5_bed0p0_nocl,never,104,26,47.692,2.793,292.6,15.884,11.8,54.6,111.8
+bed0p5,bedrock +0.5 m (and its water table),W3_ks0p2_cv6_psib0p5_bed0p5_nocl,never,53,2,0.772,2.537,190.6,7.531,1.6,0.7,0.4
+bed2p0,bedrock +2 m (and its water table),W3_ks0p2_cv6_psib0p5_bed2p0_nocl,never,53,2,0.745,2.472,188.0,7.415,-1.0,-0.6,-1.1
