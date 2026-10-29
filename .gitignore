@@ -22,3 +22,12 @@ workspaces/Sycamore/init_data/landcover_raw/
 workspaces/Sycamore/init_data/solus/*.tif
 /workspaces/Sycamore/lab/results/*
 /workspaces/Sycamore/lab/*.log
+/workspaces/Sycamore/lab/W[124]_ks*_nocl.in
+/workspaces/Sycamore/lab/proxy_logs/
+/workspaces/Sycamore/lab/start_state_logs/
+/workspaces/Sycamore/lab/proxy_manifest.json
+/workspaces/Sycamore/lab/start_state_manifest.json
+/workspaces/Sycamore/init_data/InitGW_*_mm.asc
+/workspaces/Sycamore/init_data/InitGW_*_mm.prj
+/workspaces/Sycamore/init_data/bedrock_depth_plus*.asc
+/workspaces/Sycamore/init_data/bedrock_depth_plus*.prj

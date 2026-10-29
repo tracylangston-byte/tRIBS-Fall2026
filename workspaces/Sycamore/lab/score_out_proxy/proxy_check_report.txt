@@ -1,0 +1,123 @@
+PROXY CHECK: do W1 and W2 rank the soil settings the way W4 does?
+A window passes if its ranking agrees with W4's at Spearman rho >= 0.8. Six settings, so rho moves in coarse steps.
+
+Runs found (setting: windows with a scored run):
+  1  Ks 0.2  PsiB 0.5 (baseline)    W1, W2, W4
+  2  Ks 0.2  PsiB 1.0               W1, W2, W4
+  3  Ks 0.1  PsiB 0.5               W1, W2, W4
+  4  Ks 0.3  PsiB 0.5               W1, W2, W4
+  5  Ks 0.3  PsiB 1.0               W1, W2, W4
+  6  Ks 0.1  PsiB 1.0               W1, W2, W4
+
+====================================================================================================
+PRIMARY TEST (approved method A): the January flood week, scored the same way in every window
+====================================================================================================
+Flood week (Jan 18-25): volume error |model/gauge - 1|
+  setting         W1       W2       W4      label
+      1        0.037    0.037    0.034      Ks 0.2  PsiB 0.5 (baseline)
+      2        0.087    0.087    0.096      Ks 0.2  PsiB 1.0
+      3        0.587    0.587    0.594      Ks 0.1  PsiB 0.5
+      4        0.321    0.321    0.327      Ks 0.3  PsiB 0.5
+      5        0.433    0.433    0.438      Ks 0.3  PsiB 1.0
+      6        0.457    0.457    0.445      Ks 0.1  PsiB 1.0
+  W1 vs W4: rho = 1.000 over 6 settings  -> PASS      order W1: 1 < 2 < 4 < 5 < 6 < 3   |   order W4: 1 < 2 < 4 < 5 < 6 < 3
+  W2 vs W4: rho = 1.000 over 6 settings  -> PASS      order W2: 1 < 2 < 4 < 5 < 6 < 3   |   order W4: 1 < 2 < 4 < 5 < 6 < 3
+  (W4 values run from 0.034 to 0.594; if they are nearly equal, their order is noise)
+
+Flood week (Jan 18-25): peak error |%|
+  setting         W1       W2       W4      label
+      1       13.121   13.121   14.330      Ks 0.2  PsiB 0.5 (baseline)
+      2       24.766   24.766   25.777      Ks 0.2  PsiB 1.0
+      3       38.346   38.346   37.265      Ks 0.1  PsiB 0.5
+      4       45.644   45.644   46.081      Ks 0.3  PsiB 0.5
+      5       56.631   56.631   56.973      Ks 0.3  PsiB 1.0
+      6       27.009   27.009   24.930      Ks 0.1  PsiB 1.0
+  W1 vs W4: rho = 0.943 over 6 settings  -> PASS      order W1: 1 < 2 < 6 < 3 < 4 < 5   |   order W4: 1 < 6 < 2 < 3 < 4 < 5
+  W2 vs W4: rho = 0.943 over 6 settings  -> PASS      order W2: 1 < 2 < 6 < 3 < 4 < 5   |   order W4: 1 < 6 < 2 < 3 < 4 < 5
+  (W4 values run from 14.330 to 56.973; if they are nearly equal, their order is noise)
+
+  >> W1: PASS on both   (volume rho 1.000, peak rho 0.943)
+  >> W2: PASS on both   (volume rho 1.000, peak rho 0.943)
+
+====================================================================================================
+W2 vs W4 on what W1 cannot see: the recession after the flood and the two February storms
+====================================================================================================
+January flood with its tail (Jan 18 - Feb 3): volume error
+  setting         W2       W4      label
+      1        0.124    0.119      Ks 0.2  PsiB 0.5 (baseline)
+      2        0.231    0.233      Ks 0.2  PsiB 1.0
+      3        0.354    0.354      Ks 0.1  PsiB 0.5
+      4        0.431    0.425      Ks 0.3  PsiB 0.5
+      5        0.525    0.525      Ks 0.3  PsiB 1.0
+      6        0.242    0.227      Ks 0.1  PsiB 1.0
+  W2 vs W4: rho = 0.943 over 6 settings  -> PASS      order W2: 1 < 2 < 6 < 3 < 4 < 5   |   order W4: 1 < 6 < 2 < 3 < 4 < 5
+  (W4 values run from 0.119 to 0.525; if they are nearly equal, their order is noise)
+
+February 18-19 storm with tail: volume error
+  setting         W2       W4      label
+      1        0.060    0.053      Ks 0.2  PsiB 0.5 (baseline)
+      2        0.311    0.299      Ks 0.2  PsiB 1.0
+      3        2.227    2.262      Ks 0.1  PsiB 0.5
+      4        0.642    0.651      Ks 0.3  PsiB 0.5
+      5        0.821    0.807      Ks 0.3  PsiB 1.0
+      6        1.545    1.553      Ks 0.1  PsiB 1.0
+  W2 vs W4: rho = 1.000 over 6 settings  -> PASS      order W2: 1 < 2 < 4 < 5 < 6 < 3   |   order W4: 1 < 2 < 4 < 5 < 6 < 3
+  (W4 values run from 0.053 to 2.262; if they are nearly equal, their order is noise)
+
+February 27-28 storm with tail: volume error
+  setting         W2       W4      label
+      1        0.468    0.466      Ks 0.2  PsiB 0.5 (baseline)
+      2        0.639    0.635      Ks 0.2  PsiB 1.0
+      3        0.248    0.258      Ks 0.1  PsiB 0.5
+      4        0.779    0.779      Ks 0.3  PsiB 0.5
+      5        0.871    0.864      Ks 0.3  PsiB 1.0
+      6        0.024    0.029      Ks 0.1  PsiB 1.0
+  W2 vs W4: rho = 1.000 over 6 settings  -> PASS      order W2: 6 < 3 < 1 < 2 < 4 < 5   |   order W4: 6 < 3 < 1 < 2 < 4 < 5
+  (W4 values run from 0.029 to 0.864; if they are nearly equal, their order is noise)
+
+====================================================================================================
+SECONDARY (method B): each window's own whole-window volume error against W4's Oct-Mar error
+====================================================================================================
+Whole window volume error (W4 = Oct 1 - Apr 1)
+  setting         W1       W2       W4      label
+      1        0.037    0.243    0.157      Ks 0.2  PsiB 0.5 (baseline)
+      2        0.087    0.392    0.365      Ks 0.2  PsiB 1.0
+      3        0.588    0.455    0.823      Ks 0.1  PsiB 0.5
+      4        0.321    0.577    0.558      Ks 0.3  PsiB 0.5
+      5        0.433    0.675    0.674      Ks 0.3  PsiB 1.0
+      6        0.457    0.258    0.467      Ks 0.1  PsiB 1.0
+  W1 vs W4: rho = 0.829 over 6 settings  -> PASS      order W1: 1 < 2 < 4 < 5 < 6 < 3   |   order W4: 1 < 2 < 6 < 4 < 5 < 3
+  W2 vs W4: rho = 0.771 over 6 settings  -> FAIL      order W2: 1 < 6 < 2 < 3 < 4 < 5   |   order W4: 1 < 2 < 6 < 4 < 5 < 3
+  (W4 values run from 0.157 to 0.823; if they are nearly equal, their order is noise)
+
+====================================================================================================
+DIAGNOSTIC: signed values. Do the windows at least agree on which setting makes more water / a bigger peak?
+====================================================================================================
+Flood week: volume ratio, signed (orders by water made)
+  setting         W1       W2       W4      label
+      1        1.037    1.037    1.034      Ks 0.2  PsiB 0.5 (baseline)
+      2        0.913    0.913    0.904      Ks 0.2  PsiB 1.0
+      3        1.587    1.587    1.594      Ks 0.1  PsiB 0.5
+      4        0.679    0.679    0.673      Ks 0.3  PsiB 0.5
+      5        0.567    0.567    0.562      Ks 0.3  PsiB 1.0
+      6        1.457    1.457    1.445      Ks 0.1  PsiB 1.0
+  W1 vs W4: rho = 1.000 over 6 settings  -> PASS      order W1: 5 < 4 < 2 < 1 < 6 < 3   |   order W4: 5 < 4 < 2 < 1 < 6 < 3
+  W2 vs W4: rho = 1.000 over 6 settings  -> PASS      order W2: 5 < 4 < 2 < 1 < 6 < 3   |   order W4: 5 < 4 < 2 < 1 < 6 < 3
+  (W4 values run from 0.562 to 1.594; if they are nearly equal, their order is noise)
+
+Flood week: peak error %, signed (orders by peak size)
+  setting         W1       W2       W4      label
+      1      -13.121  -13.121  -14.330      Ks 0.2  PsiB 0.5 (baseline)
+      2      -24.766  -24.766  -25.777      Ks 0.2  PsiB 1.0
+      3       38.346   38.346   37.265      Ks 0.1  PsiB 0.5
+      4      -45.644  -45.644  -46.081      Ks 0.3  PsiB 0.5
+      5      -56.631  -56.631  -56.973      Ks 0.3  PsiB 1.0
+      6       27.009   27.009   24.930      Ks 0.1  PsiB 1.0
+  W1 vs W4: rho = 1.000 over 6 settings  -> PASS      order W1: 5 < 4 < 2 < 1 < 6 < 3   |   order W4: 5 < 4 < 2 < 1 < 6 < 3
+  W2 vs W4: rho = 1.000 over 6 settings  -> PASS      order W2: 5 < 4 < 2 < 1 < 6 < 3   |   order W4: 5 < 4 < 2 < 1 < 6 < 3
+  (W4 values run from -56.973 to 37.265; if they are nearly equal, their order is noise)
+
+How to read this: the first table is the test the design asks for. The extra blocks say whether W2 can also be trusted
+for the February storms and the recession, which decide whether W2 can stand in for W4 in later stages. If W1 or W2
+fails, look at the order lines to see WHICH settings swapped: a swap between two settings whose W4 errors are almost
+equal is noise; a swap between settings far apart in W4 is a real disagreement.

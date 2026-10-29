@@ -1,0 +1,34 @@
+window (rain intervals, MST): 2017-01-20 14:00 to 2017-01-21 01:00  (11 hourly frames)
+basin area from 1 km coverage: 426.2 km2
+basin-mean rain over the window: 44.1 mm
+cells with at least 5 mm in the window: 1568 of 1568 on the grid (426 of 426 basin cells)
+WINDOW CHECK: the first hour holds 2.0% and the last hour 6.0% of the basin rain
+  WARNING: more than 3% falls in the first or last hour, so the storm probably continues past the window; the half-way times are biased. Widen --start / --end and run again.
+
+WHEN THE RAIN ARRIVED  (half-way time = when a cell had received half of its window total; basin cells)
+  the earliest 10% of basin cells reached it by Jan 20 20:02, the latest 10% by Jan 20 20:57  (a spread of 0.9 h)
+  straight-front fit to the basin cells: rain moving toward the S (162 deg), i.e. arriving from the N, at about 32.3 km/h
+    fit quality: R2 0.67, typical misfit 0.18 h
+    GOOD FIT (R2 0.6 or more): a straight front describes the timing well
+    the fitted half-way time changes by about 0.9 h from one side of the basin to the other
+    NOTE: under 1 hour across the basin. With hourly frames the storm reached the whole basin essentially at once; the direction above is at the limit of what the data can show.
+
+DOES THE ANSWER DEPEND ON HOW IT IS MEASURED?  (same straight-front fit, different cells and fractions)
+    cells    at   toward      km/h      R2   cells used
+    basin   25%   E (94)      24.8    0.37          426
+    basin   50%   S (162)     32.3    0.67          426
+    basin   75%   SE (151)    23.6    0.72          426
+    grid    25%   E (86)      34.8    0.39         1568
+    grid    50%   S (161)     48.6    0.61         1568
+    grid    75%   S (160)     32.8    0.73         1568
+  direction across the usable fits: largest departure from the average 51 deg -> NOT STABLE (over 30 deg): the direction depends on how it is measured; treat it as unresolved
+
+EAST vs WEST halves of the basin (equal areas)
+  west half reached half its rain at Jan 20 20:18; east half at Jan 20 20:21: the two halves were within 15 minutes (difference +0.05 h)
+  cross-correlation check (whole hours): best match at no shift  (correlation 0.98)
+
+NORTH vs SOUTH halves of the basin (equal areas)
+  north half reached half its rain at Jan 20 20:06; south half at Jan 20 20:36: the south half was 0.5 h LATER than the north half
+  cross-correlation check (whole hours): best match at south later by 1 h  (correlation 0.85)
+
+settings: rain-dir /home/vscode/mrms_wk_wy2017/rain | boundary data/preprocessing/Sycamore_boundary.shp | min-total 5 mm | max-lag 6 h | manifest used

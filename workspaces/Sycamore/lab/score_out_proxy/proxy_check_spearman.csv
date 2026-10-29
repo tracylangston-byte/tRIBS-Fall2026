@@ -1,0 +1,14 @@
+metric,title,window,rho,n,verdict,order_window,order_W4
+flood_vol,Flood week (Jan 18-25): volume error |model/gauge - 1|,W1,1.0,6,PASS,1 < 2 < 4 < 5 < 6 < 3,1 < 2 < 4 < 5 < 6 < 3
+flood_vol,Flood week (Jan 18-25): volume error |model/gauge - 1|,W2,1.0,6,PASS,1 < 2 < 4 < 5 < 6 < 3,1 < 2 < 4 < 5 < 6 < 3
+flood_peak,Flood week (Jan 18-25): peak error |%|,W1,0.942857142857143,6,PASS,1 < 2 < 6 < 3 < 4 < 5,1 < 6 < 2 < 3 < 4 < 5
+flood_peak,Flood week (Jan 18-25): peak error |%|,W2,0.942857142857143,6,PASS,1 < 2 < 6 < 3 < 4 < 5,1 < 6 < 2 < 3 < 4 < 5
+jan_tail_vol,January flood with its tail (Jan 18 - Feb 3): volume error,W2,0.942857142857143,6,PASS,1 < 2 < 6 < 3 < 4 < 5,1 < 6 < 2 < 3 < 4 < 5
+feb18_vol,February 18-19 storm with tail: volume error,W2,1.0,6,PASS,1 < 2 < 4 < 5 < 6 < 3,1 < 2 < 4 < 5 < 6 < 3
+feb27_vol,February 27-28 storm with tail: volume error,W2,1.0,6,PASS,6 < 3 < 1 < 2 < 4 < 5,6 < 3 < 1 < 2 < 4 < 5
+whole_vol,Whole window volume error (W4 = Oct 1 - Apr 1),W1,0.8285714285714287,6,PASS,1 < 2 < 4 < 5 < 6 < 3,1 < 2 < 6 < 4 < 5 < 3
+whole_vol,Whole window volume error (W4 = Oct 1 - Apr 1),W2,0.7714285714285715,6,FAIL,1 < 6 < 2 < 3 < 4 < 5,1 < 2 < 6 < 4 < 5 < 3
+flood_vol_signed,"Flood week: volume ratio, signed (orders by water made)",W1,1.0,6,PASS,5 < 4 < 2 < 1 < 6 < 3,5 < 4 < 2 < 1 < 6 < 3
+flood_vol_signed,"Flood week: volume ratio, signed (orders by water made)",W2,1.0,6,PASS,5 < 4 < 2 < 1 < 6 < 3,5 < 4 < 2 < 1 < 6 < 3
+flood_peak_signed,"Flood week: peak error %, signed (orders by peak size)",W1,1.0,6,PASS,5 < 4 < 2 < 1 < 6 < 3,5 < 4 < 2 < 1 < 6 < 3
+flood_peak_signed,"Flood week: peak error %, signed (orders by peak size)",W2,1.0,6,PASS,5 < 4 < 2 < 1 < 6 < 3,5 < 4 < 2 < 1 < 6 < 3
