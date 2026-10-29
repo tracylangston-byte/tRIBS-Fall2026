@@ -50,7 +50,7 @@ METRICS (design: "Which metric, when, and where")
 -------------------------------------------------
   volume ratio        model / gauge volume; on every event, every month, the whole scored span. The model volume is counted
                       only over times when the gauge has data (so a gauge blank can never make the model look too high), and
-                      Jan 1-2 2017 is excluded from both. The raw model volume is also saved.
+                      Jan 1-2 2017 is NOT excluded from either. The raw model volume is also saved.
   peak error (%)      model peak / gauge peak - 1 inside the window (not an arrival time)
   first-arrival (h)   time the flow first RISES THROUGH 20% of that window's gauge peak: model minus gauge. Blank if the flow never
                       gets there, or starts above that level and never dips below it (the flag column says which; a second storm
@@ -128,7 +128,8 @@ RUN_WINDOWS = {
 PROFILES = {
     "wy2017": {
         "period": ["2016-10-01 00:00", "2017-10-01 00:00"],
-        "exclude": [["2017-01-01 00:00", "2017-01-03 00:00"]],            # gauge outage; excluded from model and gauge
+        "exclude": [],            # none: the Jan 1 gap is blank in the gauge file, so matching already skips it; 
+                                  # Jan 2-3 estimated values count
         "events": {
             "flood_week":       ["2017-01-18 00:00", "2017-01-25 00:00"],
             "jan_second_storm": ["2017-01-23 12:00", "2017-01-25 00:00"],
