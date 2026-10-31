@@ -1,0 +1,54 @@
+Stage 1 hydrograph check   python 3.11.16, pandas 3.0.5   2026-10-29 22:44
+  scorer in use: score_run_sycamore.py v1.0; excluded gauge periods: none
+  gauge ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv: Oct 01 2016 to Sep 30 2017, 35156 values
+
+====================================================================================================
+0. Self-check: do the outlet files give back the numbers already in the score CSVs?
+====================================================================================================
+  run                                          vol ratio (here)    (CSV)  peak % (here)    (CSV)   result
+  Sycamore_octmar_ks0p2_cv6_psib0p5_nocl               1.034377   1.0344       -14.3297  -14.330   ok
+  W3_ks0p2_cv6_psib0p5_gw0p70_nocl                     1.031770   1.0318       -14.2707  -14.271   ok
+  W3_ks0p2_cv6_psib0p5_gw1p00_nocl                     1.031000   1.0310       -14.3055  -14.305   ok
+  W3_ks0p2_cv6_psib0p5_bed0p0_nocl                     2.191270   2.1913        32.4806   32.481   ok
+  W1_ks0p2_cv6_psib0p5_nocl                            1.037354   1.0374       -13.1208  -13.121   ok
+  W1_ks0p2_cv6_psib1p0_nocl                            0.913195   0.9132       -24.7657  -24.766   ok
+  Sycamore_octmar_ks0p2_cv6_nocl                       0.903689   0.9037       -25.7773  -25.777   ok
+  W1_ks0p1_cv6_psib0p5_nocl                            1.587466   1.5875        38.3460   38.346   ok
+  W4_ks0p1_cv6_psib0p5_nocl                            1.594372   1.5944        37.2649   37.265   ok
+  W1_ks0p3_cv6_psib0p5_nocl                            0.678814   0.6788       -45.6442  -45.644   ok
+  W4_ks0p3_cv6_psib0p5_nocl                            0.673339   0.6733       -46.0813  -46.081   ok
+  W1_ks0p3_cv6_psib1p0_nocl                            0.567346   0.5673       -56.6306  -56.631   ok
+  W4_ks0p3_cv6_psib1p0_nocl                            0.561583   0.5616       -56.9728  -56.973   ok
+  W1_ks0p1_cv6_psib1p0_nocl                            1.457028   1.4570        27.0092   27.009   ok
+  W4_ks0p1_cv6_psib1p0_nocl                            1.445196   1.4452        24.9296   24.930   ok
+  PASS  15 run(s) reproduce their scored flood-week numbers.
+
+====================================================================================================
+1. Start state (figure 1): each run against the baseline, flood week and Oct-Dec
+====================================================================================================
+  gauge flood-week peak 220.9 m3/s, flood-week volume 7.246 M m3
+  run                                 flood peak  vs base  flood vol  vs base  Oct-Dec vol  vs base
+  baseline                                 189.2    +0.0%      7.496    +0.0%        2.498    +0.0%
+  water table 0.70 of bedrock              189.4    +0.1%      7.477    -0.3%        2.507    +0.4%
+  water table 1.00 of bedrock              189.3    +0.0%      7.471    -0.3%        2.502    +0.2%
+  bedrock +0 m (a different model)         292.6   +54.6%     15.879  +111.8%        2.793   +11.8%
+
+====================================================================================================
+2. Proxy check (figure 2): flood week, W4 against W1, ordered by W4 volume error
+====================================================================================================
+  setting                    W4 vol   W1 vol  W4 peak%  W1 peak%   ranks vol (W4/W1)   ranks peak (W4/W1)
+  Ks x0.2, PsiB x0.5          1.034    1.037     -14.3     -13.1   1 / 1                 1 / 1
+  Ks x0.2, PsiB x1.0          0.904    0.913     -25.8     -24.8   2 / 2                 3 / 2
+  Ks x0.3, PsiB x0.5          0.673    0.679     -46.1     -45.6   3 / 3                 5 / 5
+  Ks x0.3, PsiB x1.0          0.562    0.567     -57.0     -56.6   4 / 4                 6 / 6
+  Ks x0.1, PsiB x1.0          1.445    1.457     +24.9     +27.0   5 / 5                 2 / 3
+  Ks x0.1, PsiB x0.5          1.594    1.587     +37.3     +38.3   6 / 6                 4 / 4
+
+====================================================================================================
+Files written to hydrograph_check_stage1/
+====================================================================================================
+  saved fig_stage1_start_state.png
+  saved fig_stage1_proxy_flood_week.png
+  saved hydrograph_check_numbers.csv  (16 rows)
+
+Done in 3 s. This script only reads your results; it changed none of them.

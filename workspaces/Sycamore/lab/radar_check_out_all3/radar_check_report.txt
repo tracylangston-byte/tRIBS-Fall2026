@@ -1,0 +1,81 @@
+RADAR vs GAUGE CHECK (Stage 0)   radar_gauge_check_sycamore.py v1.0
+Radar: /home/vscode/mrms_wk_wy2017/rain   labels = END of the hour; hours below are labeled by when they START.
+Hours 2017-01-17 21:00 to 2017-03-03 03:00; radar hours missing: 0.
+
+1. STORM TOTALS  (hours where both gauge and radar have a value; radar / gauge ratio only if gauge total >= 5 mm)
+                    gauge                      storm  hours used %  gauge mm  radar cell mm  radar 3x3 mean mm  ratio cell  ratio 3x3 mean  ratio lowest cell  ratio highest cell
+           Mt. Ord (2000)      Jan 18-23 flood storm        100.00      5.00          66.93              66.45       13.38           13.28              12.34               14.20
+           Mt. Ord (2000) Jan 23-25 second Jan storm        100.00      5.99          14.04              14.36        2.34            2.40               2.16                2.57
+           Mt. Ord (2000)            Feb 18-20 storm        100.00     15.98          38.95              39.33        2.44            2.46               2.27                2.67
+           Mt. Ord (2000)         Feb 27-Mar 2 storm        100.00     39.01          40.88              40.50        1.05            1.04               0.98                1.10
+Sycamore Cr Upper (82200)      Jan 18-23 flood storm        100.00     89.00          65.70              65.52        0.74            0.74               0.73                0.75
+Sycamore Cr Upper (82200) Jan 23-25 second Jan storm        100.00     22.99          16.68              16.73        0.73            0.73               0.71                0.76
+Sycamore Cr Upper (82200)            Feb 18-20 storm        100.00     51.99          46.46              46.34        0.89            0.89               0.86                0.95
+Sycamore Cr Upper (82200)         Feb 27-Mar 2 storm        100.00     56.01          44.45              43.97        0.79            0.79               0.76                0.80
+        Iron Dike (83000)      Jan 18-23 flood storm        100.00     75.01          71.33              71.58        0.95            0.95               0.92                0.99
+        Iron Dike (83000) Jan 23-25 second Jan storm        100.00     16.00          14.96              15.12        0.94            0.95               0.90                1.01
+        Iron Dike (83000)            Feb 18-20 storm        100.00     46.00          47.94              47.89        1.04            1.04               0.97                1.11
+        Iron Dike (83000)         Feb 27-Mar 2 storm        100.00     41.00          43.27              43.27        1.06            1.06               1.03                1.08
+
+2. TIMING  (radar minus gauge; + means the radar is later)
+                    gauge                      storm  gauge peak mm/h  radar peak mm/h  peak hour diff h  centre of rain diff h  best lag h  r at lag 0  r at best lag
+           Mt. Ord (2000)      Jan 18-23 flood storm             2.01             7.78            -40.00                 -28.59          -1       -0.04          -0.02
+           Mt. Ord (2000) Jan 23-25 second Jan storm             1.98             2.16            -40.00                 -39.11           2       -0.15          -0.14
+           Mt. Ord (2000)            Feb 18-20 storm             4.01             4.80            -21.00                 -15.25           3       -0.01           0.14
+           Mt. Ord (2000)         Feb 27-Mar 2 storm             4.01             7.14             10.00                  -2.09           1        0.65           0.74
+Sycamore Cr Upper (82200)      Jan 18-23 flood storm            12.01             6.90              0.00                  -9.32           0        0.83           0.83
+Sycamore Cr Upper (82200) Jan 23-25 second Jan storm             4.01             2.59              7.00                  -2.12           0        0.68           0.68
+Sycamore Cr Upper (82200)            Feb 18-20 storm             5.99             3.86            -15.00                  -7.64          -1        0.40           0.45
+Sycamore Cr Upper (82200)         Feb 27-Mar 2 storm             7.01             4.32              0.00                  -0.73           0        0.94           0.94
+        Iron Dike (83000)      Jan 18-23 flood storm             6.02             7.88             -1.00                  -0.66           0        0.92           0.92
+        Iron Dike (83000) Jan 23-25 second Jan storm             3.00             2.54              5.00                   0.01           0        0.85           0.85
+        Iron Dike (83000)            Feb 18-20 storm             5.00             4.73             -3.00                  -1.77           0        0.81           0.81
+        Iron Dike (83000)         Feb 27-Mar 2 storm             7.01             6.47              0.00                  -0.47           0        0.93           0.93
+  Peak hour is the single wettest hour: for a storm with several similar hours it can jump around. The centre of rain
+  (rain-weighted mean time) and the lag test below are steadier.
+
+3. LAG TEST, all storm hours pooled  (hourly correlation of gauge at t with radar at t+lag; best lag marked)
+    Mt. Ord (2000)               radar cell      -3:0.22  -2:0.24  -1:0.24  +0:0.25  +1:0.31  +2:0.24  +3:0.19   best lag +1 h   <-- not lag 0
+    Mt. Ord (2000)               radar 3x3 mean  -3:0.21  -2:0.24  -1:0.24  +0:0.26  +1:0.31  +2:0.24  +3:0.19   best lag +1 h   <-- not lag 0
+    Sycamore Cr Upper (82200)    radar cell      -3:0.49  -2:0.56  -1:0.69  +0:0.77  +1:0.67  +2:0.50  +3:0.40   best lag +0 h
+    Sycamore Cr Upper (82200)    radar 3x3 mean  -3:0.49  -2:0.56  -1:0.69  +0:0.77  +1:0.67  +2:0.50  +3:0.40   best lag +0 h
+    Iron Dike (83000)            radar cell      -3:0.57  -2:0.62  -1:0.78  +0:0.90  +1:0.78  +2:0.65  +3:0.57   best lag +0 h
+    Iron Dike (83000)            radar 3x3 mean  -3:0.57  -2:0.63  -1:0.78  +0:0.90  +1:0.77  +2:0.65  +3:0.57   best lag +0 h
+  READING: the gauges do not agree on a best lag. Look at the hyetograph pictures: patchy storms moving across the basin can make single gauges differ by an hour.
+  This tests the radar file labels against the gauges only. It does not test how tRIBS reads those labels.
+
+4. RAIN-SCALE READING  (design rule: consistent ratio = calibrated knob; swinging ratio = probe)
+Pooled radar / gauge ratio by storm (radar = mean of the 3x3 block; gauges added together):
+    Jan 18-23 flood storm              1.20
+    Jan 23-25 second Jan storm         1.03
+    Feb 18-20 storm                    1.17
+    Feb 27-Mar 2 storm                 0.94
+Across 4 storms: mean 1.09, spread (largest / smallest) 1.28, coefficient of variation 0.11.
+PROPOSED READING: CONSISTENT (spread <= 1.3 and CV <= 0.2). Rain scale can be a calibrated knob. The factor that would bring the radar to the gauges runs from 0.83 to 1.06 (1 / ratio). That is the range the knob needs to cover, if the gauges are right and representative.
+(Thresholds are proposals to be set before the first model run: consistent = spread <= 1.3 and CV <= 0.2; swings = spread >= 1.6 or CV > 0.3.)
+
+CAUTIONS
+  * A gauge is a point and a radar cell is 1 km across. For patchy convective storms the two can differ even when both are right.
+  * Tipping-bucket gauges under-count in very heavy rain and in wind; no catch correction is applied here.
+  * MRMS gauge-corrected products use many gauges. If these FCDMC gauges feed the product, agreement is partly built in.
+  * Three gauges and four storms is a small sample. Treat the proposed reading as a prompt for the SRP discussion, not a result.
+
+DAY BY DAY (days with 1 mm or more at any gauge or radar cell; use it to adjust the storm windows; full table in radar_gauge_daily.csv)
+  Each gauge column reads: gauge mm / radar 3x3-mean mm. Days are labeled by when the hours START (midnight to midnight).
+        radar grid mean mm Mt. Ord (2000) Sycamore Cr Upper (82200) Iron Dike (83000)
+day                                                                                  
+Jan 19                 5.9    1.0 /   6.3               8.0 /   6.4       7.0 /   6.8
+Jan 20                40.6    0.0 /  43.9              48.0 /  39.5      44.0 /  45.8
+Jan 21                 9.7    0.0 /  12.0               9.0 /  16.1      19.0 /  14.2
+Jan 22                 0.3    3.0 /   0.8              15.0 /   0.5       0.0 /   0.8
+Jan 23                13.9    1.0 /  14.2              28.0 /  17.7      19.0 /  16.7
+Jan 24                 2.1    0.0 /   3.7               1.0 /   2.1       2.0 /   2.4
+Jan 25                 0.0    6.0 /   0.0               3.0 /   0.0       0.0 /   0.0
+Jan 26                 0.0   24.0 /   0.0               1.0 /   0.0       0.0 /   0.0
+Jan 28                 0.0    4.0 /   0.0               0.0 /   0.0       0.0 /   0.0
+Feb 13                 0.8    1.0 /   0.4               1.0 /   2.1       0.0 /   2.2
+Feb 18                23.6    4.0 /  27.7              17.0 /  29.7      27.0 /  31.7
+Feb 19                16.7    9.0 /  11.6              35.0 /  16.6      19.0 /  16.2
+Feb 20                 0.0    3.0 /   0.0               0.0 /   0.0       0.0 /   0.0
+Feb 27                19.7   16.0 /  20.2              31.0 /  24.6      21.0 /  23.3
+Feb 28                19.5   23.0 /  20.3              25.0 /  19.4      20.0 /  20.0

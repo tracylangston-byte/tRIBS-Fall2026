@@ -1,0 +1,141 @@
+gauge,storm,radar_series,lag_h,r,n_hours
+Sycamore Cr Upper (82200),all storms pooled,cell,-3,0.48929911153521644,360
+Sycamore Cr Upper (82200),all storms pooled,cell,-2,0.5586739501913759,360
+Sycamore Cr Upper (82200),all storms pooled,cell,-1,0.6877297899261215,360
+Sycamore Cr Upper (82200),all storms pooled,cell,0,0.7660495324204996,360
+Sycamore Cr Upper (82200),all storms pooled,cell,1,0.6667456975926233,360
+Sycamore Cr Upper (82200),all storms pooled,cell,2,0.5012224475688455,360
+Sycamore Cr Upper (82200),all storms pooled,cell,3,0.39529196503697794,360
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,cell,-3,0.5228763617830294,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,cell,-2,0.5882325662836003,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,cell,-1,0.7457067750249138,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,cell,0,0.8253070667388401,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,cell,1,0.7328926798049044,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,cell,2,0.5480441710565418,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,cell,3,0.4053368006733926,132
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,cell,-3,0.33606516488846777,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,cell,-2,0.4859551419345551,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,cell,-1,0.6039166275322372,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,cell,0,0.6794366284127965,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,cell,1,0.6500864847231304,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,cell,2,0.5545013513190014,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,cell,3,0.5330226830780204,60
+Sycamore Cr Upper (82200),Feb 18-20 storm,cell,-3,0.33172387433722683,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,cell,-2,0.39717423461516627,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,cell,-1,0.44525620075511557,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,cell,0,0.4018696054551471,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,cell,1,0.35685854709181325,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,cell,2,0.27500799162656236,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,cell,3,0.19557377639357867,72
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,cell,-3,0.568611556939774,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,cell,-2,0.630077372245426,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,cell,-1,0.7710072086175978,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,cell,0,0.9367551347215267,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,cell,1,0.7649147828286716,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,cell,2,0.5510611666655972,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,cell,3,0.470032413316579,96
+Sycamore Cr Upper (82200),all storms pooled,3x3 mean,-3,0.4890110627447832,360
+Sycamore Cr Upper (82200),all storms pooled,3x3 mean,-2,0.5594778401966362,360
+Sycamore Cr Upper (82200),all storms pooled,3x3 mean,-1,0.690444640286982,360
+Sycamore Cr Upper (82200),all storms pooled,3x3 mean,0,0.7668330990290511,360
+Sycamore Cr Upper (82200),all storms pooled,3x3 mean,1,0.6682039552613707,360
+Sycamore Cr Upper (82200),all storms pooled,3x3 mean,2,0.5016451527841789,360
+Sycamore Cr Upper (82200),all storms pooled,3x3 mean,3,0.3973438507936995,360
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,3x3 mean,-3,0.5242116305473371,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,3x3 mean,-2,0.5901438018766405,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,3x3 mean,-1,0.7496950623965934,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,3x3 mean,0,0.8274070916404034,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,3x3 mean,1,0.7331857483619503,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,3x3 mean,2,0.5454775304222661,132
+Sycamore Cr Upper (82200),Jan 18-23 flood storm,3x3 mean,3,0.407284181383035,132
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,3x3 mean,-3,0.3380067029344517,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,3x3 mean,-2,0.486606754459072,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,3x3 mean,-1,0.607866605602169,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,3x3 mean,0,0.6814431223233464,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,3x3 mean,1,0.6547163541296916,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,3x3 mean,2,0.5576333564141082,60
+Sycamore Cr Upper (82200),Jan 23-25 second Jan storm,3x3 mean,3,0.5391154835098998,60
+Sycamore Cr Upper (82200),Feb 18-20 storm,3x3 mean,-3,0.3321703641746715,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,3x3 mean,-2,0.39774790328372606,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,3x3 mean,-1,0.4467443290587144,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,3x3 mean,0,0.4018207430334978,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,3x3 mean,1,0.35821602963389104,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,3x3 mean,2,0.27907961918926283,72
+Sycamore Cr Upper (82200),Feb 18-20 storm,3x3 mean,3,0.20017936835456968,72
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,3x3 mean,-3,0.5653559788402793,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,3x3 mean,-2,0.6302208463411048,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,3x3 mean,-1,0.7736875568004515,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,3x3 mean,0,0.9381284784032895,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,3x3 mean,1,0.769938598050561,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,3x3 mean,2,0.5550985904055307,96
+Sycamore Cr Upper (82200),Feb 27-Mar 2 storm,3x3 mean,3,0.4709748714308719,96
+Iron Dike (83000),all storms pooled,cell,-3,0.5693116551726464,360
+Iron Dike (83000),all storms pooled,cell,-2,0.6249318928599785,360
+Iron Dike (83000),all storms pooled,cell,-1,0.7755674788066854,360
+Iron Dike (83000),all storms pooled,cell,0,0.8981759065104189,360
+Iron Dike (83000),all storms pooled,cell,1,0.7750472687582098,360
+Iron Dike (83000),all storms pooled,cell,2,0.6483891409818521,360
+Iron Dike (83000),all storms pooled,cell,3,0.5688939316726338,360
+Iron Dike (83000),Jan 18-23 flood storm,cell,-3,0.6268455699107174,132
+Iron Dike (83000),Jan 18-23 flood storm,cell,-2,0.6903776548641343,132
+Iron Dike (83000),Jan 18-23 flood storm,cell,-1,0.827841097781083,132
+Iron Dike (83000),Jan 18-23 flood storm,cell,0,0.9190463049260209,132
+Iron Dike (83000),Jan 18-23 flood storm,cell,1,0.8026986562071707,132
+Iron Dike (83000),Jan 18-23 flood storm,cell,2,0.6787466341764693,132
+Iron Dike (83000),Jan 18-23 flood storm,cell,3,0.6904490616992184,132
+Iron Dike (83000),Jan 23-25 second Jan storm,cell,-3,0.2942882995409172,60
+Iron Dike (83000),Jan 23-25 second Jan storm,cell,-2,0.4829204202272757,60
+Iron Dike (83000),Jan 23-25 second Jan storm,cell,-1,0.6683615722109505,60
+Iron Dike (83000),Jan 23-25 second Jan storm,cell,0,0.8457377379943517,60
+Iron Dike (83000),Jan 23-25 second Jan storm,cell,1,0.6124253244998024,60
+Iron Dike (83000),Jan 23-25 second Jan storm,cell,2,0.4221425574968637,60
+Iron Dike (83000),Jan 23-25 second Jan storm,cell,3,0.35408267530329346,60
+Iron Dike (83000),Feb 18-20 storm,cell,-3,0.7654482118529874,72
+Iron Dike (83000),Feb 18-20 storm,cell,-2,0.6820298422897931,72
+Iron Dike (83000),Feb 18-20 storm,cell,-1,0.7640469324678525,72
+Iron Dike (83000),Feb 18-20 storm,cell,0,0.812673448824473,72
+Iron Dike (83000),Feb 18-20 storm,cell,1,0.7090257384995744,72
+Iron Dike (83000),Feb 18-20 storm,cell,2,0.6608235254608047,72
+Iron Dike (83000),Feb 18-20 storm,cell,3,0.5481264011745267,72
+Iron Dike (83000),Feb 27-Mar 2 storm,cell,-3,0.33662282156469175,96
+Iron Dike (83000),Feb 27-Mar 2 storm,cell,-2,0.4638016783415135,96
+Iron Dike (83000),Feb 27-Mar 2 storm,cell,-1,0.6921438214676026,96
+Iron Dike (83000),Feb 27-Mar 2 storm,cell,0,0.9306517750650337,96
+Iron Dike (83000),Feb 27-Mar 2 storm,cell,1,0.7899158578064359,96
+Iron Dike (83000),Feb 27-Mar 2 storm,cell,2,0.5999120151381048,96
+Iron Dike (83000),Feb 27-Mar 2 storm,cell,3,0.3611297941314851,96
+Iron Dike (83000),all storms pooled,3x3 mean,-3,0.5702703915029808,360
+Iron Dike (83000),all storms pooled,3x3 mean,-2,0.625889597854995,360
+Iron Dike (83000),all storms pooled,3x3 mean,-1,0.7769651677502626,360
+Iron Dike (83000),all storms pooled,3x3 mean,0,0.8992121167792106,360
+Iron Dike (83000),all storms pooled,3x3 mean,1,0.7746888328068683,360
+Iron Dike (83000),all storms pooled,3x3 mean,2,0.6481497552487349,360
+Iron Dike (83000),all storms pooled,3x3 mean,3,0.5690053699737898,360
+Iron Dike (83000),Jan 18-23 flood storm,3x3 mean,-3,0.6268712426471549,132
+Iron Dike (83000),Jan 18-23 flood storm,3x3 mean,-2,0.6910041794281607,132
+Iron Dike (83000),Jan 18-23 flood storm,3x3 mean,-1,0.8280099007194626,132
+Iron Dike (83000),Jan 18-23 flood storm,3x3 mean,0,0.9193938127868275,132
+Iron Dike (83000),Jan 18-23 flood storm,3x3 mean,1,0.8029789832746653,132
+Iron Dike (83000),Jan 18-23 flood storm,3x3 mean,2,0.680868125174405,132
+Iron Dike (83000),Jan 18-23 flood storm,3x3 mean,3,0.6907849447330742,132
+Iron Dike (83000),Jan 23-25 second Jan storm,3x3 mean,-3,0.3000938784051214,60
+Iron Dike (83000),Jan 23-25 second Jan storm,3x3 mean,-2,0.4893934450218411,60
+Iron Dike (83000),Jan 23-25 second Jan storm,3x3 mean,-1,0.6788524851109059,60
+Iron Dike (83000),Jan 23-25 second Jan storm,3x3 mean,0,0.8514287100292172,60
+Iron Dike (83000),Jan 23-25 second Jan storm,3x3 mean,1,0.6124538102807751,60
+Iron Dike (83000),Jan 23-25 second Jan storm,3x3 mean,2,0.42024780013220536,60
+Iron Dike (83000),Jan 23-25 second Jan storm,3x3 mean,3,0.353510650141036,60
+Iron Dike (83000),Feb 18-20 storm,3x3 mean,-3,0.7654409102627285,72
+Iron Dike (83000),Feb 18-20 storm,3x3 mean,-2,0.6794078130713429,72
+Iron Dike (83000),Feb 18-20 storm,3x3 mean,-1,0.7641185203041594,72
+Iron Dike (83000),Feb 18-20 storm,3x3 mean,0,0.8100567409668922,72
+Iron Dike (83000),Feb 18-20 storm,3x3 mean,1,0.7097724889443573,72
+Iron Dike (83000),Feb 18-20 storm,3x3 mean,2,0.6607761039768308,72
+Iron Dike (83000),Feb 18-20 storm,3x3 mean,3,0.5524032789019271,72
+Iron Dike (83000),Feb 27-Mar 2 storm,3x3 mean,-3,0.3390687067636796,96
+Iron Dike (83000),Feb 27-Mar 2 storm,3x3 mean,-2,0.466876549642543,96
+Iron Dike (83000),Feb 27-Mar 2 storm,3x3 mean,-1,0.6952491721014931,96
+Iron Dike (83000),Feb 27-Mar 2 storm,3x3 mean,0,0.9351201262833174,96
+Iron Dike (83000),Feb 27-Mar 2 storm,3x3 mean,1,0.7874241346600438,96
+Iron Dike (83000),Feb 27-Mar 2 storm,3x3 mean,2,0.595175537713181,96
+Iron Dike (83000),Feb 27-Mar 2 storm,3x3 mean,3,0.3568498870240144,96

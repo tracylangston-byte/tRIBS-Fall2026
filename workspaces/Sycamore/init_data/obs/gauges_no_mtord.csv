@@ -1,0 +1,3 @@
+name,file,x,y,lon,lat,units,value_type,time_col,value_col,scale,no_record,valid_from,valid_to,utc_offset
+Sycamore Cr Upper (82200),alert_82200_SycamoreUpper_raw_octmar2017.csv,,,-111.46433,33.98761,in,cumulative,datetime,total_in,1,zero,,,-7
+Iron Dike (83000),alert_83000_IronDike_raw_octmar2017.csv,,,-111.44442,33.92906,in,cumulative,datetime,total_in,1,zero,,,-7
