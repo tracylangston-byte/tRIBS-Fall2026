@@ -34,3 +34,10 @@ workspaces/Sycamore/init_data/solus/*.tif
 /workspaces/Sycamore/lab/screen_routing_logs/
 /workspaces/Sycamore/lab/score_out_screen_routing/
 /workspaces/Sycamore/lab/screen_routing_manifest.json
+/workspaces/Sycamore/lab/screen_soil_logs/
+/workspaces/Sycamore/lab/screen_forcing_logs/
+/workspaces/Sycamore/lab/screen_soil_manifest.json
+/workspaces/Sycamore/lab/screen_forcing_manifest.json
+/workspaces/Sycamore/lab/lhs_volume_logs/
+/workspaces/Sycamore/lab/lhs_volume_manifest.json
+/workspaces/Sycamore/lab/lhs_volume.lock
