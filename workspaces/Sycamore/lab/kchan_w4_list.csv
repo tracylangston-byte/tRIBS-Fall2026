@@ -1,0 +1,4 @@
+idx,KS_MULT,F_MULT,PSIB_MULT,KCHAN_MMHR,run_id,group,ref_run_id
+99,0.2524,1.165,0.5743,0.5,W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5,kchan,W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl
+99,0.2524,1.165,0.5743,1.0,W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1,kchan,W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl
+99,0.2524,1.165,0.5743,2.0,W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2,kchan,W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl

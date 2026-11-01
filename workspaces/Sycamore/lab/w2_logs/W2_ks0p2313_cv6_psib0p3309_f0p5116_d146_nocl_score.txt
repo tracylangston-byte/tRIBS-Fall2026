@@ -1,0 +1,87 @@
+score_run_sycamore.py v1.0   gauge ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv: Oct 01 2016 to Sep 30 2017 (35156 values)
+  profile: wy2017;  runs: 1;  results folder: results
+
+RUN W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl   (window W2)   scorer v1.0
+  model flow Jan 18 2017 00:03 to Mar 12 2017 00:00; scored span Jan 18 2017 to Mar 12 2017  (PARTIAL: not the whole scoring period)
+  blank steps skipped: model 0, gauge 99; excluded: none; outlet file checksum: written
+
+VOLUME  (M m3; model counted only where the gauge has data; ratio = model / gauge)
+  window                    model    gauge   ratio  model raw
+  flood_week                 6.41     7.25   0.884       6.41
+  jan_second_storm           0.06     1.36   0.043       0.06
+  feb18_19                   1.19     0.84   1.413       1.19
+  feb27_28                   2.01     3.44   0.585       2.01
+  jan_flood_tail             6.68     8.89   0.751       6.68
+  feb18_19_tail              1.31     1.61   0.813       1.31
+  feb27_28_tail              2.10     4.91   0.429       2.10
+  oct_mar                       -        -       -          -
+  span                      10.17    16.11   0.632      10.17
+  by month (months with under 0.005 M m3 on both sides are left out; the CSV has them all):
+    2017-02        2.74     4.25   0.644   rain 89.5 mm
+
+EVENTS  (peak error %, first-arrival error h, KGE_2012 with r, beta, gamma, NSE; arrival level = 20% of the gauge peak)
+  event              peak model peak gauge peak err % arrival h    KGE     r   beta  gamma    NSE   arrival note
+  flood_week              162.5      220.9      -26.4     -1.26   0.72  0.89   0.90   1.24   0.74   ok
+  jan_second_storm          0.9       18.7      -95.4         -  -0.68 -0.37   0.04   0.95  -6.24   gauge: already above at start
+  feb18_19                 20.4        9.3      118.8     -7.63   0.00  0.15   1.40   1.32  -3.08   ok
+  feb27_28                 48.3       73.6      -34.4     -0.48   0.53  0.96   0.61   1.26   0.77   ok
+
+TAILS  (volume M m3; recession rate k per hour = slope of ln(flow); ratio 1 = same recession, above 1 = model dries faster)
+  tail                 model   gauge  ratio   k model   k gauge  k ratio    hours used (model/gauge)
+  tail_jan26_feb2       0.25    1.17   0.21    0.0101    0.0069     1.46                   192 / 192
+  tail_mar3_mar11       0.09    1.47   0.06    0.0118    0.0069     1.71                   216 / 216
+
+STORM BALANCE  (runoff ratio = outflow volume / rain volume over 424.6 km2, rain = basin mean from the .mrf; report only, no pass/fail yet)
+  window              rain mm   model   gauge
+  flood_week             81.6   0.185   0.209
+  jan_second_storm       13.7   0.010   0.233
+  feb18_19               46.4   0.060   0.043
+  feb27_28               41.5   0.114   0.195
+  jan_flood_tail         81.6   0.193   0.257
+  feb18_19_tail          46.6   0.066   0.081
+  feb27_28_tail          41.5   0.119   0.278
+  feb27_28_tail / feb18_19_tail:  model 1.80   gauge 3.42
+  feb27_28 / feb18_19:  model 1.89   gauge 4.57
+
+PROCESS CHECKS  (not scores: is the flood made by a sensible mechanism, and does it change with the start state?)
+  mdgw_first_mm                   1340.263
+  mdgw_min_mm                     1225.425
+  mdgw_max_mm                     1341.979
+  channel_loss_Mm3                0.000
+  snow_max_cm                     0.456
+  hsrf_mean                       2.259
+  sbsrf_mean                      0.000
+  hsrf_share                      1.000
+  hsrf_share_flood_week           1.000
+
+KGE_2012 over the span: 0.362  (r 0.90, beta 0.68, gamma 1.54);  NSE 0.77 (sanity only);  PBIAS -31.6 %.   VOLUME GATE for reading KGE: CLOSED
+
+TOLERANCE CHECK  (the design's PROPOSED tolerances; OK / MISS / n.a.)
+  MISS  volume      span (Jan 18 2017 to Mar 12 2017), partial        0.632   (within 10% of 1)
+  MISS  volume      feb18_19_tail (each February storm, with tail)    0.813   (within 10% of 1)
+  MISS  volume      feb27_28_tail (each February storm, with tail)    0.429   (within 10% of 1)
+  MISS  volume      flood_week                                        0.884   (within 10% of 1)
+  MISS  peak        flood_week                                      -26.418   (within +/-15%)
+  MISS  arrival     flood_week                                       -1.258   (within +/-1 h)
+  MISS  volume      jan_second_storm                                  0.043   (within 10% of 1)
+  MISS  peak        jan_second_storm                                -95.363   (within +/-15%)
+  n.a.  arrival     jan_second_storm                                      -   (gauge: already above at start)
+  MISS  volume      feb18_19                                          1.413   (within 10% of 1)
+  MISS  peak        feb18_19                                        118.768   (within +/-15%)
+  MISS  arrival     feb18_19                                         -7.627   (within +/-1 h)
+  MISS  volume      feb27_28                                          0.585   (within 10% of 1)
+  MISS  peak        feb27_28                                        -34.422   (within +/-15%)
+  OK    arrival     feb27_28                                         -0.485   (within +/-1 h)
+  MISS  tail        tail_jan26_feb2                                   0.210   (at least 0.7)
+  MISS  tail        tail_mar3_mar11                                   0.062   (at least 0.7)
+
+REFERENCE CHECKS  (numbers quoted in the design doc)
+  'gauge' lines depend only on the gauge file and my window choices: if one does not match, my window differs from the one the design used.
+  'baseline' lines match only when this run IS the Oct 21 baseline (Ks x0.2, PsiB x0.5, f x1, cv 6, flowexp 0.3, n 0.04, loss off, bedrock +1 m).
+  [gauge] gauge volume, tail_jan26_feb2 (M m3): 1.17   design 1.17   matches the design to within 1%
+  [baseline] model volume, tail_jan26_feb2 (M m3): 0.25   design 0.26   differs from the design baseline (expected unless this run is the baseline)
+  [gauge] gauge volume, tail_mar3_mar11 (M m3): 1.47   design 1.47   matches the design to within 1%
+  [baseline] model volume, tail_mar3_mar11 (M m3): 0.09   design 0.09   matches the design baseline to within 1%
+  [gauge] gauge runoff ratio, Feb 27-28 over Feb 18-19: long windows (first-days windows in the next number): 3.42 | 4.57   design 3.40   matches the design to within 1%
+
+WROTE /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab/score_out_w2/scores_w2.csv (1 run(s) added or replaced) and /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab/score_out_w2/score_report.txt

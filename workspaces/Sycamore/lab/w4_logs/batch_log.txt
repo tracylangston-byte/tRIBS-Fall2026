@@ -1,0 +1,300 @@
+[18:39:50] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[18:39:50] Notebook: Make_Sycamore_Model.ipynb
+[18:39:50] Design: anchors 99,130,85,5: checked against w2_list.csv and lhs_volume_list.csv, and froze the list in w4_list.csv
+[18:39:50] Plan: 4 anchor runs from the W2 batch on W4 (4368 h): 4 to make, 0 already finished and skipped.
+[18:39:50] Reference run: existing Sycamore_octmar_ks0p2_cv6_psib0p5_nocl (CANNOT be used: proxy_manifest.json says this run's status is 'reused', not 'done')
+[18:39:50]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 4 runs take roughly 2 h 20 min to 4 h 37 min.
+[18:39:50]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl          anchor: Ks 0.2524, f 1.165, PsiB 0.5743
+[18:39:50]     run: W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl           anchor: Ks 0.2341, f 1.217, PsiB 1.339
+[18:39:50]     run: W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl          anchor: Ks 0.2902, f 1.996, PsiB 0.6105
+[18:39:50]     run: W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl          anchor: Ks 0.2023, f 0.7611, PsiB 1.158
+
+[18:39:54]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[18:39:54]   OK    file in lab/: score_run_sycamore.py
+[18:39:54]   FAIL  the W4 baseline Sycamore_octmar_ks0p2_cv6_psib0p5_nocl cannot be the reference run: proxy_manifest.json says this run's status is 'reused', not 'done' (nothing was made, and nothing is rerun automatically)
+[18:39:54]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[18:39:54]   OK    input: ../init_data/bedrock_depth_m.asc
+[18:39:54]   OK    input: ../init_data/scgrid.gdf
+[18:39:54]   OK    input: ../init_data/soils.sdt
+[18:39:54]   OK    input: ../init_data/met/Master_Met.sdf
+[18:39:54]   OK    input: ../init_data/LandUse.asc
+[18:39:54]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[18:39:54]   OK    free disk space: 3.7 GB (need 2)
+[18:39:54]   OK    no other tRIBS running
+[18:39:54]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 4 planned runs
+[18:39:54]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[18:39:54]   OK    reference .in (Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[18:39:54]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[18:39:54]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[18:39:54]   OK    disk: one W4 run's results are about 47 MB (the baseline's); 4 runs need about 0.2 GB; 3.7 GB free
+[18:39:54]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 4 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[18:39:54] DRY RUN: nothing was built or run. 1 check(s) FAILED.
+[18:41:26] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[18:41:26] Notebook: Make_Sycamore_Model.ipynb
+[18:41:26] Design: read the frozen list from w4_list.csv (4 runs; it matches --anchors 99,130,85,5)
+[18:41:26] Plan: 4 anchor runs from the W2 batch on W4 (4368 h): 4 to make, 0 already finished and skipped.
+[18:41:26] Reference run: existing Sycamore_octmar_ks0p2_cv6_psib0p5_nocl (md5 matches the one recorded when this baseline was first verified; checksum file matches; md5 matches proxy_manifest.json; Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[18:41:26]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 4 runs take roughly 2 h 20 min to 4 h 37 min.
+[18:41:26]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl          anchor: Ks 0.2524, f 1.165, PsiB 0.5743
+[18:41:26]     run: W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl           anchor: Ks 0.2341, f 1.217, PsiB 1.339
+[18:41:26]     run: W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl          anchor: Ks 0.2902, f 1.996, PsiB 0.6105
+[18:41:26]     run: W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl          anchor: Ks 0.2023, f 0.7611, PsiB 1.158
+
+[18:41:33]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[18:41:33]   OK    file in lab/: score_run_sycamore.py
+[18:41:33]   OK    reference run Sycamore_octmar_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[18:41:33]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[18:41:33]   OK    input: ../init_data/bedrock_depth_m.asc
+[18:41:33]   OK    input: ../init_data/scgrid.gdf
+[18:41:33]   OK    input: ../init_data/soils.sdt
+[18:41:33]   OK    input: ../init_data/met/Master_Met.sdf
+[18:41:33]   OK    input: ../init_data/LandUse.asc
+[18:41:33]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[18:41:33]   OK    free disk space: 3.7 GB (need 2)
+[18:41:33]   OK    no other tRIBS running
+[18:41:33]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 4 planned runs
+[18:41:33]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[18:41:33]   OK    reference .in (Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[18:41:33]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[18:41:33]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[18:41:33]   OK    disk: one W4 run's results are about 47 MB (the baseline's); 4 runs need about 0.2 GB; 3.7 GB free
+[18:41:33]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 4 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[18:41:33] DRY RUN: nothing was built or run. All checks passed.
+[18:41:57] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[18:41:57] Notebook: Make_Sycamore_Model.ipynb
+[18:41:58] Design: read the frozen list from w4_list.csv (4 runs; it matches --anchors 99,130,85,5)
+[18:41:58] Plan: 4 anchor runs from the W2 batch on W4 (4368 h): 4 to make, 0 already finished and skipped.
+[18:41:58] Reference run: existing Sycamore_octmar_ks0p2_cv6_psib0p5_nocl (md5 matches the one recorded when this baseline was first verified; checksum file matches; md5 matches proxy_manifest.json; Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[18:41:58]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 4 runs take roughly 2 h 20 min to 4 h 37 min.
+[18:41:58]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl          anchor: Ks 0.2524, f 1.165, PsiB 0.5743
+[18:41:58]     run: W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl           anchor: Ks 0.2341, f 1.217, PsiB 1.339
+[18:41:58]     run: W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl          anchor: Ks 0.2902, f 1.996, PsiB 0.6105
+[18:41:58]     run: W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl          anchor: Ks 0.2023, f 0.7611, PsiB 1.158
+
+[18:42:01]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[18:42:01]   OK    file in lab/: score_run_sycamore.py
+[18:42:01]   OK    reference run Sycamore_octmar_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[18:42:01]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[18:42:01]   OK    input: ../init_data/bedrock_depth_m.asc
+[18:42:01]   OK    input: ../init_data/scgrid.gdf
+[18:42:01]   OK    input: ../init_data/soils.sdt
+[18:42:01]   OK    input: ../init_data/met/Master_Met.sdf
+[18:42:01]   OK    input: ../init_data/LandUse.asc
+[18:42:01]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[18:42:01]   OK    free disk space: 3.7 GB (need 2)
+[18:42:01]   OK    no other tRIBS running
+[18:42:01]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 4 planned runs
+[18:42:01]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[18:42:01]   OK    reference .in (Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[18:42:01]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[18:42:01]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[18:42:01]   OK    disk: one W4 run's results are about 47 MB (the baseline's); 4 runs need about 0.2 GB; 3.7 GB free
+[18:42:01]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 4 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[18:42:02] Sycamore_octmar_ks0p2_cv6_psib0p5_nocl: md5 matches the one recorded when this baseline was first verified
+[18:42:02] Sycamore_octmar_ks0p2_cv6_psib0p5_nocl: checksum file matches
+[18:42:02] Sycamore_octmar_ks0p2_cv6_psib0p5_nocl: md5 matches proxy_manifest.json
+[18:42:02] Sycamore_octmar_ks0p2_cv6_psib0p5_nocl: Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values
+[18:42:02] Sycamore_octmar_ks0p2_cv6_psib0p5_nocl: baseline reused, not rerun. Oct-Dec flow Mm3 2.49808, days>0.13 24.0, max m3/s 14.2145, flood vol 1.03438, peak % -14.32974, arrival h -1.48628, Oct-Mar vol 0.84289
+[18:42:02] === draw 099  W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: anchor: Ks 0.2524, f 1.165, PsiB 0.5743 on W4 (4368 h from 10/01/2016/00/00) ===
+[18:43:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: build OK in 1.2 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[18:43:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: Ks x0.2524, PsiB x0.5743, f x1.165, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[18:43:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: --build-only, not running tRIBS
+
+[18:43:15] Batch time: 1 min
+[18:43:15] Run status counts: built 1, reused 1
+
+[18:43:15] W4 ANCHORS (Oct 1 2016 - Apr 1 2017). 4 runs from the W2 batch; everything else at the baseline; warm start (water table 0.95 x bedrock).
+[18:43:15]   Oct-Dec flow = model volume Oct 1 - Dec 31 in million m3 (the gauge's is shown below). days = days the model flow is above 0.13 m3/s.
+[18:43:15]   max = largest model flow in Oct-Dec (m3/s).  W2 win = whole-window volume ratio on W2 (model / gauge), for comparison.
+[18:43:15]   flood vol, pk, arr = flood-week volume ratio, peak error % and first-arrival error h (negative = early).  Oct-Mar = whole-window volume ratio on W4.
+[18:43:15]   Nothing is selected or dropped here: this table shows how the false flow moves with the runs. Reading it is the next step.
+[18:43:15]   Gauge, Oct-Dec: volume 0.000 M m3, largest flow 0.13 m3/s, 1 days above 0.13. Whole Oct-Mar volume ratio of the baseline: 0.843.
+
+[18:43:15]   draw      Ks      f   PsiB | W2 win | OctDec Mm3  days    max | flood vol   pk %  arr h | Oct-Mar
+[18:43:15]   base     0.2      1    0.5 |   0.76 |       2.50    24   14.2 |      1.03  -14.3  -1.49 |    0.84   (existing W4 baseline, reused)
+[18:43:15]     99  0.2524  1.165 0.5743 |   0.55 | (built)
+[18:43:15]    130  0.2341  1.217  1.339 |   0.46 | (not run)
+[18:43:15]     85  0.2902  1.996 0.6105 |   0.56 | (not run)
+[18:43:15]      5  0.2023 0.7611  1.158 |   0.53 | (not run)
+
+[18:43:15]   0 of 4 runs scored; 0 failed; 3 not run yet.
+
+[18:43:15]   Wrote w4_summary.csv (all score columns for every run, plus the W2 volume).
+[18:44:09] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[18:44:09] Notebook: Make_Sycamore_Model.ipynb
+[18:44:09] Design: read the frozen list from w4_list.csv (4 runs; it matches --anchors 99,130,85,5)
+[18:44:09] Plan: 4 anchor runs from the W2 batch on W4 (4368 h): 4 to make, 0 already finished and skipped.
+[18:44:09] Reference run: existing Sycamore_octmar_ks0p2_cv6_psib0p5_nocl (md5 matches the one recorded when this baseline was first verified; checksum file matches; md5 matches proxy_manifest.json; Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[18:44:09]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 4 runs take roughly 2 h 20 min to 4 h 37 min.
+[18:44:09]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl          anchor: Ks 0.2524, f 1.165, PsiB 0.5743
+[18:44:09]     run: W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl           anchor: Ks 0.2341, f 1.217, PsiB 1.339
+[18:44:09]     run: W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl          anchor: Ks 0.2902, f 1.996, PsiB 0.6105
+[18:44:09]     run: W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl          anchor: Ks 0.2023, f 0.7611, PsiB 1.158
+
+[18:44:15]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[18:44:15]   OK    file in lab/: score_run_sycamore.py
+[18:44:15]   OK    reference run Sycamore_octmar_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[18:44:15]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[18:44:15]   OK    input: ../init_data/bedrock_depth_m.asc
+[18:44:15]   OK    input: ../init_data/scgrid.gdf
+[18:44:15]   OK    input: ../init_data/soils.sdt
+[18:44:15]   OK    input: ../init_data/met/Master_Met.sdf
+[18:44:15]   OK    input: ../init_data/LandUse.asc
+[18:44:15]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[18:44:15]   OK    free disk space: 3.7 GB (need 2)
+[18:44:15]   OK    no other tRIBS running
+[18:44:15]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 4 planned runs
+[18:44:15]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[18:44:15]   OK    reference .in (Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[18:44:15]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[18:44:15]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[18:44:15]   OK    disk: one W4 run's results are about 47 MB (the baseline's); 4 runs need about 0.2 GB; 3.7 GB free
+[18:44:15]   OK    data/model/soil holds 6 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 4 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[18:44:15] Sycamore_octmar_ks0p2_cv6_psib0p5_nocl: baseline already checked and scored, skipping
+[18:44:15] === draw 099  W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: anchor: Ks 0.2524, f 1.165, PsiB 0.5743 on W4 (4368 h from 10/01/2016/00/00) ===
+[18:45:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[18:45:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: Ks x0.2524, PsiB x0.5743, f x1.165, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[18:45:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: starting tRIBS (4368 model hours, expect about 34 to 68 min)
+[18:50:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 5.0 min so far; outlet file has 11121 rows of about 69888 (16%)
+[18:55:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 10.0 min so far; outlet file has 24297 rows of about 69888 (35%)
+[19:00:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 15.0 min so far; outlet file has 36585 rows of about 69888 (52%)
+[19:05:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 20.0 min so far; outlet file has 47485 rows of about 69888 (68%)
+[19:10:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 25.0 min so far; outlet file has 57039 rows of about 69888 (82%)
+[19:15:15] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 30.0 min so far; outlet file has 68293 rows of about 69888 (98%)
+[19:15:55] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS finished in 30.7 min; outlet peak 151.2 m3/s over 69888 rows; files 23 MB; 3.7 GB free
+[19:15:56] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: Oct-Dec flow Mm3 1.33771, days>0.13 20.0, max m3/s 8.4179, flood vol 0.83514, peak % -31.52409, arrival h -1.06814, Oct-Mar vol 0.58591
+[19:15:56] --- 1 of 1 in this session done; average 31.7 min per run; about 0 min left ---
+
+[19:15:56] Batch time: 32 min
+[19:15:56] Run status counts: done 1, reused 1
+
+[19:15:56] W4 ANCHORS (Oct 1 2016 - Apr 1 2017). 4 runs from the W2 batch; everything else at the baseline; warm start (water table 0.95 x bedrock).
+[19:15:56]   Oct-Dec flow = model volume Oct 1 - Dec 31 in million m3 (the gauge's is shown below). days = days the model flow is above 0.13 m3/s.
+[19:15:56]   max = largest model flow in Oct-Dec (m3/s).  W2 win = whole-window volume ratio on W2 (model / gauge), for comparison.
+[19:15:56]   flood vol, pk, arr = flood-week volume ratio, peak error % and first-arrival error h (negative = early).  Oct-Mar = whole-window volume ratio on W4.
+[19:15:56]   Nothing is selected or dropped here: this table shows how the false flow moves with the runs. Reading it is the next step.
+[19:15:56]   Gauge, Oct-Dec: volume 0.000 M m3, largest flow 0.13 m3/s, 1 days above 0.13. Whole Oct-Mar volume ratio of the baseline: 0.843.
+
+[19:15:56]   draw      Ks      f   PsiB | W2 win | OctDec Mm3  days    max | flood vol   pk %  arr h | Oct-Mar
+[19:15:56]   base     0.2      1    0.5 |   0.76 |       2.50    24   14.2 |      1.03  -14.3  -1.49 |    0.84   (existing W4 baseline, reused)
+[19:15:56]     99  0.2524  1.165 0.5743 |   0.55 |       1.34    20    8.4 |      0.84  -31.5  -1.07 |    0.59
+[19:15:56]    130  0.2341  1.217  1.339 |   0.46 | (not run)
+[19:15:56]     85  0.2902  1.996 0.6105 |   0.56 | (not run)
+[19:15:56]      5  0.2023 0.7611  1.158 |   0.53 | (not run)
+
+[19:15:56]   1 of 4 runs scored; 0 failed; 3 not run yet.
+[19:15:56]   Oct-Dec flow, driest to wettest on W2: draw 99 (W2 0.55) 1.34 M m3
+[19:15:56]   Runs with less Oct-Dec flow than the baseline (2.50 M m3): 1 of 1 (draw 99).
+
+[19:15:56]   Wrote w4_summary.csv (all score columns for every run, plus the W2 volume).
+[19:19:00] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[19:19:00] Notebook: Make_Sycamore_Model.ipynb
+[19:19:00] Design: read the frozen list from w4_list.csv (4 runs; it matches --anchors 99,130,85,5)
+[19:19:00] Plan: 4 anchor runs from the W2 batch on W4 (4368 h): 3 to make, 1 already finished and skipped.
+[19:19:00] Reference run: existing Sycamore_octmar_ks0p2_cv6_psib0p5_nocl (md5 matches the one recorded when this baseline was first verified; checksum file matches; md5 matches proxy_manifest.json; Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[19:19:00]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 3 runs take roughly 1 h 45 min to 3 h 27 min.
+[19:19:00]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl          anchor: Ks 0.2524, f 1.165, PsiB 0.5743
+[19:19:00]     run: W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl           anchor: Ks 0.2341, f 1.217, PsiB 1.339
+[19:19:00]     run: W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl          anchor: Ks 0.2902, f 1.996, PsiB 0.6105
+[19:19:00]     run: W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl          anchor: Ks 0.2023, f 0.7611, PsiB 1.158
+
+[19:19:07]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[19:19:07]   OK    file in lab/: score_run_sycamore.py
+[19:19:07]   OK    reference run Sycamore_octmar_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[19:19:07]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[19:19:07]   OK    input: ../init_data/bedrock_depth_m.asc
+[19:19:07]   OK    input: ../init_data/scgrid.gdf
+[19:19:07]   OK    input: ../init_data/soils.sdt
+[19:19:07]   OK    input: ../init_data/met/Master_Met.sdf
+[19:19:07]   OK    input: ../init_data/LandUse.asc
+[19:19:07]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[19:19:07]   OK    free disk space: 3.7 GB (need 2)
+[19:19:07]   OK    no other tRIBS running
+[19:19:07]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 4 planned runs
+[19:19:07]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[19:19:07]   OK    reference .in (Sycamore_octmar_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[19:19:07]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[19:19:07]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[19:19:07]   OK    disk: one W4 run's results are about 47 MB (the baseline's); 3 runs need about 0.1 GB; 3.7 GB free
+[19:19:07]   OK    data/model/soil holds 6 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 3 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[19:19:07] Sycamore_octmar_ks0p2_cv6_psib0p5_nocl: baseline already checked and scored, skipping
+[19:19:07] === draw 130  W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: anchor: Ks 0.2341, f 1.217, PsiB 1.339 on W4 (4368 h from 10/01/2016/00/00) ===
+[19:20:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 47 MB
+[19:20:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: Ks x0.2341, PsiB x1.339, f x1.217, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[19:20:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: starting tRIBS (4368 model hours, expect about 34 to 68 min)
+[19:25:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 5.0 min so far; outlet file has 12190 rows of about 69888 (17%)
+[19:30:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 10.0 min so far; outlet file has 24297 rows of about 69888 (35%)
+[19:35:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 15.0 min so far; outlet file has 36244 rows of about 69888 (52%)
+[19:40:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 20.0 min so far; outlet file has 47487 rows of about 69888 (68%)
+[19:45:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 25.0 min so far; outlet file has 57044 rows of about 69888 (82%)
+[19:50:10] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 30.0 min so far; outlet file has 67961 rows of about 69888 (97%)
+[19:50:54] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS finished in 30.7 min; outlet peak 131.6 m3/s over 69888 rows; files 23 MB; 3.6 GB free
+[19:50:56] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: Oct-Dec flow Mm3 0.66918, days>0.13 15.0, max m3/s 3.4686, flood vol 0.74689, peak % -40.40641, arrival h -0.72058, Oct-Mar vol 0.46676
+[19:50:57] W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: --prune-soil removed 6 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[19:50:57] --- 1 of 3 in this session done; average 31.8 min per run; about 1 h 04 min left ---
+[19:50:57] === draw 085  W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: anchor: Ks 0.2902, f 1.996, PsiB 0.6105 on W4 (4368 h from 10/01/2016/00/00) ===
+[19:51:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[19:51:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: Ks x0.2902, PsiB x0.6105, f x1.996, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[19:51:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: starting tRIBS (4368 model hours, expect about 34 to 68 min)
+[19:56:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS still running, 5.0 min so far; outlet file has 13259 rows of about 69888 (19%)
+[20:01:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS still running, 10.0 min so far; outlet file has 27369 rows of about 69888 (39%)
+[20:06:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS still running, 15.0 min so far; outlet file has 38974 rows of about 69888 (56%)
+[20:11:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS still running, 20.0 min so far; outlet file has 49533 rows of about 69888 (71%)
+[20:16:59] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS still running, 25.0 min so far; outlet file has 60444 rows of about 69888 (86%)
+[20:20:48] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS finished in 28.8 min; outlet peak 153.5 m3/s over 69888 rows; files 23 MB; 3.6 GB free
+[20:20:49] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: Oct-Dec flow Mm3 1.03015, days>0.13 19.0, max m3/s 6.0373, flood vol 0.85235, peak % -30.51771, arrival h -1.02387, Oct-Mar vol 0.5756
+[20:20:49] W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[20:20:49] --- 2 of 3 in this session done; average 30.9 min per run; about 31 min left ---
+[20:20:49] === draw 005  W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: anchor: Ks 0.2023, f 0.7611, PsiB 1.158 on W4 (4368 h from 10/01/2016/00/00) ===
+[20:21:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[20:21:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: Ks x0.2023, PsiB x1.158, f x0.7611, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[20:21:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: starting tRIBS (4368 model hours, expect about 34 to 68 min)
+[20:26:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 5.0 min so far; outlet file has 13259 rows of about 69888 (19%)
+[20:31:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 10.0 min so far; outlet file has 27369 rows of about 69888 (39%)
+[20:36:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 15.0 min so far; outlet file has 38633 rows of about 69888 (55%)
+[20:41:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 20.0 min so far; outlet file has 47827 rows of about 69888 (68%)
+[20:46:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 25.0 min so far; outlet file has 56698 rows of about 69888 (81%)
+[20:51:51] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 30.0 min so far; outlet file has 65565 rows of about 69888 (94%)
+[20:54:00] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS finished in 32.2 min; outlet peak 146.9 m3/s over 69888 rows; files 23 MB; 3.6 GB free
+[20:54:01] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: Oct-Dec flow Mm3 1.04133, days>0.13 16.0, max m3/s 5.9326, flood vol 0.81774, peak % -33.46957, arrival h -0.95248, Oct-Mar vol 0.54703
+[20:54:01] W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[20:54:01] --- 3 of 3 in this session done; average 31.6 min per run; about 0 min left ---
+
+[20:54:01] Batch time: 1 h 35 min
+[20:54:01] Run status counts: done 4, reused 1
+
+[20:54:01] W4 ANCHORS (Oct 1 2016 - Apr 1 2017). 4 runs from the W2 batch; everything else at the baseline; warm start (water table 0.95 x bedrock).
+[20:54:01]   Oct-Dec flow = model volume Oct 1 - Dec 31 in million m3 (the gauge's is shown below). days = days the model flow is above 0.13 m3/s.
+[20:54:01]   max = largest model flow in Oct-Dec (m3/s).  W2 win = whole-window volume ratio on W2 (model / gauge), for comparison.
+[20:54:01]   flood vol, pk, arr = flood-week volume ratio, peak error % and first-arrival error h (negative = early).  Oct-Mar = whole-window volume ratio on W4.
+[20:54:01]   Nothing is selected or dropped here: this table shows how the false flow moves with the runs. Reading it is the next step.
+[20:54:01]   Gauge, Oct-Dec: volume 0.000 M m3, largest flow 0.13 m3/s, 1 days above 0.13. Whole Oct-Mar volume ratio of the baseline: 0.843.
+
+[20:54:01]   draw      Ks      f   PsiB | W2 win | OctDec Mm3  days    max | flood vol   pk %  arr h | Oct-Mar
+[20:54:01]   base     0.2      1    0.5 |   0.76 |       2.50    24   14.2 |      1.03  -14.3  -1.49 |    0.84   (existing W4 baseline, reused)
+[20:54:01]     99  0.2524  1.165 0.5743 |   0.55 |       1.34    20    8.4 |      0.84  -31.5  -1.07 |    0.59
+[20:54:01]    130  0.2341  1.217  1.339 |   0.46 |       0.67    15    3.5 |      0.75  -40.4  -0.72 |    0.47
+[20:54:01]     85  0.2902  1.996 0.6105 |   0.56 |       1.03    19    6.0 |      0.85  -30.5  -1.02 |    0.58
+[20:54:01]      5  0.2023 0.7611  1.158 |   0.53 |       1.04    16    5.9 |      0.82  -33.5  -0.95 |    0.55
+
+[20:54:01]   4 of 4 runs scored; 0 failed; 0 not run yet.
+[20:54:01]   Oct-Dec flow, driest to wettest on W2: draw 130 (W2 0.46) 0.67 M m3; draw 5 (W2 0.53) 1.04 M m3; draw 99 (W2 0.55) 1.34 M m3; draw 85 (W2 0.56) 1.03 M m3
+[20:54:01]   The pair with the same W2 behavior (draw 85: Ks 0.2902, f 1.996, PsiB 0.6105; draw 5: Ks 0.2023, f 0.7611, PsiB 1.158): W2 whole-window volume 0.56 vs 0.53; W4 Oct-Dec flow 1.03 vs 1.04 M m3 (the larger is 1.01 times the smaller).
+[20:54:01]   Runs with less Oct-Dec flow than the baseline (2.50 M m3): 4 of 4 (draw 99, draw 130, draw 85, draw 5).
+
+[20:54:01]   Wrote w4_summary.csv (all score columns for every run, plus the W2 volume).

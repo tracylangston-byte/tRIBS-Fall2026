@@ -1,0 +1,479 @@
+[14:29:42] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[14:29:42] Notebook: Make_Sycamore_Model.ipynb
+[14:29:42] Design: read 13 runs from w2_candidates.csv, checked them against lhs_volume_list.csv, and froze the list in w2_list.csv
+[14:29:42] Plan: 13 runs from the Stage 3 Latin hypercube on W2 (1272 h): 13 to make, 0 already finished and skipped.
+[14:29:42] Reference run: existing W2_ks0p2_cv6_psib0p5_nocl (checksum file matches; md5 matches proxy_manifest.json; W2_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[14:29:42]   main     group: 10 runs; Ks 0.2023 to 0.2902, f 0.5116 to 1.996, PsiB 0.2667 to 1.339
+[14:29:42]   control  group: 3 runs; Ks 0.1588 to 0.2075, f 0.5471 to 1.416, PsiB 0.4317 to 1.443
+[14:29:42]   Time: each run is a notebook build (about 1 min) + tRIBS (about 10 min, up to 20 if the machine is slower), so 13 runs take roughly 2 h 22 min to 4 h 31 min.
+[14:29:42]     first runs: W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl      main: Ks 0.2023, f 0.7611, PsiB 1.158
+[14:29:42]     first runs: W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl      main: Ks 0.2782, f 1.564, PsiB 0.2766
+[14:29:42]     first runs: W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl     main: Ks 0.2313, f 0.5116, PsiB 0.3309
+[14:29:42]     first runs: W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl     control: Ks 0.2075, f 0.8215, PsiB 0.4317
+[14:29:42]     first runs: W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl      main: Ks 0.2808, f 1.932, PsiB 0.9683
+
+[14:30:11]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[14:30:11]   OK    file in lab/: score_run_sycamore.py
+[14:30:11]   OK    reference run W2_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[14:30:11]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[14:30:11]   OK    input: ../init_data/bedrock_depth_m.asc
+[14:30:11]   OK    input: ../init_data/scgrid.gdf
+[14:30:11]   OK    input: ../init_data/soils.sdt
+[14:30:11]   OK    input: ../init_data/met/Master_Met.sdf
+[14:30:11]   OK    input: ../init_data/LandUse.asc
+[14:30:11]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[14:30:11]   OK    free disk space: 4.0 GB (need 2)
+[14:30:11]   OK    no other tRIBS running
+[14:30:11]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 13 planned runs
+[14:30:11]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[14:30:11]   OK    reference .in (W2_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[14:30:11]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[14:30:11]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[14:30:11]   OK    disk: one W2 run's results are about 18 MB (the baseline's); 13 runs need about 0.2 GB; 4.0 GB free
+[14:30:11]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 13 runs could add up to 0.1 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[14:30:11] DRY RUN: nothing was built or run. All checks passed.
+[14:30:15] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[14:30:15] Notebook: Make_Sycamore_Model.ipynb
+[14:30:15] Design: read the frozen list from w2_list.csv (13 runs; it matches w2_candidates.csv)
+[14:30:15] Plan: 13 runs from the Stage 3 Latin hypercube on W2 (1272 h): 13 to make, 0 already finished and skipped.
+[14:30:15] Reference run: existing W2_ks0p2_cv6_psib0p5_nocl (checksum file matches; md5 matches proxy_manifest.json; W2_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[14:30:15]   main     group: 10 runs; Ks 0.2023 to 0.2902, f 0.5116 to 1.996, PsiB 0.2667 to 1.339
+[14:30:15]   control  group: 3 runs; Ks 0.1588 to 0.2075, f 0.5471 to 1.416, PsiB 0.4317 to 1.443
+[14:30:15]   Time: each run is a notebook build (about 1 min) + tRIBS (about 10 min, up to 20 if the machine is slower), so 13 runs take roughly 2 h 22 min to 4 h 31 min.
+[14:30:15]     first runs: W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl      main: Ks 0.2023, f 0.7611, PsiB 1.158
+[14:30:15]     first runs: W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl      main: Ks 0.2782, f 1.564, PsiB 0.2766
+[14:30:15]     first runs: W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl     main: Ks 0.2313, f 0.5116, PsiB 0.3309
+[14:30:15]     first runs: W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl     control: Ks 0.2075, f 0.8215, PsiB 0.4317
+[14:30:15]     first runs: W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl      main: Ks 0.2808, f 1.932, PsiB 0.9683
+
+[14:30:19]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[14:30:19]   OK    file in lab/: score_run_sycamore.py
+[14:30:19]   OK    reference run W2_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[14:30:19]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[14:30:19]   OK    input: ../init_data/bedrock_depth_m.asc
+[14:30:19]   OK    input: ../init_data/scgrid.gdf
+[14:30:19]   OK    input: ../init_data/soils.sdt
+[14:30:19]   OK    input: ../init_data/met/Master_Met.sdf
+[14:30:19]   OK    input: ../init_data/LandUse.asc
+[14:30:19]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[14:30:19]   OK    free disk space: 4.0 GB (need 2)
+[14:30:19]   OK    no other tRIBS running
+[14:30:19]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 13 planned runs
+[14:30:19]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[14:30:19]   OK    reference .in (W2_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[14:30:19]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[14:30:19]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[14:30:19]   OK    disk: one W2 run's results are about 18 MB (the baseline's); 13 runs need about 0.2 GB; 4.0 GB free
+[14:30:19]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 13 runs could add up to 0.1 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[14:30:20] W2_ks0p2_cv6_psib0p5_nocl: checksum file matches
+[14:30:20] W2_ks0p2_cv6_psib0p5_nocl: md5 matches proxy_manifest.json
+[14:30:20] W2_ks0p2_cv6_psib0p5_nocl: W2_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values
+[14:30:20] W2_ks0p2_cv6_psib0p5_nocl: baseline reused, not rerun. flood vol 1.03735, peak % -13.1208, arrival h -1.47863, Feb18 vol 1.86658, Feb27 vol 0.73086, tail1 0.20315, tail2 0.06705, W2 vol 0.75735
+[14:30:20] === draw 005  W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: main: Ks 0.2023, f 0.7611, PsiB 1.158 on W2 (1272 h from 01/18/2017/00/00) ===
+[14:31:40] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: build OK in 1.3 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[14:31:40] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: Ks x0.2023, PsiB x1.158, f x0.7611, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[14:31:40] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: --build-only, not running tRIBS
+
+[14:31:40] Batch time: 1 min
+[14:31:40] Run status counts: built 1, reused 1
+
+[14:31:40] STAGE 3 RUNS PROMOTED TO W2 (Jan 18 - Mar 12 2017). 13 runs from the Latin hypercube; everything else at the baseline.
+[14:31:40]   vol = model volume / gauge volume.  pk = flood-week peak error %.  arr = flood-week first-arrival error, h (negative = early).
+[14:31:40]   f18, f27 = volume ratio for the Feb 18-19 and Feb 27-28 storms.  bal = Feb 27-28 runoff ratio over Feb 18-19 (the gauge's is on the baseline line).
+[14:31:40]   t1, t2 = tail volume ratios (Jan 26-Feb 2 and Mar 3-11).  win = whole-window volume ratio.  met = how many of the 8 labeled targets are met.
+[14:31:40]   Proposed tolerances, used only to LABEL rows: volume 0.9-1.1, peak within 15%, arrival within 1 h, tails at least 0.7. Nothing is selected or dropped here.
+[14:31:40]   Baseline (Ks 0.2, f 1, PsiB 0.5): vol 1.04, pk -13.1, arr -1.48, f18 1.87, f27 0.73, bal 1.79 (gauge 4.57), t1 0.20, t2 0.07, win 0.76; 2 of 8 targets met
+
+[14:31:40]   draw  grp      Ks      f   PsiB |   vol   pk %  arr h |   f18   f27   bal |    t1    t2 |   win | met
+[14:31:40]      5 main  0.2023 0.7611  1.158 | (built)
+[14:31:40]     82 main  0.2782  1.564 0.2766 | (not run)
+[14:31:40]    146 main  0.2313 0.5116 0.3309 | (not run)
+[14:31:40]     89 cont  0.2075 0.8215 0.4317 | (not run)
+[14:31:40]     35 main  0.2808  1.932 0.9683 | (not run)
+[14:31:40]     99 main  0.2524  1.165 0.5743 | (not run)
+[14:31:40]     10 main  0.2583 0.9419 0.2667 | (not run)
+[14:31:40]     55 cont   0.181  1.416  1.405 | (not run)
+[14:31:40]    130 main  0.2341  1.217  1.339 | (not run)
+[14:31:40]    114 main  0.2376 0.7009 0.4737 | (not run)
+[14:31:40]     21 main  0.2145 0.5362 0.9151 | (not run)
+[14:31:40]     29 cont  0.1588 0.5471  1.443 | (not run)
+[14:31:40]     85 main  0.2902  1.996 0.6105 | (not run)
+
+[14:31:40]   0 of 13 runs scored; 0 failed; 12 not run yet.
+
+[14:31:40]   Wrote w2_summary.csv (all score columns for every run). The tables promote nothing: choosing anchors for W4 is the next step.
+[14:32:24] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[14:32:24] Notebook: Make_Sycamore_Model.ipynb
+[14:32:24] Design: read the frozen list from w2_list.csv (13 runs; it matches w2_candidates.csv)
+[14:32:24] Plan: 13 runs from the Stage 3 Latin hypercube on W2 (1272 h): 13 to make, 0 already finished and skipped.
+[14:32:24] Reference run: existing W2_ks0p2_cv6_psib0p5_nocl (checksum file matches; md5 matches proxy_manifest.json; W2_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[14:32:24]   main     group: 10 runs; Ks 0.2023 to 0.2902, f 0.5116 to 1.996, PsiB 0.2667 to 1.339
+[14:32:24]   control  group: 3 runs; Ks 0.1588 to 0.2075, f 0.5471 to 1.416, PsiB 0.4317 to 1.443
+[14:32:24]   Time: each run is a notebook build (about 1 min) + tRIBS (about 10 min, up to 20 if the machine is slower), so 13 runs take roughly 2 h 22 min to 4 h 31 min.
+[14:32:24]     first runs: W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl      main: Ks 0.2023, f 0.7611, PsiB 1.158
+[14:32:24]     first runs: W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl      main: Ks 0.2782, f 1.564, PsiB 0.2766
+[14:32:24]     first runs: W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl     main: Ks 0.2313, f 0.5116, PsiB 0.3309
+[14:32:24]     first runs: W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl     control: Ks 0.2075, f 0.8215, PsiB 0.4317
+[14:32:24]     first runs: W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl      main: Ks 0.2808, f 1.932, PsiB 0.9683
+
+[14:32:29]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[14:32:29]   OK    file in lab/: score_run_sycamore.py
+[14:32:29]   OK    reference run W2_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[14:32:29]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[14:32:29]   OK    input: ../init_data/bedrock_depth_m.asc
+[14:32:29]   OK    input: ../init_data/scgrid.gdf
+[14:32:29]   OK    input: ../init_data/soils.sdt
+[14:32:29]   OK    input: ../init_data/met/Master_Met.sdf
+[14:32:29]   OK    input: ../init_data/LandUse.asc
+[14:32:29]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[14:32:29]   OK    free disk space: 4.0 GB (need 2)
+[14:32:29]   OK    no other tRIBS running
+[14:32:29]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 13 planned runs
+[14:32:29]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[14:32:29]   OK    reference .in (W2_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[14:32:29]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[14:32:29]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[14:32:29]   OK    disk: one W2 run's results are about 18 MB (the baseline's); 13 runs need about 0.2 GB; 4.0 GB free
+[14:32:29]   OK    data/model/soil holds 6 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 13 runs could add up to 0.1 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[14:32:29] W2_ks0p2_cv6_psib0p5_nocl: baseline already checked and scored, skipping
+[14:32:29] === draw 005  W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: main: Ks 0.2023, f 0.7611, PsiB 1.158 on W2 (1272 h from 01/18/2017/00/00) ===
+[14:33:34] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: build OK in 1.1 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[14:33:34] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: Ks x0.2023, PsiB x1.158, f x0.7611, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[14:33:34] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[14:38:34] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 5.0 min so far; outlet file has 9316 rows of about 20352 (46%)
+[14:43:34] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS still running, 10.0 min so far; outlet file has 18803 rows of about 20352 (92%)
+[14:44:20] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: tRIBS finished in 10.8 min; outlet peak 148.6 m3/s over 20352 rows; files 18 MB; 3.9 GB free
+[14:44:20] W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl: flood vol 0.82655, peak % -32.71306, arrival h -0.95728, Feb18 vol 0.89596, Feb27 vol 0.38174, tail1 0.14954, tail2 0.0577, W2 vol 0.53128
+[14:44:20] --- 1 of 1 in this session done; average 11.9 min per run; about 0 min left ---
+
+[14:44:20] Batch time: 12 min
+[14:44:20] Run status counts: done 1, reused 1
+
+[14:44:20] STAGE 3 RUNS PROMOTED TO W2 (Jan 18 - Mar 12 2017). 13 runs from the Latin hypercube; everything else at the baseline.
+[14:44:20]   vol = model volume / gauge volume.  pk = flood-week peak error %.  arr = flood-week first-arrival error, h (negative = early).
+[14:44:20]   f18, f27 = volume ratio for the Feb 18-19 and Feb 27-28 storms.  bal = Feb 27-28 runoff ratio over Feb 18-19 (the gauge's is on the baseline line).
+[14:44:20]   t1, t2 = tail volume ratios (Jan 26-Feb 2 and Mar 3-11).  win = whole-window volume ratio.  met = how many of the 8 labeled targets are met.
+[14:44:20]   Proposed tolerances, used only to LABEL rows: volume 0.9-1.1, peak within 15%, arrival within 1 h, tails at least 0.7. Nothing is selected or dropped here.
+[14:44:20]   Baseline (Ks 0.2, f 1, PsiB 0.5): vol 1.04, pk -13.1, arr -1.48, f18 1.87, f27 0.73, bal 1.79 (gauge 4.57), t1 0.20, t2 0.07, win 0.76; 2 of 8 targets met
+
+[14:44:20]   draw  grp      Ks      f   PsiB |   vol   pk %  arr h |   f18   f27   bal |    t1    t2 |   win | met
+[14:44:20]      5 main  0.2023 0.7611  1.158 |  0.83  -32.7  -0.96 |  0.90  0.38  1.95 |  0.15  0.06 |  0.53 |   1
+[14:44:20]     82 main  0.2782  1.564 0.2766 | (not run)
+[14:44:20]    146 main  0.2313 0.5116 0.3309 | (not run)
+[14:44:20]     89 cont  0.2075 0.8215 0.4317 | (not run)
+[14:44:20]     35 main  0.2808  1.932 0.9683 | (not run)
+[14:44:20]     99 main  0.2524  1.165 0.5743 | (not run)
+[14:44:20]     10 main  0.2583 0.9419 0.2667 | (not run)
+[14:44:20]     55 cont   0.181  1.416  1.405 | (not run)
+[14:44:20]    130 main  0.2341  1.217  1.339 | (not run)
+[14:44:20]    114 main  0.2376 0.7009 0.4737 | (not run)
+[14:44:20]     21 main  0.2145 0.5362 0.9151 | (not run)
+[14:44:20]     29 cont  0.1588 0.5471  1.443 | (not run)
+[14:44:20]     85 main  0.2902  1.996 0.6105 | (not run)
+
+[14:44:20]   1 of 13 runs scored; 0 failed; 12 not run yet.
+[14:44:20]   main     group (1 runs): targets met per run 1 to 1, mean 1.0  (baseline 2)
+[14:44:20]   How many of the scored runs meet each target:
+[14:44:20]     flood vol     0 of 1   (baseline: yes)
+[14:44:20]     flood peak    0 of 1   (baseline: yes)
+[14:44:20]     flood arr     1 of 1   (baseline: no)
+[14:44:20]     Feb18 vol     0 of 1   (baseline: no)
+[14:44:20]     Feb27 vol     0 of 1   (baseline: no)
+[14:44:20]     tail 1        0 of 1   (baseline: no)
+[14:44:20]     tail 2        0 of 1   (baseline: no)
+[14:44:20]     window vol    0 of 1   (baseline: no)
+[14:44:20]   Both February storm volumes inside the band: 0 of 1 runs.
+[14:44:20]   Second January storm volume ratio, all scored runs: 0.04 to 0.04 (target 0.9 to 1.1; none of these three knobs was expected to fix it).
+[14:44:20]   Tail ratios, all scored runs: Jan 26-Feb 2 0.15 to 0.15; Mar 3-11 0.06 to 0.06 (target at least 0.7).
+
+[14:44:20]   Wrote w2_summary.csv (all score columns for every run). The tables promote nothing: choosing anchors for W4 is the next step.
+[14:55:21] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[14:55:21] Notebook: Make_Sycamore_Model.ipynb
+[14:55:21] Design: read the frozen list from w2_list.csv (13 runs; it matches w2_candidates.csv)
+[14:55:21] Plan: 13 runs from the Stage 3 Latin hypercube on W2 (1272 h): 12 to make, 1 already finished and skipped.
+[14:55:21] Reference run: existing W2_ks0p2_cv6_psib0p5_nocl (checksum file matches; md5 matches proxy_manifest.json; W2_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[14:55:21]   main     group: 10 runs; Ks 0.2023 to 0.2902, f 0.5116 to 1.996, PsiB 0.2667 to 1.339
+[14:55:21]   control  group: 3 runs; Ks 0.1588 to 0.2075, f 0.5471 to 1.416, PsiB 0.4317 to 1.443
+[14:55:21]   Time: each run is a notebook build (about 1 min) + tRIBS (about 10 min, up to 20 if the machine is slower), so 12 runs take roughly 2 h 11 min to 4 h 10 min.
+[14:55:21]     first runs: W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl      main: Ks 0.2023, f 0.7611, PsiB 1.158
+[14:55:21]     first runs: W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl      main: Ks 0.2782, f 1.564, PsiB 0.2766
+[14:55:21]     first runs: W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl     main: Ks 0.2313, f 0.5116, PsiB 0.3309
+[14:55:21]     first runs: W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl     control: Ks 0.2075, f 0.8215, PsiB 0.4317
+[14:55:21]     first runs: W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl      main: Ks 0.2808, f 1.932, PsiB 0.9683
+
+[14:55:27]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[14:55:27]   OK    file in lab/: score_run_sycamore.py
+[14:55:27]   OK    reference run W2_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[14:55:27]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[14:55:27]   OK    input: ../init_data/bedrock_depth_m.asc
+[14:55:27]   OK    input: ../init_data/scgrid.gdf
+[14:55:27]   OK    input: ../init_data/soils.sdt
+[14:55:27]   OK    input: ../init_data/met/Master_Met.sdf
+[14:55:27]   OK    input: ../init_data/LandUse.asc
+[14:55:27]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[14:55:27]   OK    free disk space: 3.9 GB (need 2)
+[14:55:27]   OK    no other tRIBS running
+[14:55:27]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 13 planned runs
+[14:55:27]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[14:55:27]   OK    reference .in (W2_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[14:55:27]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[14:55:27]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[14:55:27]   OK    disk: one W2 run's results are about 18 MB (the baseline's); 12 runs need about 0.2 GB; 3.9 GB free
+[14:55:27]   OK    data/model/soil holds 6 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 12 runs could add up to 0.1 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[14:55:27] W2_ks0p2_cv6_psib0p5_nocl: baseline already checked and scored, skipping
+[14:55:27] === draw 082  W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: main: Ks 0.2782, f 1.564, PsiB 0.2766 on W2 (1272 h from 01/18/2017/00/00) ===
+[14:56:31] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: build OK in 1.1 min; .in file matches the reference except the allowed lines; data/model/soil is 47 MB
+[14:56:31] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: Ks x0.2782, PsiB x0.2766, f x1.564, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[14:56:31] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[15:01:31] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: tRIBS still running, 5.0 min so far; outlet file has 8959 rows of about 20352 (44%)
+[15:06:31] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: tRIBS still running, 10.0 min so far; outlet file has 18111 rows of about 20352 (89%)
+[15:07:40] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: tRIBS finished in 11.2 min; outlet peak 165.7 m3/s over 20352 rows; files 18 MB; 3.9 GB free
+[15:07:41] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: flood vol 0.89861, peak % -24.99391, arrival h -1.22945, Feb18 vol 1.26078, Feb27 vol 0.56279, tail1 0.19735, tail2 0.05736, W2 vol 0.62393
+[15:07:41] W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl: --prune-soil removed 6 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[15:07:41] --- 1 of 12 in this session done; average 12.2 min per run; about 2 h 15 min left ---
+[15:07:41] === draw 146  W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: main: Ks 0.2313, f 0.5116, PsiB 0.3309 on W2 (1272 h from 01/18/2017/00/00) ===
+[15:08:45] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: build OK in 1.1 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[15:08:45] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: Ks x0.2313, PsiB x0.3309, f x0.5116, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[15:08:45] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[15:13:45] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: tRIBS still running, 5.0 min so far; outlet file has 8959 rows of about 20352 (44%)
+[15:18:45] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: tRIBS still running, 10.0 min so far; outlet file has 18110 rows of about 20352 (89%)
+[15:19:46] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: tRIBS finished in 11.0 min; outlet peak 162.5 m3/s over 20352 rows; files 18 MB; 3.9 GB free
+[15:19:46] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: flood vol 0.88411, peak % -26.41804, arrival h -1.25775, Feb18 vol 1.41316, Feb27 vol 0.58511, tail1 0.21027, tail2 0.06161, W2 vol 0.63157
+[15:19:46] W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[15:19:46] --- 2 of 12 in this session done; average 12.2 min per run; about 2 h 02 min left ---
+[15:19:46] === draw 089  W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: control: Ks 0.2075, f 0.8215, PsiB 0.4317 on W2 (1272 h from 01/18/2017/00/00) ===
+[15:20:49] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: build OK in 1.1 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[15:20:49] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: Ks x0.2075, PsiB x0.4317, f x0.8215, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[15:20:49] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[15:25:49] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: tRIBS still running, 5.0 min so far; outlet file has 8957 rows of about 20352 (44%)
+[15:30:49] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: tRIBS still running, 10.0 min so far; outlet file has 18104 rows of about 20352 (89%)
+[15:31:55] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: tRIBS finished in 11.1 min; outlet peak 184.6 m3/s over 20352 rows; files 18 MB; 3.9 GB free
+[15:31:55] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: flood vol 0.99897, peak % -16.41802, arrival h -1.43409, Feb18 vol 1.76971, Feb27 vol 0.69852, tail1 0.2092, tail2 0.06638, W2 vol 0.72784
+[15:31:55] W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[15:31:55] --- 3 of 12 in this session done; average 12.2 min per run; about 1 h 49 min left ---
+[15:31:55] === draw 035  W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: main: Ks 0.2808, f 1.932, PsiB 0.9683 on W2 (1272 h from 01/18/2017/00/00) ===
+[15:32:57] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[15:32:57] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: Ks x0.2808, PsiB x0.9683, f x1.932, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[15:32:57] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[15:37:57] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: tRIBS still running, 5.0 min so far; outlet file has 8960 rows of about 20352 (44%)
+[15:42:57] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: tRIBS still running, 10.0 min so far; outlet file has 18466 rows of about 20352 (91%)
+[15:43:52] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: tRIBS finished in 10.9 min; outlet peak 143.4 m3/s over 20352 rows; files 18 MB; 3.9 GB free
+[15:43:53] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: flood vol 0.80629, peak % -35.08739, arrival h -0.85048, Feb18 vol 0.71291, Feb27 vol 0.35039, tail1 0.10698, tail2 0.07495, W2 vol 0.50444
+[15:43:53] W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[15:43:53] --- 4 of 12 in this session done; average 12.1 min per run; about 1 h 37 min left ---
+[15:43:53] === draw 099  W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: main: Ks 0.2524, f 1.165, PsiB 0.5743 on W2 (1272 h from 01/18/2017/00/00) ===
+[15:44:55] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[15:44:55] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: Ks x0.2524, PsiB x0.5743, f x1.165, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[15:44:55] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[15:49:55] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 5.0 min so far; outlet file has 8959 rows of about 20352 (44%)
+[15:54:55] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS still running, 10.0 min so far; outlet file has 18458 rows of about 20352 (91%)
+[15:55:51] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: tRIBS finished in 10.9 min; outlet peak 153.0 m3/s over 20352 rows; files 18 MB; 3.8 GB free
+[15:55:52] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: flood vol 0.84138, peak % -30.72014, arrival h -1.06698, Feb18 vol 0.95887, Feb27 vol 0.44335, tail1 0.16596, tail2 0.05949, W2 vol 0.55471
+[15:55:52] W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[15:55:52] --- 5 of 12 in this session done; average 12.1 min per run; about 1 h 25 min left ---
+[15:55:52] === draw 010  W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: main: Ks 0.2583, f 0.9419, PsiB 0.2667 on W2 (1272 h from 01/18/2017/00/00) ===
+[15:56:56] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: build OK in 1.1 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[15:56:56] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: Ks x0.2583, PsiB x0.2667, f x0.9419, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[15:56:56] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[16:01:56] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: tRIBS still running, 5.0 min so far; outlet file has 8603 rows of about 20352 (42%)
+[16:06:56] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: tRIBS still running, 10.0 min so far; outlet file has 17770 rows of about 20352 (87%)
+[16:08:13] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: tRIBS finished in 11.3 min; outlet peak 160.3 m3/s over 20352 rows; files 18 MB; 3.8 GB free
+[16:08:14] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: flood vol 0.86927, peak % -27.43461, arrival h -1.21833, Feb18 vol 1.30373, Feb27 vol 0.56302, tail1 0.20388, tail2 0.06009, W2 vol 0.61404
+[16:08:14] W2_ks0p2583_cv6_psib0p2667_f0p9419_d010_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[16:08:14] --- 6 of 12 in this session done; average 12.1 min per run; about 1 h 13 min left ---
+[16:08:14] === draw 055  W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: control: Ks 0.181, f 1.416, PsiB 1.405 on W2 (1272 h from 01/18/2017/00/00) ===
+[16:09:14] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[16:09:14] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: Ks x0.181, PsiB x1.405, f x1.416, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[16:09:14] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[16:14:14] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: tRIBS still running, 5.0 min so far; outlet file has 8957 rows of about 20352 (44%)
+[16:19:14] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: tRIBS still running, 10.0 min so far; outlet file has 17767 rows of about 20352 (87%)
+[16:20:24] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: tRIBS finished in 11.2 min; outlet peak 180.2 m3/s over 20352 rows; files 18 MB; 3.8 GB free
+[16:20:25] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: flood vol 0.99072, peak % -18.40745, arrival h -1.20308, Feb18 vol 1.41838, Feb27 vol 0.55272, tail1 0.17752, tail2 0.06971, W2 vol 0.67224
+[16:20:25] W2_ks0p181_cv6_psib1p405_f1p416_d055_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[16:20:25] --- 7 of 12 in this session done; average 12.1 min per run; about 1 h 01 min left ---
+[16:20:25] === draw 130  W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: main: Ks 0.2341, f 1.217, PsiB 1.339 on W2 (1272 h from 01/18/2017/00/00) ===
+[16:21:28] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[16:21:28] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: Ks x0.2341, PsiB x1.339, f x1.217, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[16:21:28] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[16:26:28] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 5.0 min so far; outlet file has 8605 rows of about 20352 (42%)
+[16:31:28] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS still running, 10.0 min so far; outlet file has 17786 rows of about 20352 (87%)
+[16:32:40] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: tRIBS finished in 11.2 min; outlet peak 133.1 m3/s over 20352 rows; files 18 MB; 3.8 GB free
+[16:32:41] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: flood vol 0.75771, peak % -39.73421, arrival h -0.73256, Feb18 vol 0.60595, Feb27 vol 0.28904, tail1 0.11896, tail2 0.06998, W2 vol 0.4641
+[16:32:41] W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[16:32:41] --- 8 of 12 in this session done; average 12.2 min per run; about 49 min left ---
+[16:32:41] === draw 114  W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: main: Ks 0.2376, f 0.7009, PsiB 0.4737 on W2 (1272 h from 01/18/2017/00/00) ===
+[16:33:42] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[16:33:42] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: Ks x0.2376, PsiB x0.4737, f x0.7009, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[16:33:42] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[16:38:42] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: tRIBS still running, 5.0 min so far; outlet file has 8247 rows of about 20352 (41%)
+[16:43:42] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: tRIBS still running, 10.0 min so far; outlet file has 16750 rows of about 20352 (82%)
+[16:45:31] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: tRIBS finished in 11.8 min; outlet peak 154.0 m3/s over 20352 rows; files 18 MB; 3.8 GB free
+[16:45:32] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: flood vol 0.84329, peak % -30.28858, arrival h -1.12916, Feb18 vol 1.09524, Feb27 vol 0.48637, tail1 0.19789, tail2 0.05786, W2 vol 0.5747
+[16:45:32] W2_ks0p2376_cv6_psib0p4737_f0p7009_d114_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[16:45:32] --- 9 of 12 in this session done; average 12.2 min per run; about 37 min left ---
+[16:45:32] === draw 021  W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: main: Ks 0.2145, f 0.5362, PsiB 0.9151 on W2 (1272 h from 01/18/2017/00/00) ===
+[16:46:33] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[16:46:33] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: Ks x0.2145, PsiB x0.9151, f x0.5362, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[16:46:33] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[16:51:33] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: tRIBS still running, 5.0 min so far; outlet file has 8961 rows of about 20352 (44%)
+[16:56:33] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: tRIBS still running, 10.0 min so far; outlet file has 18121 rows of about 20352 (89%)
+[16:57:36] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: tRIBS finished in 11.0 min; outlet peak 140.9 m3/s over 20352 rows; files 18 MB; 3.7 GB free
+[16:57:36] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: flood vol 0.77558, peak % -36.22461, arrival h -0.93323, Feb18 vol 0.81121, Feb27 vol 0.35984, tail1 0.16143, tail2 0.05567, W2 vol 0.49883
+[16:57:36] W2_ks0p2145_cv6_psib0p9151_f0p5362_d021_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[16:57:36] --- 10 of 12 in this session done; average 12.2 min per run; about 24 min left ---
+[16:57:36] === draw 029  W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: control: Ks 0.1588, f 0.5471, PsiB 1.443 on W2 (1272 h from 01/18/2017/00/00) ===
+[16:58:38] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[16:58:38] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: Ks x0.1588, PsiB x1.443, f x0.5471, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[16:58:38] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[17:03:38] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: tRIBS still running, 5.0 min so far; outlet file has 8958 rows of about 20352 (44%)
+[17:08:38] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: tRIBS still running, 10.0 min so far; outlet file has 18452 rows of about 20352 (91%)
+[17:09:29] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: tRIBS finished in 10.8 min; outlet peak 169.3 m3/s over 20352 rows; files 18 MB; 3.7 GB free
+[17:09:29] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: flood vol 0.93513, peak % -23.3391, arrival h -1.14625, Feb18 vol 1.35735, Feb27 vol 0.50951, tail1 0.20021, tail2 0.05935, W2 vol 0.63521
+[17:09:29] W2_ks0p1588_cv6_psib1p443_f0p5471_d029_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[17:09:29] --- 11 of 12 in this session done; average 12.2 min per run; about 12 min left ---
+[17:09:29] === draw 085  W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: main: Ks 0.2902, f 1.996, PsiB 0.6105 on W2 (1272 h from 01/18/2017/00/00) ===
+[17:10:31] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[17:10:31] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: Ks x0.2902, PsiB x0.6105, f x1.996, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.82 x bedrock (mm)
+[17:10:31] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: starting tRIBS (1272 model hours, expect about 10 to 20 min)
+[17:15:31] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS still running, 5.0 min so far; outlet file has 8247 rows of about 20352 (41%)
+[17:20:31] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS still running, 10.0 min so far; outlet file has 16411 rows of about 20352 (81%)
+[17:22:39] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: tRIBS finished in 12.1 min; outlet peak 154.8 m3/s over 20352 rows; files 18 MB; 3.7 GB free
+[17:22:40] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: flood vol 0.85528, peak % -29.91506, arrival h -1.02413, Feb18 vol 0.91078, Feb27 vol 0.43147, tail1 0.13003, tail2 0.06782, W2 vol 0.55545
+[17:22:40] W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[17:22:40] --- 12 of 12 in this session done; average 12.3 min per run; about 0 min left ---
+
+[17:22:40] Batch time: 2 h 27 min
+[17:22:40] Run status counts: done 13, reused 1
+
+[17:22:40] STAGE 3 RUNS PROMOTED TO W2 (Jan 18 - Mar 12 2017). 13 runs from the Latin hypercube; everything else at the baseline.
+[17:22:40]   vol = model volume / gauge volume.  pk = flood-week peak error %.  arr = flood-week first-arrival error, h (negative = early).
+[17:22:40]   f18, f27 = volume ratio for the Feb 18-19 and Feb 27-28 storms.  bal = Feb 27-28 runoff ratio over Feb 18-19 (the gauge's is on the baseline line).
+[17:22:40]   t1, t2 = tail volume ratios (Jan 26-Feb 2 and Mar 3-11).  win = whole-window volume ratio.  met = how many of the 8 labeled targets are met.
+[17:22:40]   Proposed tolerances, used only to LABEL rows: volume 0.9-1.1, peak within 15%, arrival within 1 h, tails at least 0.7. Nothing is selected or dropped here.
+[17:22:40]   Baseline (Ks 0.2, f 1, PsiB 0.5): vol 1.04, pk -13.1, arr -1.48, f18 1.87, f27 0.73, bal 1.79 (gauge 4.57), t1 0.20, t2 0.07, win 0.76; 2 of 8 targets met
+
+[17:22:40]   draw  grp      Ks      f   PsiB |   vol   pk %  arr h |   f18   f27   bal |    t1    t2 |   win | met
+[17:22:40]      5 main  0.2023 0.7611  1.158 |  0.83  -32.7  -0.96 |  0.90  0.38  1.95 |  0.15  0.06 |  0.53 |   1
+[17:22:40]     82 main  0.2782  1.564 0.2766 |  0.90  -25.0  -1.23 |  1.26  0.56  2.04 |  0.20  0.06 |  0.62 |   0
+[17:22:40]    146 main  0.2313 0.5116 0.3309 |  0.88  -26.4  -1.26 |  1.41  0.59  1.89 |  0.21  0.06 |  0.63 |   0
+[17:22:40]     89 cont  0.2075 0.8215 0.4317 |  1.00  -16.4  -1.43 |  1.77  0.70  1.80 |  0.21  0.07 |  0.73 |   1
+[17:22:40]     35 main  0.2808  1.932 0.9683 |  0.81  -35.1  -0.85 |  0.71  0.35  2.25 |  0.11  0.07 |  0.50 |   1
+[17:22:40]     99 main  0.2524  1.165 0.5743 |  0.84  -30.7  -1.07 |  0.96  0.44  2.11 |  0.17  0.06 |  0.55 |   1
+[17:22:40]     10 main  0.2583 0.9419 0.2667 |  0.87  -27.4  -1.22 |  1.30  0.56  1.97 |  0.20  0.06 |  0.61 |   0
+[17:22:40]     55 cont   0.181  1.416  1.405 |  0.99  -18.4  -1.20 |  1.42  0.55  1.78 |  0.18  0.07 |  0.67 |   1
+[17:22:40]    130 main  0.2341  1.217  1.339 |  0.76  -39.7  -0.73 |  0.61  0.29  2.18 |  0.12  0.07 |  0.46 |   1
+[17:22:40]    114 main  0.2376 0.7009 0.4737 |  0.84  -30.3  -1.13 |  1.10  0.49  2.03 |  0.20  0.06 |  0.57 |   1
+[17:22:40]     21 main  0.2145 0.5362 0.9151 |  0.78  -36.2  -0.93 |  0.81  0.36  2.03 |  0.16  0.06 |  0.50 |   1
+[17:22:40]     29 cont  0.1588 0.5471  1.443 |  0.94  -23.3  -1.15 |  1.36  0.51  1.72 |  0.20  0.06 |  0.64 |   1
+[17:22:40]     85 main  0.2902  1.996 0.6105 |  0.86  -29.9  -1.02 |  0.91  0.43  2.17 |  0.13  0.07 |  0.56 |   1
+
+[17:22:40]   13 of 13 runs scored; 0 failed; 0 not run yet.
+[17:22:40]   main     group (10 runs): targets met per run 0 to 1, mean 0.7  (baseline 2)
+[17:22:40]   control  group (3 runs): targets met per run 1 to 1, mean 1.0
+[17:22:40]   How many of the scored runs meet each target:
+[17:22:40]     flood vol     3 of 13   (baseline: yes)
+[17:22:40]     flood peak    0 of 13   (baseline: yes)
+[17:22:40]     flood arr     4 of 13   (baseline: no)
+[17:22:40]     Feb18 vol     3 of 13   (baseline: no)
+[17:22:40]     Feb27 vol     0 of 13   (baseline: no)
+[17:22:40]     tail 1        0 of 13   (baseline: no)
+[17:22:40]     tail 2        0 of 13   (baseline: no)
+[17:22:40]     window vol    0 of 13   (baseline: no)
+[17:22:40]   Both February storm volumes inside the band: 0 of 13 runs.
+[17:22:40]   Second January storm volume ratio, all scored runs: 0.04 to 0.04 (target 0.9 to 1.1; none of these three knobs was expected to fix it).
+[17:22:40]   Tail ratios, all scored runs: Jan 26-Feb 2 0.11 to 0.21; Mar 3-11 0.06 to 0.07 (target at least 0.7).
+
+[17:22:40]   Wrote w2_summary.csv (all score columns for every run). The tables promote nothing: choosing anchors for W4 is the next step.
+[18:13:50] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[18:13:50] Notebook: Make_Sycamore_Model.ipynb
+[18:13:50] Design: read the frozen list from w2_list.csv (13 runs; it matches w2_candidates.csv)
+[18:13:50] Plan: 13 runs from the Stage 3 Latin hypercube on W2 (1272 h): 0 to make, 13 already finished and skipped.
+[18:13:50] Reference run: existing W2_ks0p2_cv6_psib0p5_nocl (checksum file matches; md5 matches proxy_manifest.json; W2_ks0p2_cv6_psib0p5_nocl.in has the baseline routing values)
+[18:13:50]   main     group: 10 runs; Ks 0.2023 to 0.2902, f 0.5116 to 1.996, PsiB 0.2667 to 1.339
+[18:13:50]   control  group: 3 runs; Ks 0.1588 to 0.2075, f 0.5471 to 1.416, PsiB 0.4317 to 1.443
+[18:13:50]   Time: each run is a notebook build (about 1 min) + tRIBS (about 10 min, up to 20 if the machine is slower), so 0 runs take roughly 0 min to 0 min.
+[18:13:50]     first runs: W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl      main: Ks 0.2023, f 0.7611, PsiB 1.158
+[18:13:50]     first runs: W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl      main: Ks 0.2782, f 1.564, PsiB 0.2766
+[18:13:50]     first runs: W2_ks0p2313_cv6_psib0p3309_f0p5116_d146_nocl     main: Ks 0.2313, f 0.5116, PsiB 0.3309
+[18:13:50]     first runs: W2_ks0p2075_cv6_psib0p4317_f0p8215_d089_nocl     control: Ks 0.2075, f 0.8215, PsiB 0.4317
+[18:13:50]     first runs: W2_ks0p2808_cv6_psib0p9683_f1p932_d035_nocl      main: Ks 0.2808, f 1.932, PsiB 0.9683
+
+[18:14:20]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[18:14:20]   OK    file in lab/: score_run_sycamore.py
+[18:14:20]   OK    reference run W2_ks0p2_cv6_psib0p5_nocl passes its checks (reused, not rerun)
+[18:14:20]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[18:14:20]   OK    input: ../init_data/bedrock_depth_m.asc
+[18:14:20]   OK    input: ../init_data/scgrid.gdf
+[18:14:20]   OK    input: ../init_data/soils.sdt
+[18:14:20]   OK    input: ../init_data/met/Master_Met.sdf
+[18:14:20]   OK    input: ../init_data/LandUse.asc
+[18:14:20]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[18:14:20]   OK    free disk space: 3.7 GB (need 2)
+[18:14:20]   OK    no other tRIBS running
+[18:14:20]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 13 planned runs
+[18:14:20]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[18:14:20]   OK    reference .in (W2_ks0p2_cv6_psib0p5_nocl.in) has the keywords the comparison needs
+[18:14:20]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[18:14:20]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[18:14:20]   OK    disk: one W2 run's results are about 18 MB (the baseline's); 0 runs need about 0.0 GB; 3.7 GB free
+[18:14:20]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 0 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[18:14:20] W2_ks0p2_cv6_psib0p5_nocl: baseline already checked and scored, skipping
+[18:14:20] Nothing left to run: every draw is already done.
+
+[18:14:20] Batch time: 0 min
+[18:14:20] Run status counts: done 13, reused 1
+
+[18:14:20] STAGE 3 RUNS PROMOTED TO W2 (Jan 18 - Mar 12 2017). 13 runs from the Latin hypercube; everything else at the baseline.
+[18:14:20]   vol = model volume / gauge volume.  pk = flood-week peak error %.  arr = flood-week first-arrival error, h (negative = early).
+[18:14:20]   f18, f27 = volume ratio for the Feb 18-19 and Feb 27-28 storms.  bal = Feb 27-28 runoff ratio over Feb 18-19 (the gauge's is on the baseline line).
+[18:14:20]   t1, t2 = tail volume ratios (Jan 26-Feb 2 and Mar 3-11).  win = whole-window volume ratio.  met = how many of the 8 labeled targets are met.
+[18:14:20]   Proposed tolerances, used only to LABEL rows: volume 0.9-1.1, peak within 15%, arrival within 1 h, tails at least 0.7. Nothing is selected or dropped here.
+[18:14:20]   Baseline (Ks 0.2, f 1, PsiB 0.5): vol 1.04, pk -13.1, arr -1.48, f18 1.87, f27 0.73, bal 1.79 (gauge 4.57), t1 0.20, t2 0.07, win 0.76; 2 of 8 targets met
+
+[18:14:20]   draw  grp      Ks      f   PsiB |   vol   pk %  arr h |   f18   f27   bal |    t1    t2 |   win | met
+[18:14:20]      5 main  0.2023 0.7611  1.158 |  0.83  -32.7  -0.96 |  0.90  0.38  1.95 |  0.15  0.06 |  0.53 |   1
+[18:14:20]     82 main  0.2782  1.564 0.2766 |  0.90  -25.0  -1.23 |  1.26  0.56  2.04 |  0.20  0.06 |  0.62 |   0
+[18:14:20]    146 main  0.2313 0.5116 0.3309 |  0.88  -26.4  -1.26 |  1.41  0.59  1.89 |  0.21  0.06 |  0.63 |   0
+[18:14:20]     89 cont  0.2075 0.8215 0.4317 |  1.00  -16.4  -1.43 |  1.77  0.70  1.80 |  0.21  0.07 |  0.73 |   1
+[18:14:20]     35 main  0.2808  1.932 0.9683 |  0.81  -35.1  -0.85 |  0.71  0.35  2.25 |  0.11  0.07 |  0.50 |   1
+[18:14:20]     99 main  0.2524  1.165 0.5743 |  0.84  -30.7  -1.07 |  0.96  0.44  2.11 |  0.17  0.06 |  0.55 |   1
+[18:14:20]     10 main  0.2583 0.9419 0.2667 |  0.87  -27.4  -1.22 |  1.30  0.56  1.97 |  0.20  0.06 |  0.61 |   0
+[18:14:20]     55 cont   0.181  1.416  1.405 |  0.99  -18.4  -1.20 |  1.42  0.55  1.78 |  0.18  0.07 |  0.67 |   1
+[18:14:20]    130 main  0.2341  1.217  1.339 |  0.76  -39.7  -0.73 |  0.61  0.29  2.18 |  0.12  0.07 |  0.46 |   1
+[18:14:20]    114 main  0.2376 0.7009 0.4737 |  0.84  -30.3  -1.13 |  1.10  0.49  2.03 |  0.20  0.06 |  0.57 |   1
+[18:14:20]     21 main  0.2145 0.5362 0.9151 |  0.78  -36.2  -0.93 |  0.81  0.36  2.03 |  0.16  0.06 |  0.50 |   1
+[18:14:20]     29 cont  0.1588 0.5471  1.443 |  0.94  -23.3  -1.15 |  1.36  0.51  1.72 |  0.20  0.06 |  0.64 |   1
+[18:14:20]     85 main  0.2902  1.996 0.6105 |  0.86  -29.9  -1.02 |  0.91  0.43  2.17 |  0.13  0.07 |  0.56 |   1
+
+[18:14:20]   13 of 13 runs scored; 0 failed; 0 not run yet.
+[18:14:20]   main     group (10 runs): targets met per run 0 to 1, mean 0.7  (baseline 2)
+[18:14:20]   control  group (3 runs): targets met per run 1 to 1, mean 1.0
+[18:14:20]   How many of the scored runs meet each target:
+[18:14:20]     flood vol     3 of 13   (baseline: yes)
+[18:14:20]     flood peak    0 of 13   (baseline: yes)
+[18:14:20]     flood arr     4 of 13   (baseline: no)
+[18:14:20]     Feb18 vol     3 of 13   (baseline: no)
+[18:14:20]     Feb27 vol     0 of 13   (baseline: no)
+[18:14:20]     tail 1        0 of 13   (baseline: no)
+[18:14:20]     tail 2        0 of 13   (baseline: no)
+[18:14:20]     window vol    0 of 13   (baseline: no)
+[18:14:20]   Both February storm volumes inside the band: 0 of 13 runs.
+[18:14:20]   Second January storm volume ratio, all scored runs: 0.04 to 0.04 (target 0.9 to 1.1; none of these three knobs was expected to fix it).
+[18:14:20]   Tail ratios, all scored runs: Jan 26-Feb 2 0.11 to 0.21; Mar 3-11 0.06 to 0.07 (target at least 0.7).
+
+[18:14:20]   Wrote w2_summary.csv (all score columns for every run). The tables promote nothing: choosing anchors for W4 is the next step.

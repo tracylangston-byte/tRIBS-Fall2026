@@ -1,0 +1,818 @@
+/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+pytRIBS version: 1.0.0
+Run choice: jan_to_mar | start 01/18/2017/00/00 | 1272 hours
+OK       DEM                    ../init_data/Sycamore_DEM.tif
+OK       Land cover map         ../init_data/LandUse.asc
+OK       Land cover table       ../init_data/land_use_params.ldt
+OK       Weather station list   ../init_data/met/Master_Met.sdf
+OK       Radar folder           /home/vscode/mrms_wk_wy2017/rain
+OK       Radar first file       /home/vscode/mrms_wk_wy2017/rain/radar_1001201601.asc
+OK       Radar last file        /home/vscode/mrms_wk_wy2017/rain/radar_1001201700.asc
+{'model': 'data/model',
+ 'preprocessing': 'data/preprocessing',
+ 'results': 'results',
+ 'spinup': 'results/spinup',
+ 'restart': 'restart',
+ 'soil': 'data/model/soil',
+ 'land': 'data/model/land',
+ 'met_precip': 'data/model/met/precip',
+ 'met_meteor': 'data/model/met/meteor',
+ 'mesh': 'data/model/mesh'}
+{'Name': 'Sycamore', 'Scenario': None, 'EPSG': 26912}
+Could not create output settings.json file. WBT is likely installed somewhere without write permission.
+Boundary had 3 pieces (km2): [424.6151, 0.0001, 0.0001]
+Pieces now: 1 | area (km2): 424.6151
+Plotting with elevation limits: 626.7 m to 1830.2 m
+<Figure size 1000x800 with 2 Axes>
+CRS: EPSG:26912
+watershed area (km2): 424.6151
+stream segments: 119 | total length (km): 259.6
+threshold 0.5: about 32914 candidate points
+threshold 0.7: about 18850 candidate points
+threshold 0.9: about 12216 candidate points  <- MESH_THRESHOLD
+Mesh files found. Skipping the build and reusing: data/model/mesh/Sycamore_mesh
+  Read mesh 'data/model/mesh/Sycamore_mesh': 15792 nodes, 30317 triangles, 92216 directed edges.
+Nodes by code: {'interior': 11877, 'boundary': 1264, 'outlet': 1, 'stream': 2650} | total: 15792
+Triangles: 30317 | median area 7800 m2 | 95th percentile 49028 m2 | largest 296280 m2
+Triangles under 500 m2: 995 (3.3%) | smallest 25.5 m2
+<Figure size 800x800 with 1 Axes>
+<Figure size 800x1000 with 2 Axes>
+Download box (EPSG 26912): [441494.3524340587, 3720135.18523321, 470774.3524340587, 3768105.18523321]
+Downloading SOLUS data via COG windowed reads and reprojecting...
+SOLUS download complete.
+Bedrock file already exists, not downloaded again: ../init_data/bedrock_depth_m.asc
+Bedrock file: ../init_data/bedrock_depth_m.asc
+Added 1 m to every bedrock cell that has data.
+Bedrock file in use: ../init_data/bedrock_depth_plus1m.asc
+--- Texture and bulk density rasters ---
+sandtotal_0-5cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 80.0, no data: 0.4%, cells equal to 0: 24.9%
+sandtotal_5-15cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 82.0, no data: 0.4%, cells equal to 0: 24.9%
+sandtotal_15-30cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 84.0, no data: 0.4%, cells equal to 0: 24.9%
+silttotal_0-5cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 59.0, no data: 0.4%, cells equal to 0: 24.9%
+silttotal_5-15cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 58.0, no data: 0.4%, cells equal to 0: 24.9%
+silttotal_15-30cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 42.0, no data: 0.4%, cells equal to 0: 24.9%
+claytotal_0-5cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 30.0, no data: 0.4%, cells equal to 0: 24.9%
+claytotal_5-15cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 29.0, no data: 0.4%, cells equal to 0: 24.9%
+claytotal_15-30cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 43.0, no data: 0.4%, cells equal to 0: 24.9%
+dbovendry_0-5cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 166.0, no data: 0.4%, cells equal to 0: 24.9%
+dbovendry_5-15cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 168.0, no data: 0.4%, cells equal to 0: 24.9%
+dbovendry_15-30cm_mean.tif: 569 rows x 444 cols, cell 100 x 100 m, min 0.0, max 180.0, no data: 0.4%, cells equal to 0: 24.9%
+
+--- Depth to bedrock (m) ---
+569 rows x 444 cols, cell 100 x 100 m, nodata value: 255.0
+cells with no data: 0.4%
+min 1.00 m, median 1.54 m, max 3.01 m
+cells at exactly 0 m: 0.0%
+--- Inside the basin outline only ---
+cells inside basin: 42449
+  flagged no-data by SOLUS: 0.0%
+  non-soil (sand + silt + clay = 0, e.g. rock outcrop or water): 0.0%
+  other cells where sand + silt + clay is not near 100: 0.0%
+bedrock depth inside basin: no data 0.0%, exactly 0 m 0.0%, min 1.12 m, median 1.60 m, max 2.73 m
+<Figure size 1100x600 with 4 Axes>
+All soil workflow outputs already exist; skipped. Set REBUILD_SOIL = True to run it again.
+Soil settings now:
+  optsoiltype : 1
+  scgrid      : ../init_data/scgrid.gdf
+  soil table  : ../init_data/soils.sdt
+  soil map    : ../init_data/solus/soil_classes.soi
+
+Grids and maps in the SOLUS folder:
+   Ks_0-5cm.asc
+   Ks_15-30cm.asc
+   Ks_5-15cm.asc
+   f.asc
+   m_0-5cm.asc
+   nonsoil_mask.asc
+   psib_0-5cm.asc
+   soil_classes.soi
+   theta_r_0-5cm.asc
+   theta_s_0-5cm.asc
+
+scgrid.gdf says:
+Variable,BasePath,FileExtension
+KS,../init_data/solus/Ks_0-5cm,asc
+TR,../init_data/solus/theta_r_0-5cm,asc
+TS,../init_data/solus/theta_s_0-5cm,asc
+PB,../init_data/solus/psib_0-5cm,asc
+PI,../init_data/solus/m_0-5cm,asc
+FD,../init_data/solus/f,asc
+PO,../init_data/solus/theta_s_0-5cm,asc
+
+Soil texture classes inside the basin:
+  class 2 (sandy_loam): 96.3% of basin cells
+  class 3 (loam): 0.1% of basin cells
+  class 5 (sandy_clay_loam): 3.5% of basin cells
+
+Inside the basin:
+  Ks_0-5cm       min       4.83   median      11.53   max      27.48
+  Ks_5-15cm      min       4.23   median      10.15   max      24.47
+  Ks_15-30cm     min       3.97   median       9.18   max      24.78
+  theta_s_0-5cm  min       0.36   median       0.39   max       0.42
+  theta_r_0-5cm  min       0.07   median       0.08   max       0.09
+  m_0-5cm        min       0.35   median       0.42   max       0.51
+  psib_0-5cm     min     -119.8   median     -93.74   max     -76.45
+  f              min     0.0001   median    0.00302   max     0.0143
+<Figure size 1200x600 with 4 Axes>
+Soil texture reference written to ../init_data/soils_textures.csv. This file is for user reference only and is not read by tRIBS.
+ID,Ks_mm/hr,ThetaS_m3/m3,ThetaR_m3/m3,m_[],PsiB_mm,f_1/mm,As_[],Au_[],n_m3/m3,ks_J/msK,Cs_J/m3K
+1,9999.99,9999.99,9999.99,9999.99,9999.99,9999.99,1,1,9999.99,0.7,1400000.0
+2,9999.99,9999.99,9999.99,9999.99,9999.99,9999.99,1,1,9999.99,0.7,1400000.0
+3,9999.99,9999.99,9999.99,9999.99,9999.99,9999.99,1,1,9999.99,0.7,1400000.0
+4,9999.99,9999.99,9999.99,9999.99,9999.99,9999.99,1,1,9999.99,0.7,1400000.0
+5,9999.99,9999.99,9999.99,9999.99,9999.99,9999.99,1,1,9999.99,0.7,1400000.0
+6,9999.99,9999.99,9999.99,9999.99,9999.99,9999.99,1,1,9999.99,0.7,1400000.0
+
+Initial groundwater depth raster written to: ../init_data/InitGW_82pct_plus1m_mm.asc
+Made from bedrock file: ../init_data/bedrock_depth_plus1m.asc
+Initial water table depth (mm): min 918, median 1312, max 2239
+f (1/mm): 10th percentile 0.00019, median 0.00302, 90th percentile 0.00684
+cells where f sits at the 0.0001 floor: 9.3%
+Files now in data/model/soil
+   InitGW_100pct_plus1m_mm.asc
+   InitGW_70pct_plus1m_mm.asc
+   InitGW_82pct_plus0.5m_mm.asc
+   InitGW_82pct_plus1m_mm.asc
+   InitGW_82pct_plus2m_mm.asc
+   InitGW_95pct_mm.asc
+   InitGW_95pct_plus0.5m_mm.asc
+   InitGW_95pct_plus0m_mm.asc
+   InitGW_95pct_plus1m_mm.asc
+   InitGW_95pct_plus2m_mm.asc
+   Ks_0-5cm.asc
+   Ks_0-5cm_x0.1.prj
+   Ks_0-5cm_x0.12.prj
+   Ks_0-5cm_x0.14.prj
+   Ks_0-5cm_x0.1504.prj
+   Ks_0-5cm_x0.151.prj
+   Ks_0-5cm_x0.1516.prj
+   Ks_0-5cm_x0.1524.prj
+   Ks_0-5cm_x0.1532.prj
+   Ks_0-5cm_x0.1536.prj
+   Ks_0-5cm_x0.1548.prj
+   Ks_0-5cm_x0.1553.prj
+   Ks_0-5cm_x0.1559.prj
+   Ks_0-5cm_x0.157.prj
+   Ks_0-5cm_x0.1577.prj
+   Ks_0-5cm_x0.1583.prj
+   Ks_0-5cm_x0.1588.prj
+   Ks_0-5cm_x0.1595.prj
+   Ks_0-5cm_x0.1603.prj
+   Ks_0-5cm_x0.1611.prj
+   Ks_0-5cm_x0.162.prj
+   Ks_0-5cm_x0.1625.prj
+   Ks_0-5cm_x0.1634.prj
+   Ks_0-5cm_x0.1639.prj
+   Ks_0-5cm_x0.1646.asc
+   Ks_0-5cm_x0.1646.prj
+   Ks_0-5cm_x0.1658.prj
+   Ks_0-5cm_x0.1667.prj
+   Ks_0-5cm_x0.1672.prj
+   Ks_0-5cm_x0.1678.prj
+   Ks_0-5cm_x0.1685.prj
+   Ks_0-5cm_x0.1696.prj
+   Ks_0-5cm_x0.17.prj
+   Ks_0-5cm_x0.1704.prj
+   Ks_0-5cm_x0.171.prj
+   Ks_0-5cm_x0.172.prj
+   Ks_0-5cm_x0.1725.prj
+   Ks_0-5cm_x0.1736.prj
+   Ks_0-5cm_x0.1744.prj
+   Ks_0-5cm_x0.1752.prj
+   Ks_0-5cm_x0.1762.prj
+   Ks_0-5cm_x0.1769.prj
+   Ks_0-5cm_x0.1773.prj
+   Ks_0-5cm_x0.1785.prj
+   Ks_0-5cm_x0.1789.prj
+   Ks_0-5cm_x0.18.prj
+   Ks_0-5cm_x0.1801.prj
+   Ks_0-5cm_x0.181.prj
+   Ks_0-5cm_x0.1819.prj
+   Ks_0-5cm_x0.1826.prj
+   Ks_0-5cm_x0.1833.prj
+   Ks_0-5cm_x0.1843.prj
+   Ks_0-5cm_x0.1852.prj
+   Ks_0-5cm_x0.1861.prj
+   Ks_0-5cm_x0.187.prj
+   Ks_0-5cm_x0.1876.prj
+   Ks_0-5cm_x0.1885.prj
+   Ks_0-5cm_x0.1893.prj
+   Ks_0-5cm_x0.1901.prj
+   Ks_0-5cm_x0.1915.prj
+   Ks_0-5cm_x0.1922.prj
+   Ks_0-5cm_x0.1928.prj
+   Ks_0-5cm_x0.1942.prj
+   Ks_0-5cm_x0.1949.prj
+   Ks_0-5cm_x0.1958.prj
+   Ks_0-5cm_x0.1968.prj
+   Ks_0-5cm_x0.1974.prj
+   Ks_0-5cm_x0.1983.prj
+   Ks_0-5cm_x0.1993.prj
+   Ks_0-5cm_x0.2.prj
+   Ks_0-5cm_x0.2004.prj
+   Ks_0-5cm_x0.2009.prj
+   Ks_0-5cm_x0.2023.asc
+   Ks_0-5cm_x0.2023.prj
+   Ks_0-5cm_x0.2032.prj
+   Ks_0-5cm_x0.2037.prj
+   Ks_0-5cm_x0.2048.prj
+   Ks_0-5cm_x0.2062.prj
+   Ks_0-5cm_x0.2066.prj
+   Ks_0-5cm_x0.2075.prj
+   Ks_0-5cm_x0.2089.prj
+   Ks_0-5cm_x0.21.prj
+   Ks_0-5cm_x0.2108.prj
+   Ks_0-5cm_x0.2119.prj
+   Ks_0-5cm_x0.2125.prj
+   Ks_0-5cm_x0.2133.prj
+   Ks_0-5cm_x0.2145.prj
+   Ks_0-5cm_x0.2154.prj
+   Ks_0-5cm_x0.2166.prj
+   Ks_0-5cm_x0.2174.prj
+   Ks_0-5cm_x0.2187.prj
+   Ks_0-5cm_x0.2197.prj
+   Ks_0-5cm_x0.2203.prj
+   Ks_0-5cm_x0.2219.prj
+   Ks_0-5cm_x0.2223.prj
+   Ks_0-5cm_x0.2236.prj
+   Ks_0-5cm_x0.2245.prj
+   Ks_0-5cm_x0.2257.prj
+   Ks_0-5cm_x0.2269.prj
+   Ks_0-5cm_x0.2279.prj
+   Ks_0-5cm_x0.2292.prj
+   Ks_0-5cm_x0.2298.prj
+   Ks_0-5cm_x0.2313.prj
+   Ks_0-5cm_x0.2319.prj
+   Ks_0-5cm_x0.2334.prj
+   Ks_0-5cm_x0.2341.prj
+   Ks_0-5cm_x0.2351.prj
+   Ks_0-5cm_x0.2364.prj
+   Ks_0-5cm_x0.2376.prj
+   Ks_0-5cm_x0.2389.prj
+   Ks_0-5cm_x0.2399.prj
+   Ks_0-5cm_x0.2412.prj
+   Ks_0-5cm_x0.2423.prj
+   Ks_0-5cm_x0.2432.prj
+   Ks_0-5cm_x0.2441.prj
+   Ks_0-5cm_x0.2455.prj
+   Ks_0-5cm_x0.2463.prj
+   Ks_0-5cm_x0.2475.prj
+   Ks_0-5cm_x0.2485.prj
+   Ks_0-5cm_x0.2498.prj
+   Ks_0-5cm_x0.2513.prj
+   Ks_0-5cm_x0.2524.prj
+   Ks_0-5cm_x0.2538.prj
+   Ks_0-5cm_x0.2547.prj
+   Ks_0-5cm_x0.2556.prj
+   Ks_0-5cm_x0.257.prj
+   Ks_0-5cm_x0.2583.prj
+   Ks_0-5cm_x0.2591.prj
+   Ks_0-5cm_x0.2608.prj
+   Ks_0-5cm_x0.2618.prj
+   Ks_0-5cm_x0.2628.prj
+   Ks_0-5cm_x0.2646.prj
+   Ks_0-5cm_x0.2652.prj
+   Ks_0-5cm_x0.2665.prj
+   Ks_0-5cm_x0.2675.prj
+   Ks_0-5cm_x0.2688.prj
+   Ks_0-5cm_x0.2707.prj
+   Ks_0-5cm_x0.272.prj
+   Ks_0-5cm_x0.2726.prj
+   Ks_0-5cm_x0.2742.prj
+   Ks_0-5cm_x0.2752.prj
+   Ks_0-5cm_x0.2769.prj
+   Ks_0-5cm_x0.2782.asc
+   Ks_0-5cm_x0.2782.prj
+   Ks_0-5cm_x0.2792.prj
+   Ks_0-5cm_x0.2808.prj
+   Ks_0-5cm_x0.2815.prj
+   Ks_0-5cm_x0.2835.prj
+   Ks_0-5cm_x0.2845.prj
+   Ks_0-5cm_x0.2861.prj
+   Ks_0-5cm_x0.2873.prj
+   Ks_0-5cm_x0.2887.prj
+   Ks_0-5cm_x0.2902.prj
+   Ks_0-5cm_x0.291.prj
+   Ks_0-5cm_x0.2926.prj
+   Ks_0-5cm_x0.2935.prj
+   Ks_0-5cm_x0.295.prj
+   Ks_0-5cm_x0.2965.prj
+   Ks_0-5cm_x0.2978.prj
+   Ks_0-5cm_x0.299.prj
+   Ks_0-5cm_x0.3.prj
+   Ks_0-5cm_x0.45.prj
+   Ks_0-5cm_x0.6.prj
+   Ks_0-5cm_x0.8.prj
+   Ks_0-5cm_x10.prj
+   Ks_0-5cm_x3.prj
+   bedrock_depth_m.asc
+   bedrock_depth_plus0.5m.asc
+   bedrock_depth_plus1m.asc
+   bedrock_depth_plus2m.asc
+   f.asc
+   f_x0.25.prj
+   f_x0.5.prj
+   f_x0.5033.prj
+   f_x0.5055.prj
+   f_x0.5116.prj
+   f_x0.5152.prj
+   f_x0.5219.prj
+   f_x0.5263.prj
+   f_x0.5293.prj
+   f_x0.5362.prj
+   f_x0.5419.prj
+   f_x0.5471.prj
+   f_x0.5511.prj
+   f_x0.5565.prj
+   f_x0.5627.prj
+   f_x0.5679.prj
+   f_x0.5712.prj
+   f_x0.578.prj
+   f_x0.5842.prj
+   f_x0.5874.prj
+   f_x0.5946.prj
+   f_x0.6004.prj
+   f_x0.6038.prj
+   f_x0.6117.prj
+   f_x0.6158.prj
+   f_x0.6225.prj
+   f_x0.628.prj
+   f_x0.6347.prj
+   f_x0.6375.prj
+   f_x0.6447.prj
+   f_x0.6522.prj
+   f_x0.6571.prj
+   f_x0.6638.prj
+   f_x0.6698.prj
+   f_x0.6766.prj
+   f_x0.6831.prj
+   f_x0.6897.prj
+   f_x0.696.prj
+   f_x0.7009.prj
+   f_x0.7094.prj
+   f_x0.7145.prj
+   f_x0.7219.prj
+   f_x0.7288.prj
+   f_x0.7336.prj
+   f_x0.739.prj
+   f_x0.7469.prj
+   f_x0.7564.prj
+   f_x0.7611.asc
+   f_x0.7611.prj
+   f_x0.7681.prj
+   f_x0.7733.prj
+   f_x0.7852.prj
+   f_x0.7891.prj
+   f_x0.7984.prj
+   f_x0.8072.prj
+   f_x0.8098.prj
+   f_x0.8215.prj
+   f_x0.8257.prj
+   f_x0.8372.prj
+   f_x0.8414.prj
+   f_x0.8529.prj
+   f_x0.8609.prj
+   f_x0.8683.prj
+   f_x0.8757.prj
+   f_x0.8816.prj
+   f_x0.8881.prj
+   f_x0.8974.prj
+   f_x0.9047.prj
+   f_x0.915.prj
+   f_x0.9245.prj
+   f_x0.9305.prj
+   f_x0.9419.prj
+   f_x0.9517.prj
+   f_x0.9609.prj
+   f_x0.971.prj
+   f_x0.9778.prj
+   f_x0.9863.prj
+   f_x0.996.prj
+   f_x1.007.prj
+   f_x1.016.prj
+   f_x1.025.prj
+   f_x1.035.prj
+   f_x1.042.prj
+   f_x1.052.prj
+   f_x1.064.prj
+   f_x1.072.prj
+   f_x1.081.prj
+   f_x1.09.prj
+   f_x1.105.prj
+   f_x1.11.prj
+   f_x1.125.prj
+   f_x1.13.prj
+   f_x1.141.prj
+   f_x1.154.prj
+   f_x1.165.prj
+   f_x1.179.prj
+   f_x1.185.prj
+   f_x1.197.prj
+   f_x1.211.prj
+   f_x1.217.prj
+   f_x1.234.prj
+   f_x1.239.prj
+   f_x1.251.prj
+   f_x1.266.prj
+   f_x1.274.prj
+   f_x1.293.prj
+   f_x1.301.prj
+   f_x1.317.prj
+   f_x1.326.prj
+   f_x1.339.prj
+   f_x1.352.asc
+   f_x1.352.prj
+   f_x1.36.prj
+   f_x1.375.prj
+   f_x1.39.prj
+   f_x1.403.prj
+   f_x1.416.prj
+   f_x1.427.prj
+   f_x1.442.prj
+   f_x1.457.prj
+   f_x1.466.prj
+   f_x1.486.prj
+   f_x1.493.prj
+   f_x1.513.prj
+   f_x1.525.prj
+   f_x1.537.prj
+   f_x1.55.prj
+   f_x1.564.asc
+   f_x1.564.prj
+   f_x1.584.prj
+   f_x1.598.prj
+   f_x1.611.prj
+   f_x1.627.prj
+   f_x1.639.prj
+   f_x1.657.prj
+   f_x1.673.prj
+   f_x1.691.prj
+   f_x1.704.prj
+   f_x1.718.prj
+   f_x1.733.prj
+   f_x1.754.prj
+   f_x1.765.prj
+   f_x1.786.prj
+   f_x1.793.prj
+   f_x1.82.prj
+   f_x1.838.prj
+   f_x1.852.prj
+   f_x1.862.prj
+   f_x1.88.prj
+   f_x1.901.prj
+   f_x1.925.prj
+   f_x1.932.prj
+   f_x1.949.prj
+   f_x1.967.prj
+   f_x1.996.prj
+   f_x2.prj
+   f_x4.prj
+   m_0-5cm.asc
+   m_0-5cm_x0.8.prj
+   m_0-5cm_x1.2.prj
+   psib_0-5cm.asc
+   psib_0-5cm_x0.25.prj
+   psib_0-5cm_x0.2506.prj
+   psib_0-5cm_x0.2537.prj
+   psib_0-5cm_x0.257.prj
+   psib_0-5cm_x0.2601.prj
+   psib_0-5cm_x0.2643.prj
+   psib_0-5cm_x0.2667.prj
+   psib_0-5cm_x0.2695.prj
+   psib_0-5cm_x0.2745.prj
+   psib_0-5cm_x0.2766.asc
+   psib_0-5cm_x0.2766.prj
+   psib_0-5cm_x0.2797.prj
+   psib_0-5cm_x0.2835.prj
+   psib_0-5cm_x0.2869.prj
+   psib_0-5cm_x0.2896.prj
+   psib_0-5cm_x0.2939.prj
+   psib_0-5cm_x0.2983.prj
+   psib_0-5cm_x0.3008.prj
+   psib_0-5cm_x0.305.prj
+   psib_0-5cm_x0.3079.prj
+   psib_0-5cm_x0.311.prj
+   psib_0-5cm_x0.3155.prj
+   psib_0-5cm_x0.3192.prj
+   psib_0-5cm_x0.3219.prj
+   psib_0-5cm_x0.3265.prj
+   psib_0-5cm_x0.3309.prj
+   psib_0-5cm_x0.3358.prj
+   psib_0-5cm_x0.34.prj
+   psib_0-5cm_x0.3424.prj
+   psib_0-5cm_x0.3467.prj
+   psib_0-5cm_x0.3512.prj
+   psib_0-5cm_x0.3561.prj
+   psib_0-5cm_x0.3603.prj
+   psib_0-5cm_x0.3647.prj
+   psib_0-5cm_x0.3694.prj
+   psib_0-5cm_x0.3729.prj
+   psib_0-5cm_x0.3764.prj
+   psib_0-5cm_x0.3831.prj
+   psib_0-5cm_x0.3861.prj
+   psib_0-5cm_x0.3923.prj
+   psib_0-5cm_x0.3952.prj
+   psib_0-5cm_x0.4016.prj
+   psib_0-5cm_x0.4054.prj
+   psib_0-5cm_x0.411.prj
+   psib_0-5cm_x0.4148.prj
+   psib_0-5cm_x0.4187.prj
+   psib_0-5cm_x0.424.prj
+   psib_0-5cm_x0.4317.prj
+   psib_0-5cm_x0.4344.prj
+   psib_0-5cm_x0.442.prj
+   psib_0-5cm_x0.4474.prj
+   psib_0-5cm_x0.452.prj
+   psib_0-5cm_x0.4562.prj
+   psib_0-5cm_x0.4619.prj
+   psib_0-5cm_x0.4699.prj
+   psib_0-5cm_x0.4737.prj
+   psib_0-5cm_x0.479.prj
+   psib_0-5cm_x0.4853.prj
+   psib_0-5cm_x0.4897.prj
+   psib_0-5cm_x0.4963.prj
+   psib_0-5cm_x0.5.prj
+   psib_0-5cm_x0.5014.prj
+   psib_0-5cm_x0.5095.prj
+   psib_0-5cm_x0.5131.prj
+   psib_0-5cm_x0.5214.prj
+   psib_0-5cm_x0.5276.prj
+   psib_0-5cm_x0.5353.prj
+   psib_0-5cm_x0.5394.prj
+   psib_0-5cm_x0.5479.prj
+   psib_0-5cm_x0.5535.prj
+   psib_0-5cm_x0.5622.prj
+   psib_0-5cm_x0.5648.prj
+   psib_0-5cm_x0.5743.prj
+   psib_0-5cm_x0.5808.prj
+   psib_0-5cm_x0.5866.prj
+   psib_0-5cm_x0.5946.prj
+   psib_0-5cm_x0.6034.prj
+   psib_0-5cm_x0.6105.prj
+   psib_0-5cm_x0.6161.prj
+   psib_0-5cm_x0.6215.prj
+   psib_0-5cm_x0.6293.prj
+   psib_0-5cm_x0.6394.prj
+   psib_0-5cm_x0.6466.prj
+   psib_0-5cm_x0.6544.prj
+   psib_0-5cm_x0.6622.prj
+   psib_0-5cm_x0.6706.prj
+   psib_0-5cm_x0.6793.prj
+   psib_0-5cm_x0.6877.prj
+   psib_0-5cm_x0.6914.prj
+   psib_0-5cm_x0.7001.prj
+   psib_0-5cm_x0.7117.prj
+   psib_0-5cm_x0.7186.prj
+   psib_0-5cm_x0.7298.prj
+   psib_0-5cm_x0.7362.prj
+   psib_0-5cm_x0.7473.prj
+   psib_0-5cm_x0.752.prj
+   psib_0-5cm_x0.767.prj
+   psib_0-5cm_x0.7733.prj
+   psib_0-5cm_x0.7808.prj
+   psib_0-5cm_x0.7923.prj
+   psib_0-5cm_x0.8022.prj
+   psib_0-5cm_x0.8104.prj
+   psib_0-5cm_x0.8174.prj
+   psib_0-5cm_x0.8315.prj
+   psib_0-5cm_x0.8376.prj
+   psib_0-5cm_x0.8524.prj
+   psib_0-5cm_x0.864.prj
+   psib_0-5cm_x0.8744.prj
+   psib_0-5cm_x0.8781.prj
+   psib_0-5cm_x0.8914.prj
+   psib_0-5cm_x0.9039.prj
+   psib_0-5cm_x0.9151.prj
+   psib_0-5cm_x0.9252.prj
+   psib_0-5cm_x0.9334.prj
+   psib_0-5cm_x0.9475.prj
+   psib_0-5cm_x0.9557.prj
+   psib_0-5cm_x0.9683.prj
+   psib_0-5cm_x0.983.prj
+   psib_0-5cm_x0.9914.prj
+   psib_0-5cm_x1.003.prj
+   psib_0-5cm_x1.014.prj
+   psib_0-5cm_x1.031.prj
+   psib_0-5cm_x1.046.prj
+   psib_0-5cm_x1.052.prj
+   psib_0-5cm_x1.063.prj
+   psib_0-5cm_x1.077.prj
+   psib_0-5cm_x1.093.prj
+   psib_0-5cm_x1.109.prj
+   psib_0-5cm_x1.117.asc
+   psib_0-5cm_x1.117.prj
+   psib_0-5cm_x1.13.prj
+   psib_0-5cm_x1.148.prj
+   psib_0-5cm_x1.158.asc
+   psib_0-5cm_x1.158.prj
+   psib_0-5cm_x1.174.prj
+   psib_0-5cm_x1.188.prj
+   psib_0-5cm_x1.207.prj
+   psib_0-5cm_x1.22.prj
+   psib_0-5cm_x1.235.prj
+   psib_0-5cm_x1.248.prj
+   psib_0-5cm_x1.266.prj
+   psib_0-5cm_x1.276.prj
+   psib_0-5cm_x1.297.prj
+   psib_0-5cm_x1.306.prj
+   psib_0-5cm_x1.322.prj
+   psib_0-5cm_x1.339.prj
+   psib_0-5cm_x1.354.prj
+   psib_0-5cm_x1.367.prj
+   psib_0-5cm_x1.388.prj
+   psib_0-5cm_x1.405.prj
+   psib_0-5cm_x1.419.prj
+   psib_0-5cm_x1.443.prj
+   psib_0-5cm_x1.461.prj
+   psib_0-5cm_x1.474.prj
+   psib_0-5cm_x1.485.prj
+   psib_0-5cm_x1.5.prj
+   scgrid.gdf
+   soil_classes.soi
+   soils.sdt
+   theta_r_0-5cm.asc
+   theta_s_0-5cm.asc
+   theta_s_0-5cm_x1.05.prj
+   theta_s_0-5cm_x1.1.prj
+   theta_s_0-5cm_x1.15.prj
+
+model-folder scgrid.gdf:
+Variable,BasePath,FileExtension
+KS,data/model/soil/Ks_0-5cm_x0.2782,asc
+TR,data/model/soil/theta_r_0-5cm,asc
+TS,data/model/soil/theta_s_0-5cm,asc
+PB,data/model/soil/psib_0-5cm_x0.2766,asc
+PI,data/model/soil/m_0-5cm,asc
+FD,data/model/soil/f_x1.564,asc
+PO,data/model/soil/theta_s_0-5cm,asc
+
+Ks 0-5 cm inside the basin (mm/hr): SOLUS median 11.53 | in use for this run 3.21 (KS_MULT = 0.2782, grid file Ks_0-5cm_x0.2782.asc)
+PsiB 0-5 cm inside the basin (mm, negative): SOLUS median -93.74 | in use for this run -25.93 (PSIB_MULT = 0.2766, grid file psib_0-5cm_x0.2766.asc)
+f inside the basin (1/mm): SOLUS median 0.00302, 9.3% of cells at the floor | in use for this run median 0.00472, 0.0% at the floor (F_MULT = 1.564, grid file f_x1.564.asc)
+m (pore-size index) inside the basin: SOLUS median 0.4200 | in use for this run median 0.4200 (M_MULT = 1, grid file m_0-5cm.asc)
+thetaS 0-5 cm inside the basin: SOLUS median 0.3900 (min 0.3600) | in use for this run median 0.3900 (min 0.3600, max 0.4200) (THETAS_MULT = 1, grid file theta_s_0-5cm.asc)
+porosity grid in use: theta_s_0-5cm.asc | equal to the thetaS grid in use: True | cells held at the 0.99 cap: thetaS 0, porosity 0
+As and Au in the soil table in use: [('1', '1')] (ANISOTROPY = 1)
+Weather stations: ../init_data/met/Master_Met.sdf
+Radar rain      : /home/vscode/mrms_wk_wy2017/rain/radar_*.asc
+Run window: 2017-01-18 00:00 to 2017-03-12 00:00 (1272 hours)
+
+OK     station 1: 8760 rows, 2016-10-01 00:00 to 2017-09-30 23:00, elev 657 m | ../init_data/met/met_NLDAS_1_2016-2017.mdf
+OK     station 2: 8760 rows, 2016-10-01 00:00 to 2017-09-30 23:00, elev 1247 m | ../init_data/met/met_NLDAS_2_2016-2017.mdf
+OK     station 3: 8760 rows, 2016-10-01 00:00 to 2017-09-30 23:00, elev 1435 m | ../init_data/met/met_NLDAS_3_2016-2017.mdf
+8760 radar files in /home/vscode/mrms_wk_wy2017/rain
+This run needs 1272 files: first radar_0118201701.asc, last radar_0312201700.asc
+OK: every hourly file the run needs is there.
+Land cover map  : data/model/land/LandUse.asc
+Land cover table: data/model/land/land_use_params.ldt
+   ID                      Class     P     S      K     b2    Al     h    Kt  \
+0   1                   Woodland   0.4   1.5   0.12    4.7  0.18   6.3   0.4   
+1   2               Desert scrub   0.4   1.5   0.12    4.7  0.18   0.7   0.4   
+2   3    Chaparral and oak shrub   0.4   1.5   0.12    4.7  0.18   0.5   0.4   
+3   4                  Bare rock  0.99  0.01  0.001  0.001  0.25  0.01  0.99   
+4   5  Recently burned or logged   0.4   1.5   0.12    4.7  0.18   4.7   0.4   
+5   6                  Developed  0.99  0.01  0.001  0.001  0.15  0.01  0.99   
+6   7         Riparian and water   0.4   1.5   0.12    4.7  0.18   4.3   0.4   
+7   8                  Grassland   0.6   0.5   0.12    4.7  0.22   0.3   0.6   
+
+     Rs     V   LAI theta*_s theta*_t    RZD_m  
+0   120  0.28   1.8     0.33      0.3  9999.99  
+1   120  0.23   1.5     0.33      0.3  9999.99  
+2   120  0.24   1.5     0.33      0.3  9999.99  
+3  9999  0.01  0.01     0.33      0.3  9999.99  
+4   120  0.29   1.8     0.33      0.3  9999.99  
+5  9999  0.01  0.01     0.33      0.3  9999.99  
+6   120  0.31   1.5     0.33      0.3  9999.99  
+7   100  0.27   1.0     0.33      0.3  9999.99  
+Classes in the map  : [1, 2, 3, 4, 5, 6, 7, 8]
+Classes in the table: [1, 2, 3, 4, 5, 6, 7, 8]
+OK: every class in the map has a row in the table.
+smallest thetaS inside the basin: SOLUS 0.3600 | in use for this run 0.3600
+largest theta*_s among the land classes in the map: 0.3300 | largest theta*_t: 0.3000 (information only)
+OK: thetaS is above theta*_s everywhere in the basin.
+<Figure size 1000x900 with 1 Axes>
+Options now set on the model:
+  optmeshinput         1
+  inputdatafile        data/model/mesh/Sycamore_mesh
+  optsoiltype          1
+  optbedrock           1
+  optgwfile            0
+  optlanduse           0
+  metdataoption        1
+  rainsource           1
+  rainintrvl           1
+  optsnow              1
+  optpercolation       0
+  channelconductivity  5
+  startdate            01/18/2017/00/00
+  runtime              1272
+  outfilename          results/W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl
+  utcoffset            -7
+  centroidlat          33.81441837488156
+  centroidlong         -111.4723173184714
+  templapse            -0.0065
+SNOWFILENAME = data/model/snow_params.spf
+   label  node_id         x          y  elev_m    code  offset_from_target_m  \
+0  gauge     9777  449734.5  3728375.3   536.8  stream                  19.9   
+
+         output  
+0  pixel + qout  
+For reference, the mesh outlet node (code 2) is ID 1201 at (449607.4, 3728391.6)
+Pixel nodes          : [9777] -> data/model/pnodes.nol
+Internal flow nodes  : [9777] -> data/model/qnodes.nol
+<Figure size 800x800 with 1 Axes>
+
+The following tRIBS inputs do not have paths that exist: 
+
+
+Checking if station descriptor paths exist.
+
+GAUGESTATIONS: is not specified.
+No rain gauges are specified.
+All met station paths exist.
+
+Checking if grid files exist.
+
+Model is set to read soil grid files: checking paths and .gdf file
+OK       mesh .nodes                                data/model/mesh/Sycamore_mesh.nodes
+OK       mesh .edges                                data/model/mesh/Sycamore_mesh.edges
+OK       mesh .tri                                  data/model/mesh/Sycamore_mesh.tri
+OK       mesh .z                                    data/model/mesh/Sycamore_mesh.z
+OK       soiltablename                              data/model/soil/soils.sdt
+OK       soilmapname                                data/model/soil/soil_classes.soi
+OK       bedrockfile                                data/model/soil/bedrock_depth_plus1m.asc
+OK       gwaterfile                                 data/model/soil/InitGW_82pct_plus1m_mm.asc
+OK       landtablename                              data/model/land/land_use_params.ldt
+OK       landmapname                                data/model/land/LandUse.asc
+OK       nodeoutputlist                             data/model/pnodes.nol
+OK       outletnodelist                             data/model/qnodes.nol
+OK       scgrid                                     data/model/soil/scgrid.gdf
+OK       soil grid KS                               data/model/soil/Ks_0-5cm_x0.2782.asc
+OK       soil grid TR                               data/model/soil/theta_r_0-5cm.asc
+OK       soil grid TS                               data/model/soil/theta_s_0-5cm.asc
+OK       soil grid PB                               data/model/soil/psib_0-5cm_x0.2766.asc
+OK       soil grid PI                               data/model/soil/m_0-5cm.asc
+OK       soil grid FD                               data/model/soil/f_x1.564.asc
+OK       soil grid PO                               data/model/soil/theta_s_0-5cm.asc
+OK       hydrometstations                           ../init_data/met/Master_Met.sdf
+OK       weather station 1                          ../init_data/met/met_NLDAS_1_2016-2017.mdf
+OK       weather station 2                          ../init_data/met/met_NLDAS_2_2016-2017.mdf
+OK       weather station 3                          ../init_data/met/met_NLDAS_3_2016-2017.mdf
+OK       radar folder                               /home/vscode/mrms_wk_wy2017/rain
+OK       radar files for the run (1272 needed)      all present
+OK       results folder                             results
+
+All 27 checks passed.
+Wrote /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab/W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl.in
+OK     RAINSOURCE           1                                             gridded (radar) rain
+OK     RAINFILE             /home/vscode/mrms_wk_wy2017/rain/radar_       radar folder + base name
+OK     RAINEXTENSION        asc                                           radar file extension
+OK     RAININTRVL           1                                             hours between rain files
+OK     METDATAOPTION        1                                             weather station point data
+OK     OPTSOILTYPE          1                                             gridded soils
+OK     OPTBEDROCK           1                                             bedrock depth grid
+OK     OPTGWFILE            0                                             initial groundwater from a grid
+OK     OPTLANDUSE           0                                             land class map + table
+OK     OPTMESHINPUT         1                                             pre-built mesh
+OK     OPTSNOW              1                                             snow module
+OK     OPTPERCOLATION       0                                             channel transmission loss
+OK     CHANNELCONDUCTIVITY  5                                             mm/hr
+OK     UTCOFFSET            -7                                            hours from UTC
+OK     STARTDATE            01/18/2017/00/00                              run start
+OK     RUNTIME              1272                                          run length, hours
+OK     CENTROIDLAT          33.81441837488156                            
+OK     CENTROIDLONG         -111.4723173184714                           
+OK     INPUTDATAFILE        data/model/mesh/Sycamore_mesh                
+OK     SCGRID               data/model/soil/scgrid.gdf                   
+OK     SOILTABLENAME        data/model/soil/soils.sdt                    
+OK     SOILMAPNAME          data/model/soil/soil_classes.soi             
+OK     BEDROCKFILE          data/model/soil/bedrock_depth_plus1m.asc     
+OK     GWATERFILE           data/model/soil/InitGW_82pct_plus1m_mm.asc   
+OK     LANDMAPNAME          data/model/land/LandUse.asc                  
+OK     LANDTABLENAME        data/model/land/land_use_params.ldt          
+OK     HYDROMETSTATIONS     ../init_data/met/Master_Met.sdf              
+OK     OUTFILENAME          results/W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl
+OK     NODEOUTPUTLIST       data/model/pnodes.nol                        
+OK     OUTLETNODELIST       data/model/qnodes.nol                        
+
+GAUGESTATIONS (not used with gridded rain): ''
+TEMPLAPSE (air temperature lapse rate, K/m): -0.0065
+
+Every expected setting is in the input file.
+Input file: W2_ks0p2782_cv6_psib0p2766_f1p564_d082_nocl.in
+
+BEDROCKFILE: data/model/soil/bedrock_depth_plus1m.asc
+  last written: Sat Oct 31 14:56:27 2026
+  depth to bedrock, m: min 1.00, median 1.54, max 3.01
+
+GWATERFILE: data/model/soil/InitGW_82pct_plus1m_mm.asc
+  last written: Sat Oct 31 14:56:27 2026
+  starting water table depth, mm: min 820.00, median 1263.00, max 2468.00
+
+What the notebook currently holds in memory:
+  BEDROCK_ADD_M    = 1.0
+  bedrock_path     = ../init_data/bedrock_depth_plus1m.asc
+  gw_path          = ../init_data/InitGW_82pct_plus1m_mm.asc
+  soil.bedrockfile = data/model/soil/bedrock_depth_plus1m.asc
+  soil.gwaterfile  = data/model/soil/InitGW_82pct_plus1m_mm.asc

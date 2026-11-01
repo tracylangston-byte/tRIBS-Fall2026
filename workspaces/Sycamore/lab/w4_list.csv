@@ -1,0 +1,5 @@
+idx,KS_MULT,F_MULT,PSIB_MULT,run_id,group,w2_run_id
+99,0.2524,1.165,0.5743,W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl,anchor,W2_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl
+130,0.2341,1.217,1.339,W4_ks0p2341_cv6_psib1p339_f1p217_d130_nocl,anchor,W2_ks0p2341_cv6_psib1p339_f1p217_d130_nocl
+85,0.2902,1.996,0.6105,W4_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl,anchor,W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl
+5,0.2023,0.7611,1.158,W4_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl,anchor,W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl

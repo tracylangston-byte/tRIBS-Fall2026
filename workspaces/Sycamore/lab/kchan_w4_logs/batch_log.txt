@@ -1,0 +1,272 @@
+[21:32:52] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[21:32:52] Notebook: Make_Sycamore_Model.ipynb
+[21:32:52] Design: draw 99, Kchan 0.5,1,2: checked against w4_list.csv and lhs_volume_list.csv, and would freeze the list in kchan_w4_list.csv (a real start does that)
+[21:32:52] Plan: draw 99 with channel loss ON at Kchan 0.5, 1, 2 mm/hr on W4 (4368 h): 3 to make, 0 already finished and skipped.
+[21:32:52] Reference run (loss off): existing W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl (checksum file matches; md5 matches w4_manifest.json; W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in shows channel loss off and the baseline routing values)
+[21:32:52]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 3 runs take roughly 1 h 45 min to 3 h 27 min.
+[21:32:52]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5         draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 0.5 mm/hr
+[21:32:52]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 1 mm/hr
+[21:32:52]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 2 mm/hr
+
+[21:32:59]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[21:32:59]   OK    file in lab/: score_run_sycamore.py
+[21:32:59]   OK    reference run W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl passes its checks (reused, not rerun)
+[21:32:59]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[21:32:59]   OK    input: ../init_data/bedrock_depth_m.asc
+[21:32:59]   OK    input: ../init_data/scgrid.gdf
+[21:32:59]   OK    input: ../init_data/soils.sdt
+[21:32:59]   OK    input: ../init_data/met/Master_Met.sdf
+[21:32:59]   OK    input: ../init_data/LandUse.asc
+[21:32:59]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[21:32:59]   OK    free disk space: 3.6 GB (need 2)
+[21:32:59]   OK    no other tRIBS running
+[21:32:59]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 3 planned runs
+[21:32:59]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[21:32:59]   OK    reference .in (W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in) has the keywords the comparison needs
+[21:32:59]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[21:32:59]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[21:32:59]   OK    disk: one W4 run's results are about 23 MB (the reference's); 3 runs need about 0.1 GB; 3.6 GB free
+[21:32:59]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 3 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[21:32:59] DRY RUN: nothing was built or run. All checks passed.
+[21:33:37] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[21:33:37] Notebook: Make_Sycamore_Model.ipynb
+[21:33:37] Design: draw 99, Kchan 0.5,1,2: checked against w4_list.csv and lhs_volume_list.csv, and froze the list in kchan_w4_list.csv
+[21:33:37] Plan: draw 99 with channel loss ON at Kchan 0.5, 1, 2 mm/hr on W4 (4368 h): 3 to make, 0 already finished and skipped.
+[21:33:37] Reference run (loss off): existing W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl (checksum file matches; md5 matches w4_manifest.json; W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in shows channel loss off and the baseline routing values)
+[21:33:37]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 3 runs take roughly 1 h 45 min to 3 h 27 min.
+[21:33:37]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5         draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 0.5 mm/hr
+[21:33:37]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 1 mm/hr
+[21:33:37]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 2 mm/hr
+
+[21:33:41]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[21:33:41]   OK    file in lab/: score_run_sycamore.py
+[21:33:41]   OK    reference run W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl passes its checks (reused, not rerun)
+[21:33:41]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[21:33:41]   OK    input: ../init_data/bedrock_depth_m.asc
+[21:33:41]   OK    input: ../init_data/scgrid.gdf
+[21:33:41]   OK    input: ../init_data/soils.sdt
+[21:33:41]   OK    input: ../init_data/met/Master_Met.sdf
+[21:33:41]   OK    input: ../init_data/LandUse.asc
+[21:33:41]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[21:33:41]   OK    free disk space: 3.6 GB (need 2)
+[21:33:41]   OK    no other tRIBS running
+[21:33:41]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 3 planned runs
+[21:33:41]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[21:33:41]   OK    reference .in (W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in) has the keywords the comparison needs
+[21:33:41]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[21:33:41]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[21:33:41]   OK    disk: one W4 run's results are about 23 MB (the reference's); 3 runs need about 0.1 GB; 3.6 GB free
+[21:33:41]   OK    data/model/soil holds 3 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 3 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[21:33:42] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: checksum file matches
+[21:33:42] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: md5 matches w4_manifest.json
+[21:33:42] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in shows channel loss off and the baseline routing values
+[21:33:42] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: reference reused, not rerun. Oct-Dec flow Mm3 1.33771, days>0.13 20.0, max m3/s 8.4179, flood vol 0.83514, peak % -31.52409, arrival h -1.06814, Oct-Mar vol 0.58591
+[21:33:42] === draw 099  W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 0.5 mm/hr on W4 (4368 h from 10/01/2016/00/00) ===
+[21:34:51] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: build OK in 1.1 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[21:34:51] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: Ks x0.2524, PsiB x0.5743, f x1.165, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[21:34:51] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: --build-only, not running tRIBS
+
+[21:34:51] Batch time: 1 min
+[21:34:51] Run status counts: built 1, reused 1
+
+[21:34:51] CHANNEL-LOSS CHECK on W4 (Oct 1 2016 - Apr 1 2017). Draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743); everything else at the baseline; warm start (water table 0.95 x bedrock).
+[21:34:51]   Only OPTPERCOLATION (0 -> 1) and Kchan (mm/hr) change. 'off' is the same draw with channel loss off (already run, only read here).
+[21:34:51]   Oct-Dec flow = model volume Oct 1 - Dec 31 in million m3. days = days the model flow is above 0.13 m3/s. max = largest Oct-Dec flow (m3/s).
+[21:34:51]   dry h% = share of the 4,368 hours with exactly zero flow at the outlet. flood vol, pk, arr = flood-week volume ratio, peak error % and arrival error h.
+[21:34:51]   Feb18, Feb27 = volume ratio of the Feb 18-19 and Feb 27-28 storms. Oct-Mar = whole-window volume ratio (1.00 = the gauge's volume).
+[21:34:51]   Gauge, Oct-Dec: volume 0.000 M m3, largest flow 0.13 m3/s, 1 days above 0.13.
+
+[21:34:51]     Kchan | OctDec Mm3  days    max dry h% | flood vol   pk %  arr h |  Feb18  Feb27 | Oct-Mar
+[21:34:51]       off |       1.34    20    8.4    4.5 |      0.84  -31.5  -1.07 |   0.96   0.45 |    0.59   (same draw, loss off)
+[21:34:51]   W4 base |       2.50    24   14.2      - |      1.03  -14.3  -1.49 |   1.85   0.73 |    0.84   (context: the W4 baseline, Ks 0.2, f 1, PsiB 0.5, loss off)
+[21:34:51]       0.5 | (built)
+[21:34:51]         1 | (not run)
+[21:34:51]         2 | (not run)
+
+[21:34:51]   0 of 3 runs scored; 0 failed; 2 not run yet.
+
+[21:34:51]   Wrote kchan_w4_summary.csv (all score columns for the reference and every run, plus the changes from the loss-off run).
+[21:38:51] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[21:38:51] Notebook: Make_Sycamore_Model.ipynb
+[21:38:51] Design: read the frozen list from kchan_w4_list.csv (3 runs; it matches --kchan 0.5,1,2)
+[21:38:51] Plan: draw 99 with channel loss ON at Kchan 0.5, 1, 2 mm/hr on W4 (4368 h): 3 to make, 0 already finished and skipped.
+[21:38:51] Reference run (loss off): existing W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl (checksum file matches; md5 matches w4_manifest.json; W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in shows channel loss off and the baseline routing values)
+[21:38:51]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 3 runs take roughly 1 h 45 min to 3 h 27 min.
+[21:38:51]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5         draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 0.5 mm/hr
+[21:38:51]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 1 mm/hr
+[21:38:51]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 2 mm/hr
+
+[21:38:57]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[21:38:57]   OK    file in lab/: score_run_sycamore.py
+[21:38:57]   OK    reference run W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl passes its checks (reused, not rerun)
+[21:38:57]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[21:38:57]   OK    input: ../init_data/bedrock_depth_m.asc
+[21:38:57]   OK    input: ../init_data/scgrid.gdf
+[21:38:57]   OK    input: ../init_data/soils.sdt
+[21:38:57]   OK    input: ../init_data/met/Master_Met.sdf
+[21:38:57]   OK    input: ../init_data/LandUse.asc
+[21:38:57]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[21:38:57]   OK    free disk space: 3.6 GB (need 2)
+[21:38:57]   OK    no other tRIBS running
+[21:38:57]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 3 planned runs
+[21:38:57]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[21:38:57]   OK    reference .in (W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in) has the keywords the comparison needs
+[21:38:57]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[21:38:57]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[21:38:57]   OK    disk: one W4 run's results are about 23 MB (the reference's); 3 runs need about 0.1 GB; 3.6 GB free
+[21:38:57]   OK    data/model/soil holds 6 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 3 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[21:38:57] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: reference already checked and scored, skipping
+[21:38:57] === draw 099  W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 0.5 mm/hr on W4 (4368 h from 10/01/2016/00/00) ===
+[21:39:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[21:39:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: Ks x0.2524, PsiB x0.5743, f x1.165, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[21:39:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: starting tRIBS (4368 model hours, expect about 34 to 68 min)
+[21:44:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS still running, 5.0 min so far; outlet file has 12903 rows of about 69888 (18%)
+[21:49:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS still running, 10.0 min so far; outlet file has 21225 rows of about 69888 (30%)
+[21:54:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS still running, 15.0 min so far; outlet file has 31124 rows of about 69888 (45%)
+[21:59:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS still running, 20.0 min so far; outlet file has 40340 rows of about 69888 (58%)
+[22:04:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS still running, 25.0 min so far; outlet file has 49875 rows of about 69888 (71%)
+[22:09:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS still running, 30.0 min so far; outlet file has 59080 rows of about 69888 (85%)
+[22:14:59] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS still running, 35.0 min so far; outlet file has 68296 rows of about 69888 (98%)
+[22:15:45] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: tRIBS finished in 35.8 min; outlet peak 150.2 m3/s over 69888 rows; files 23 MB; 3.5 GB free
+[22:15:46] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5: Oct-Dec flow Mm3 0.88025, days>0.13 11.0, max m3/s 7.7093, flood vol 0.81644, peak % -32.00976, arrival h -1.041, Oct-Mar vol 0.50767
+[22:15:46] --- 1 of 1 in this session done; average 36.8 min per run; about 0 min left ---
+
+[22:15:46] Batch time: 37 min
+[22:15:46] Run status counts: done 1, reused 1
+
+[22:15:46] CHANNEL-LOSS CHECK on W4 (Oct 1 2016 - Apr 1 2017). Draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743); everything else at the baseline; warm start (water table 0.95 x bedrock).
+[22:15:46]   Only OPTPERCOLATION (0 -> 1) and Kchan (mm/hr) change. 'off' is the same draw with channel loss off (already run, only read here).
+[22:15:46]   Oct-Dec flow = model volume Oct 1 - Dec 31 in million m3. days = days the model flow is above 0.13 m3/s. max = largest Oct-Dec flow (m3/s).
+[22:15:46]   dry h% = share of the 4,368 hours with exactly zero flow at the outlet. flood vol, pk, arr = flood-week volume ratio, peak error % and arrival error h.
+[22:15:46]   Feb18, Feb27 = volume ratio of the Feb 18-19 and Feb 27-28 storms. Oct-Mar = whole-window volume ratio (1.00 = the gauge's volume).
+[22:15:46]   Gauge, Oct-Dec: volume 0.000 M m3, largest flow 0.13 m3/s, 1 days above 0.13.
+
+[22:15:46]     Kchan | OctDec Mm3  days    max dry h% | flood vol   pk %  arr h |  Feb18  Feb27 | Oct-Mar
+[22:15:46]       off |       1.34    20    8.4    4.5 |      0.84  -31.5  -1.07 |   0.96   0.45 |    0.59   (same draw, loss off)
+[22:15:46]   W4 base |       2.50    24   14.2      - |      1.03  -14.3  -1.49 |   1.85   0.73 |    0.84   (context: the W4 baseline, Ks 0.2, f 1, PsiB 0.5, loss off)
+[22:15:46]       0.5 |       0.88    11    7.7   82.5 |      0.82  -32.0  -1.04 |   0.87   0.41 |    0.51
+[22:15:46]         1 | (not run)
+[22:15:46]         2 | (not run)
+
+[22:15:46]   1 of 3 runs scored; 0 failed; 2 not run yet.
+
+[22:15:46]   CHANGE FROM THE LOSS-OFF RUN (percent of the loss-off value; flood peak in points of peak error):
+[22:15:46]     Kchan | OctDec flow flood vol flood pk   Feb18   Feb27  Oct-Mar | cut ratio
+[22:15:46]       0.5 |        -34%       -2%      +0     -10%     -8%     -13% |      15.3
+[22:15:46]   cut ratio = (percent cut in Oct-Dec false flow) / (percent cut in flood-week volume), shown when both fall by 1% or more.
+[22:15:46]   A ratio well above the soil dial's (below) means loss removes the false flow more selectively than the soil knobs do.
+[22:15:46]   For scale, the soil dial alone (each W4 run with loss off, against the W4 baseline):
+[22:15:46]     draw 99: false flow -46%, flood volume -19%, flood peak -17 points, cut ratio 2.4
+[22:15:46]     draw 130: false flow -73%, flood volume -28%, flood peak -26 points, cut ratio 2.6
+[22:15:46]     draw 85: false flow -59%, flood volume -18%, flood peak -16 points, cut ratio 3.3
+[22:15:46]     draw 5: false flow -58%, flood volume -21%, flood peak -19 points, cut ratio 2.8
+[22:15:46]   Check: Kchan 0.5 should look almost the same as the loss-off run. If it does not, turning loss on changes something besides the loss itself.
+[22:15:46]   Nothing is selected or dropped here. Reading it is the next step.
+
+[22:15:46]   Wrote kchan_w4_summary.csv (all score columns for the reference and every run, plus the changes from the loss-off run).
+[22:31:12] Working folder: /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab
+[22:31:12] Notebook: Make_Sycamore_Model.ipynb
+[22:31:12] Design: read the frozen list from kchan_w4_list.csv (3 runs; it matches --kchan 0.5,1,2)
+[22:31:12] Plan: draw 99 with channel loss ON at Kchan 0.5, 1, 2 mm/hr on W4 (4368 h): 2 to make, 1 already finished and skipped.
+[22:31:12] Reference run (loss off): existing W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl (checksum file matches; md5 matches w4_manifest.json; W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in shows channel loss off and the baseline routing values)
+[22:31:12]   Time: each run is a notebook build (about 1 min) + tRIBS (about 34 min, up to 68 if the machine is slower), so 2 runs take roughly 1 h 10 min to 2 h 18 min.
+[22:31:12]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc0p5         draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 0.5 mm/hr
+[22:31:12]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 1 mm/hr
+[22:31:12]     run: W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2           draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 2 mm/hr
+
+[22:31:18]   OK    file in lab/: Make_Sycamore_Model.ipynb
+[22:31:18]   OK    file in lab/: score_run_sycamore.py
+[22:31:18]   OK    reference run W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl passes its checks (reused, not rerun)
+[22:31:18]   OK    gauge file: ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv
+[22:31:18]   OK    input: ../init_data/bedrock_depth_m.asc
+[22:31:18]   OK    input: ../init_data/scgrid.gdf
+[22:31:18]   OK    input: ../init_data/soils.sdt
+[22:31:18]   OK    input: ../init_data/met/Master_Met.sdf
+[22:31:18]   OK    input: ../init_data/LandUse.asc
+[22:31:18]   OK    tRIBS program: /opt/tRIBS/build/tRIBS
+[22:31:18]   OK    free disk space: 3.5 GB (need 2)
+[22:31:18]   OK    no other tRIBS running
+[22:31:18]   OK    notebook Settings cell (cell 4) is the new one and patches correctly for all 3 planned runs
+[22:31:18]   OK    notebook Settings cell now reads F_MULT = 1, KS_MULT = 0.2, PSIB_MULT = 0.5 (the script overrides all three for every run, so these only matter when you run the notebook by hand)
+[22:31:18]   OK    reference .in (W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl.in) has the keywords the comparison needs
+[22:31:18]   OK    scorer accepts --run --window --results-dir --out-dir --csv-name --write-checksum
+[22:31:18]   OK    notebook kernel imports pytRIBS (/usr/local/lib/python3.11/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+/usr/local/bin/python /workspaces/tRIBS-Fall2026/workspaces/Sycamore/lab)
+[22:31:18]   OK    disk: one W4 run's results are about 23 MB (the reference's); 2 runs need about 0.0 GB; 3.5 GB free
+[22:31:18]   OK    data/model/soil holds 6 scaled grid file(s) now (about 2.3 MB each). Each run adds up to 3 (Ks, f, PsiB), so 2 runs could add up to 0.0 GB unless the notebook replaces them; --prune-soil removes the unused ones.
+
+[22:31:18] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_nocl: reference already checked and scored, skipping
+[22:31:18] === draw 099  W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 1 mm/hr on W4 (4368 h from 10/01/2016/00/00) ===
+[22:32:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: build OK in 1.1 min; .in file matches the reference except the allowed lines; data/model/soil is 40 MB
+[22:32:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: Ks x0.2524, PsiB x0.5743, f x1.165, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[22:32:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: starting tRIBS (4368 model hours, expect about 34 to 68 min)
+[22:37:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: tRIBS still running, 5.0 min so far; outlet file has 10765 rows of about 69888 (15%)
+[22:42:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: tRIBS still running, 10.0 min so far; outlet file has 21566 rows of about 69888 (31%)
+[22:47:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: tRIBS still running, 15.0 min so far; outlet file has 32148 rows of about 69888 (46%)
+[22:52:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: tRIBS still running, 20.0 min so far; outlet file has 42046 rows of about 69888 (60%)
+[22:57:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: tRIBS still running, 25.0 min so far; outlet file has 52265 rows of about 69888 (75%)
+[23:02:24] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: tRIBS still running, 30.0 min so far; outlet file has 62153 rows of about 69888 (89%)
+[23:06:01] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: tRIBS finished in 33.6 min; outlet peak 149.5 m3/s over 69888 rows; files 23 MB; 3.5 GB free
+[23:06:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: Oct-Dec flow Mm3 0.72169, days>0.13 8.0, max m3/s 7.3368, flood vol 0.80337, peak % -32.32985, arrival h -1.028, Oct-Mar vol 0.48087
+[23:06:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc1: --prune-soil removed 3 unused scaled soil grid file(s); data/model/soil is now 33 MB
+[23:06:02] --- 1 of 2 in this session done; average 34.7 min per run; about 35 min left ---
+[23:06:02] === draw 099  W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743), channel loss ON, Kchan 2 mm/hr on W4 (4368 h from 10/01/2016/00/00) ===
+[23:07:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: build OK in 1.0 min; .in file matches the reference except the allowed lines; data/model/soil is 33 MB
+[23:07:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: Ks x0.2524, PsiB x0.5743, f x1.165, m x1, thetaS x1, As = Au = 1; bedrock +1 m; water table = 0.95 x bedrock (mm)
+[23:07:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: starting tRIBS (4368 model hours, expect about 34 to 68 min)
+[23:12:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: tRIBS still running, 5.0 min so far; outlet file has 12546 rows of about 69888 (18%)
+[23:17:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: tRIBS still running, 10.0 min so far; outlet file has 24297 rows of about 69888 (35%)
+[23:22:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: tRIBS still running, 15.0 min so far; outlet file has 34878 rows of about 69888 (50%)
+[23:27:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: tRIBS still running, 20.0 min so far; outlet file has 43392 rows of about 69888 (62%)
+[23:32:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: tRIBS still running, 25.0 min so far; outlet file has 51582 rows of about 69888 (74%)
+[23:37:02] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: tRIBS still running, 30.0 min so far; outlet file has 61813 rows of about 69888 (88%)
+[23:40:43] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: tRIBS finished in 33.7 min; outlet peak 148.1 m3/s over 69888 rows; files 23 MB; 3.5 GB free
+[23:40:45] W4_ks0p2524_cv6_psib0p5743_f1p165_d099_cc2: Oct-Dec flow Mm3 0.49676, days>0.13 8.0, max m3/s 6.5905, flood vol 0.78196, peak % -32.93654, arrival h -1.00382, Oct-Mar vol 0.44367
+[23:40:45] --- 2 of 2 in this session done; average 34.7 min per run; about 0 min left ---
+
+[23:40:45] Batch time: 1 h 09 min
+[23:40:45] Run status counts: done 3, reused 1
+
+[23:40:45] CHANNEL-LOSS CHECK on W4 (Oct 1 2016 - Apr 1 2017). Draw 99 (Ks 0.2524, f 1.165, PsiB 0.5743); everything else at the baseline; warm start (water table 0.95 x bedrock).
+[23:40:45]   Only OPTPERCOLATION (0 -> 1) and Kchan (mm/hr) change. 'off' is the same draw with channel loss off (already run, only read here).
+[23:40:45]   Oct-Dec flow = model volume Oct 1 - Dec 31 in million m3. days = days the model flow is above 0.13 m3/s. max = largest Oct-Dec flow (m3/s).
+[23:40:45]   dry h% = share of the 4,368 hours with exactly zero flow at the outlet. flood vol, pk, arr = flood-week volume ratio, peak error % and arrival error h.
+[23:40:45]   Feb18, Feb27 = volume ratio of the Feb 18-19 and Feb 27-28 storms. Oct-Mar = whole-window volume ratio (1.00 = the gauge's volume).
+[23:40:45]   Gauge, Oct-Dec: volume 0.000 M m3, largest flow 0.13 m3/s, 1 days above 0.13.
+
+[23:40:45]     Kchan | OctDec Mm3  days    max dry h% | flood vol   pk %  arr h |  Feb18  Feb27 | Oct-Mar
+[23:40:45]       off |       1.34    20    8.4    4.5 |      0.84  -31.5  -1.07 |   0.96   0.45 |    0.59   (same draw, loss off)
+[23:40:45]   W4 base |       2.50    24   14.2      - |      1.03  -14.3  -1.49 |   1.85   0.73 |    0.84   (context: the W4 baseline, Ks 0.2, f 1, PsiB 0.5, loss off)
+[23:40:45]       0.5 |       0.88    11    7.7   82.5 |      0.82  -32.0  -1.04 |   0.87   0.41 |    0.51
+[23:40:45]         1 |       0.72     8    7.3   88.8 |      0.80  -32.3  -1.03 |   0.81   0.39 |    0.48
+[23:40:45]         2 |       0.50     8    6.6   92.4 |      0.78  -32.9  -1.00 |   0.70   0.34 |    0.44
+
+[23:40:45]   3 of 3 runs scored; 0 failed; 0 not run yet.
+
+[23:40:45]   CHANGE FROM THE LOSS-OFF RUN (percent of the loss-off value; flood peak in points of peak error):
+[23:40:45]     Kchan | OctDec flow flood vol flood pk   Feb18   Feb27  Oct-Mar | cut ratio
+[23:40:45]       0.5 |        -34%       -2%      +0     -10%     -8%     -13% |      15.3
+[23:40:45]         1 |        -46%       -4%      -1     -16%    -14%     -18% |      12.1
+[23:40:45]         2 |        -63%       -6%      -1     -28%    -24%     -24% |       9.9
+[23:40:45]   cut ratio = (percent cut in Oct-Dec false flow) / (percent cut in flood-week volume), shown when both fall by 1% or more.
+[23:40:45]   A ratio well above the soil dial's (below) means loss removes the false flow more selectively than the soil knobs do.
+[23:40:45]   For scale, the soil dial alone (each W4 run with loss off, against the W4 baseline):
+[23:40:45]     draw 99: false flow -46%, flood volume -19%, flood peak -17 points, cut ratio 2.4
+[23:40:45]     draw 130: false flow -73%, flood volume -28%, flood peak -26 points, cut ratio 2.6
+[23:40:45]     draw 85: false flow -59%, flood volume -18%, flood peak -16 points, cut ratio 3.3
+[23:40:45]     draw 5: false flow -58%, flood volume -21%, flood peak -19 points, cut ratio 2.8
+[23:40:45]   Rough sensitivity, Kchan 0.5 to 2 (0.6 tenfold steps): per tenfold increase in Kchan the false flow changes by -48 points of its loss-off value, the flood volume by -7 points, and the flood peak error by -2 points. (A straight-line guess from the two end runs: the fewer tenfold steps apart they are, the rougher it is.)
+[23:40:45]   Check: Kchan 0.5 should look almost the same as the loss-off run. If it does not, turning loss on changes something besides the loss itself.
+[23:40:45]   Nothing is selected or dropped here. Reading it is the next step.
+
+[23:40:45]   Wrote kchan_w4_summary.csv (all score columns for the reference and every run, plus the changes from the loss-off run).
