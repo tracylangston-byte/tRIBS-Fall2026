@@ -1,0 +1,129 @@
+{
+  "started": "2026-11-02T00:14:20",
+  "draw": 12,
+  "ids": {
+    "src": "W1TRIAL_src_ks0p187_psib0p2939_f0p5874_d012_cv6_fe0p3_n0p04",
+    "short": "W1TRIAL_short_ks0p187_psib0p2939_f0p5874_d012_cv8_fe0p29_n0p055",
+    "full": "W1TRIAL_full_ks0p187_psib0p2939_f0p5874_d012_cv8_fe0p29_n0p055"
+  },
+  "baseline_routing": {
+    "KINEMVELCOEF": 6,
+    "FLOWEXP": 0.3,
+    "CHANNELROUGHNESS": 0.04
+  },
+  "test_routing": {
+    "KINEMVELCOEF": 8,
+    "FLOWEXP": 0.29,
+    "CHANNELROUGHNESS": 0.055
+  },
+  "src_build_min": 1.06,
+  "edit_seconds": 0.007,
+  "short_tribs_min": 1.72,
+  "short_outlet": {
+    "rows": 2688,
+    "last_hour": 168.0,
+    "peak_m3s": 265.6041,
+    "md5": "16edbbbabec0e820b03ced301d5f46d1"
+  },
+  "full_build_min": 1.07,
+  "full_tribs_min": 1.83,
+  "full_outlet": {
+    "rows": 2688,
+    "last_hour": 168.0,
+    "peak_m3s": 265.6041,
+    "md5": "16edbbbabec0e820b03ced301d5f46d1"
+  },
+  "in_diff_lines": [
+    {
+      "line": 320,
+      "shortcut": "results/W1TRIAL_short_ks0p187_psib0p2939_f0p5874_d012_cv8_fe0p29_n0p055",
+      "full": "results/W1TRIAL_full_ks0p187_psib0p2939_f0p5874_d012_cv8_fe0p29_n0p055"
+    }
+  ],
+  "results_files": [
+    {
+      "suffix": ".0168_00d",
+      "status": "identical",
+      "size_mb": 3.21
+    },
+    {
+      "suffix": ".0168_00i",
+      "status": "identical",
+      "size_mb": 6.17
+    },
+    {
+      "suffix": ".edges",
+      "status": "identical",
+      "size_mb": 1.52
+    },
+    {
+      "suffix": ".nodes",
+      "status": "identical",
+      "size_mb": 0.58
+    },
+    {
+      "suffix": ".tri",
+      "status": "identical",
+      "size_mb": 1.52
+    },
+    {
+      "suffix": ".z",
+      "status": "identical",
+      "size_mb": 0.18
+    },
+    {
+      "suffix": "0168_00.mrf",
+      "status": "identical",
+      "size_mb": 0.03
+    },
+    {
+      "suffix": "0168_00.rft",
+      "status": "identical",
+      "size_mb": 0.01
+    },
+    {
+      "suffix": "14525.pixel",
+      "status": "identical",
+      "size_mb": 0.1
+    },
+    {
+      "suffix": "_14525.qout",
+      "status": "identical",
+      "size_mb": 0.06
+    },
+    {
+      "suffix": "_Outlet.qout",
+      "status": "identical",
+      "size_mb": 0.06
+    },
+    {
+      "suffix": "_area",
+      "status": "identical",
+      "size_mb": 0.13
+    },
+    {
+      "suffix": "_reach",
+      "status": "identical",
+      "size_mb": 0.08
+    },
+    {
+      "suffix": "_voi",
+      "status": "identical",
+      "size_mb": 3.06
+    },
+    {
+      "suffix": "_width",
+      "status": "identical",
+      "size_mb": 0.17
+    }
+  ],
+  "outlet_identical": true,
+  "in_identical_except_name": true,
+  "other_files_differing": [],
+  "verdict": "PASS: the shortcut gives a byte-identical outlet file and an .in file identical to the full build's except the output name.",
+  "cost_per_run_min": {
+    "shortcut": 1.72,
+    "full_build": 2.9
+  },
+  "finished": "2026-11-02T00:20:02"
+}
