@@ -1,0 +1,7 @@
+group,draw,run_id,KS_MULT,F_MULT,PSIB_MULT,flood_week__vol_ratio_W1
+main,25,W1_ks0p1852_cv6_psib0p3358_f0p5055_d025_nocl,0.1852,0.5055,0.3358,1.087
+main,107,W1_ks0p1928_cv6_psib0p4187_f0p9863_d107_nocl,0.1928,0.9863,0.4187,1.085
+main,52,W1_ks0p1901_cv6_psib0p3561_f0p5565_d052_nocl,0.1901,0.5565,0.3561,1.057
+main,123,W1_ks0p1949_cv6_psib0p2643_f0p9305_d123_nocl,0.1949,0.9305,0.2643,1.122
+main,12,W1_ks0p187_cv6_psib0p2939_f0p5874_d012_nocl,0.187,0.5874,0.2939,1.106
+main,94,W1_ks0p1504_cv6_psib0p8174_f0p5263_d094_nocl,0.1504,0.5263,0.8174,1.12

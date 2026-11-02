@@ -1,0 +1,58 @@
+RUN W1_ks0p1646_cv6_psib1p117_f1p352_d150_nocl   (window W1)   scorer v1.0
+  model flow Jan 18 2017 00:03 to Jan 25 2017 00:00; scored span Jan 18 2017 to Jan 25 2017  (PARTIAL: not the whole scoring period)
+  blank steps skipped: model 0, gauge 99; excluded: none; outlet file checksum: written
+
+VOLUME  (M m3; model counted only where the gauge has data; ratio = model / gauge)
+  window                    model    gauge   ratio  model raw
+  flood_week                 8.00     7.25   1.104       8.00
+  jan_second_storm           0.05     1.36   0.040       0.05
+  feb18_19                      -        -       -          -
+  feb27_28                      -        -       -          -
+  jan_flood_tail                -        -       -          -
+  feb18_19_tail                 -        -       -          -
+  feb27_28_tail                 -        -       -          -
+  oct_mar                       -        -       -          -
+  span                       8.00     7.25   1.104       8.00
+
+EVENTS  (peak error %, first-arrival error h, KGE_2012 with r, beta, gamma, NSE; arrival level = 20% of the gauge peak)
+  event              peak model peak gauge peak err % arrival h    KGE     r   beta  gamma    NSE   arrival note
+  flood_week              203.9      220.9       -7.7     -1.47   0.68  0.89   1.12   1.27   0.49   ok
+  jan_second_storm          0.8       18.7      -95.7         -  -0.70 -0.40   0.04   1.02  -6.28   gauge: already above at start
+  feb18_19                    -        9.3          -         -      -     -      -      -      -   not covered
+  feb27_28                    -       73.6          -         -      -     -      -      -      -   not covered
+
+TAILS  (volume M m3; recession rate k per hour = slope of ln(flow); ratio 1 = same recession, above 1 = model dries faster)
+  tail                 model   gauge  ratio   k model   k gauge  k ratio    hours used (model/gauge)
+  tail_jan26_feb2          -       -      -         -         -        -                       0 / 0
+  tail_mar3_mar11          -       -      -         -         -        -                       0 / 0
+
+STORM BALANCE  (runoff ratio = outflow volume / rain volume over 424.6 km2, rain = basin mean from the .mrf; report only, no pass/fail yet)
+  window              rain mm   model   gauge
+  flood_week             81.6   0.231   0.209
+  jan_second_storm       13.7   0.009   0.233
+  feb27_28_tail / feb18_19_tail:  model -   gauge -
+  feb27_28 / feb18_19:  model -   gauge -
+
+PROCESS CHECKS  (not scores: is the flood made by a sensible mechanism, and does it change with the start state?)
+  mdgw_first_mm                   1340.274
+  mdgw_min_mm                     1331.085
+  mdgw_max_mm                     1344.055
+  channel_loss_Mm3                0.000
+  snow_max_cm                     0.456
+  hsrf_mean                       14.211
+  sbsrf_mean                      0.000
+  hsrf_share                      1.000
+  hsrf_share_flood_week           1.000
+
+KGE_2012 over the span: 0.679  (r 0.89, beta 1.12, gamma 1.27);  NSE 0.49 (sanity only);  PBIAS 12.3 %.   VOLUME GATE for reading KGE: CLOSED
+
+TOLERANCE CHECK  (the design's PROPOSED tolerances; OK / MISS / n.a.)
+  MISS  volume      span (Jan 18 2017 to Jan 25 2017), partial        1.104   (within 10% of 1)
+  MISS  volume      flood_week                                        1.104   (within 10% of 1)
+  OK    peak        flood_week                                       -7.674   (within +/-15%)
+  MISS  arrival     flood_week                                       -1.469   (within +/-1 h)
+  MISS  volume      jan_second_storm                                  0.040   (within 10% of 1)
+  MISS  peak        jan_second_storm                                -95.704   (within +/-15%)
+  n.a.  arrival     jan_second_storm                                      -   (gauge: already above at start)
+
+----------------------------------------------------------------------------------------------------

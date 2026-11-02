@@ -1,0 +1,6 @@
+role,draw,run_id,window,ks,f,psib,flood_vol_ratio,flood_peak_err_pct,feb18_vol_ratio,feb18_peak_err_pct,feb27_vol_ratio,feb27_peak_err_pct,whole_window_vol_ratio,flood_ok,feb27_ok,both_ok,scorer_whole_vol_ratio,scorer_flood_vol_ratio,scorer_flood_peak_err_pct
+candidate,12,W2_ks0p187_cv6_psib0p2939_f0p5874_d012_nocl,W2,0.1870,0.5874,0.2939,1.1172,-6.1143,2.4748,313.1131,0.9500,4.7201,0.9222,yes,yes,yes,,,
+candidate,123,W2_ks0p1949_cv6_psib0p2643_f0p9305_d123_nocl,W2,0.1949,0.9305,0.2643,1.1332,-4.2398,2.5037,316.3920,0.9687,7.8048,0.9347,no,yes,no,,,
+candidate,25,W2_ks0p1852_cv6_psib0p3358_f0p5055_d025_nocl,W2,0.1852,0.5055,0.3358,1.0994,-7.9516,2.3545,291.3422,0.9110,0.5194,0.8984,yes,yes,yes,,,
+reference,85,W2_ks0p2902_cv6_psib0p6105_f1p996_d085_nocl,W2,0.2902,1.9960,0.6105,0.8780,-29.9151,0.9050,32.9105,0.4512,-53.3738,0.6115,no,no,no,0.5554,0.8553,-29.9151
+reference,5,W2_ks0p2023_cv6_psib1p158_f0p7611_d005_nocl,W2,0.2023,0.7611,1.1580,0.8491,-32.7131,0.8901,44.8105,0.3994,-59.4335,0.5844,no,no,no,0.5313,0.8266,-32.7131
