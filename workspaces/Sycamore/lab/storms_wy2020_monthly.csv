@@ -1,0 +1,12 @@
+# storms_wy2020_monthly.csv -- one window per month, Sep 1 2019 to Jun 1 2020 (Arizona local time). Sep 2019 is the model spin-up month; the scoring period starts Oct 1 2019.
+# A window contains the hours that START inside [start, end). Used with: --storms storms_wy2020_monthly.csv
+name,start,end
+Sep 2019,2019-09-01 00:00,2019-10-01 00:00
+Oct 2019,2019-10-01 00:00,2019-11-01 00:00
+Nov 2019,2019-11-01 00:00,2019-12-01 00:00
+Dec 2019,2019-12-01 00:00,2020-01-01 00:00
+Jan 2020,2020-01-01 00:00,2020-02-01 00:00
+Feb 2020,2020-02-01 00:00,2020-03-01 00:00
+Mar 2020,2020-03-01 00:00,2020-04-01 00:00
+Apr 2020,2020-04-01 00:00,2020-05-01 00:00
+May 2020,2020-05-01 00:00,2020-06-01 00:00

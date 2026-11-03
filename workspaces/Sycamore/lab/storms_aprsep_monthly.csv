@@ -1,0 +1,9 @@
+# storms_aprsep_monthly.csv -- one window per month, Apr 1 2017 to Oct 1 2017 (Arizona local time). Jul, Aug and Sep are the monsoon.
+# A window contains the hours that START inside [start, end). Used with: --storms storms_aprsep_monthly.csv
+name,start,end
+Apr 2017,2017-04-01 00:00,2017-05-01 00:00
+May 2017,2017-05-01 00:00,2017-06-01 00:00
+Jun 2017,2017-06-01 00:00,2017-07-01 00:00
+Jul 2017,2017-07-01 00:00,2017-08-01 00:00
+Aug 2017,2017-08-01 00:00,2017-09-01 00:00
+Sep 2017,2017-09-01 00:00,2017-10-01 00:00
