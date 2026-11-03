@@ -1,0 +1,9 @@
+# storms_w4_monthly.csv -- one window per month of W4 (Oct 1 2016 to Apr 1 2017), Arizona local time.
+# A window contains the hours that START inside [start, end). Used with: --storms storms_w4_monthly.csv
+name,start,end
+Oct 2016,2016-10-01 00:00,2016-11-01 00:00
+Nov 2016,2016-11-01 00:00,2016-12-01 00:00
+Dec 2016,2016-12-01 00:00,2017-01-01 00:00
+Jan 2017,2017-01-01 00:00,2017-02-01 00:00
+Feb 2017,2017-02-01 00:00,2017-03-01 00:00
+Mar 2017,2017-03-01 00:00,2017-04-01 00:00
