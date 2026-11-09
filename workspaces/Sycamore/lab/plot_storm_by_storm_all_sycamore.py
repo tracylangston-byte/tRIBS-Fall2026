@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-plot_storm_by_storm_all_sycamore.py   (v1.1, 2026-11-03)
+plot_storm_by_storm_all_sycamore.py   (v1.3, 2026-11-04)
 =========================================================
 
 The "storm by storm" figure for EVERY storm in the storm table (storm_table.csv), not only the 20 mm list.
 It replaces plot_w5_rain_by_storm_sycamore.py's two figures (5 and 7 storms). Same three rows:
 
-  VOLUME  (WY2017 only)  outlet volume in M m3 for the USGS gauge, the Re-tuned run and the three Original runs
-                         (loss off, Kchan 0.5, Kchan 0.2). The window runs from 00:00 on the first rain day to
+  VOLUME                 outlet volume in M m3 for the USGS gauge and the model runs. WY2017: Re-tuned and the three Original runs
+                         (loss off, Kchan 0.5, Kchan 0.2). WY2020: Re-tuned and Original (loss off) and, new in v1.3, the Original with Kchan 0.5 and Kchan 0.2 (same colors as WY2017). The window runs from 00:00 on the first rain day to
                          3 days after the last rain day, or the next storm's first day if that comes sooner (the
-                         table's "event window"; no flow is counted in two panels). Above each panel: gauge volume / Re-tuned volume (M m3).
+                         table's "event window"; no flow is counted in two panels). Above each panel: gauge volume / Re-tuned volume (M m3);
+                         WY2020 also shows the Original volume (gauge / Re-tuned / Original).
                          A star (*) replaces the gauge bar and number when the gauge recorded NO flow in the window
-                         (volume under 0.005 M m3).
+                         (volume under 0.005 M m3). WY2020 September storms (before the USGS file starts on Oct 1) have no gauge record: the panel says
+                         "no gauge record" and shows the model only. They are spin-up and do not set the scale of the other panels.
   RAIN                   daily radar rain (mm per day, mean of the whole radar grid), from the hourly basin rain files.
   RATIO                  radar / gauge rain over the storm days (3 gauges, and 2 gauges without Mt. Ord), taken from the storm
                          table. The table has them only for the storms on the 20 mm list; other storms show "not computed".
                          (No gauge dots in this version: they need the daily gauge files, which were not available.)
 
-WY2020 has NO volume row: WY2020 flow and model results stay sealed, so a star there would mean nothing.
+The WY2020 volume row was added after the WY2020 scoring plan was logged and the runs were scored (nothing here is tuned on WY2020).
 A year with more than 8 storms is cut into two bands of panels (same scales in both bands).
 
 NAMES (log entry 21:10): Re-tuned = Ks x1.03, f x0.15, As 300 (the frozen setting); Original = the "as drawn" setting.
@@ -26,7 +28,7 @@ NAMES (log entry 21:10): Re-tuned = Ks x1.03, f x0.15, As 300 (the frozen settin
 WHAT IT READS  (nothing is changed, nothing is run)
   storm_table.csv                                    the storm list (year, event, first_day, last_day, grid_mm, status)
   hourly_basin_wy2017.csv, hourly_basin_wy2020.csv   hourly radar rain (grid_mean_mm), summed to local days
-  results/<run>_Outlet.qout (4 files) + USGS file    WY2017 volumes only
+  results/<run>_Outlet.qout (4 WY2017 files, 2 WY2020 files) + the two USGS files
 WHAT IT WRITES
   <out-dir>/fig_storm_by_storm_all_wy2017.png, fig_storm_by_storm_all_wy2020.png, storm_by_storm_all.csv
 
@@ -49,13 +51,21 @@ import plot_w5_rain_sycamore as P                          # noqa: E402  colors 
 
 AFTER_DAYS = 3
 NO_FLOW_MM3 = 0.005                                        # gauge volume below this = "no gauge flow"
-RUN_START_TS = "2016-10-01 00:00"
-RUNS = [  # label, color, outlet file stem
-    ("Re-tuned: loss off", P.RETUNED_COLOR, "W5_d012_k10_f0p15_as300_ksx1p03_nocl"),
-    ("Original: loss off", P.RUN_COLORS[0], "W5_d012_k10_base_nocl"),
-    ("Original: Kchan 0.5", P.RUN_COLORS[1], "W5_d012_k10_base_kchan0p5"),
-    ("Original: Kchan 0.2", P.RUN_COLORS[2], "W5_d012_k10_base_kchan0p2"),
-]
+RUN_START = {"WY2017": "2016-10-01 00:00", "WY2020": "2019-09-01 00:00"}      # Time_hr 0 of each run
+RUNS_BY_YEAR = {  # label, color, outlet file stem
+    "WY2017": [
+        ("Re-tuned: loss off", P.RETUNED_COLOR, "W5_d012_k10_f0p15_as300_ksx1p03_nocl"),
+        ("Original: loss off", P.RUN_COLORS[0], "W5_d012_k10_base_nocl"),
+        ("Original: Kchan 0.5", P.RUN_COLORS[1], "W5_d012_k10_base_kchan0p5"),
+        ("Original: Kchan 0.2", P.RUN_COLORS[2], "W5_d012_k10_base_kchan0p2"),
+    ],
+    "WY2020": [
+        ("Re-tuned: loss off", P.RETUNED_COLOR, "Sycamore_WY2020_Retuned"),
+        ("Original: loss off", P.RUN_COLORS[0], "Sycamore_WY2020_Original"),
+        ("Original: Kchan 0.5", P.RUN_COLORS[1], "Sycamore_WY2020_Original_kchan0p5"),      # v1.3: the two channel-loss comparison runs
+        ("Original: Kchan 0.2", P.RUN_COLORS[2], "Sycamore_WY2020_Original_kchan0p2"),
+    ],
+}
 
 
 def log(msg=""):
@@ -74,11 +84,11 @@ def load_daily(path: Path) -> pd.DataFrame:
     return d
 
 
-def read_qout(path: Path) -> pd.Series:
+def read_qout(path: Path, start: str) -> pd.Series:
     raw = pd.read_csv(path, sep=",", header=0).iloc[:, :2]
     raw.columns = ["Time_hr", "Q"]
     raw = raw.apply(pd.to_numeric, errors="coerce").dropna()
-    s = pd.Series(raw["Q"].to_numpy(float), index=pd.Timestamp(RUN_START_TS) + pd.to_timedelta(raw["Time_hr"].to_numpy(), unit="h"))
+    s = pd.Series(raw["Q"].to_numpy(float), index=pd.Timestamp(start) + pd.to_timedelta(raw["Time_hr"].to_numpy(), unit="h"))
     return s[~s.index.duplicated(keep="last")].sort_index()
 
 
@@ -95,7 +105,7 @@ def volume(q: pd.Series, a, b):
 
 
 # ------------------------------------------------------------------------------------------------ figure
-def make_year_figure(out: Path, year: str, rows: list, d: pd.DataFrame, vols, exclude="Mt. Ord"):
+def make_year_figure(out: Path, year: str, rows: list, d: pd.DataFrame, vols, runs, exclude="Mt. Ord"):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -124,7 +134,8 @@ def make_year_figure(out: Path, year: str, rows: list, d: pd.DataFrame, vols, ex
         rain_max = max(rain_max, float(np.nanmax(m["grid_mean_radar_mm"].to_numpy(float))) if m["grid_mean_radar_mm"].notna().any() else 0)
     vmax = 0.01
     if with_vol:
-        vmax = max([v["gauge"] for v in vols if np.isfinite(v["gauge"])] + [x for v in vols for x in v["runs"] if np.isfinite(x)] + [0.01])
+        scored = [v for v, st in zip(vols, rows) if st["status_short"] != "spin-up"] or vols      # September spin-up storms do not set the scale
+        vmax = max([v["gauge"] for v in scored if np.isfinite(v["gauge"])] + [x for v in scored for x in v["runs"] if np.isfinite(x)] + [0.01])
     ratio_vals = [r[k] for r in rows for k in ("ratio_3g", "ratio_2g") if np.isfinite(r[k])]
     ymax_r = max(2.0, 1.25 * max(ratio_vals)) if ratio_vals else 2.0
 
@@ -143,21 +154,32 @@ def make_year_figure(out: Path, year: str, rows: list, d: pd.DataFrame, vols, ex
                 ax = axes[r, c]
                 v = vols[i]
                 vals = [v["gauge"]] + list(v["runs"])
-                cols = [P.GAUGE_GRAY] + [col for _, col, _ in RUNS]
+                cols = [P.GAUGE_GRAY] + [col for _, col, _ in runs]
                 bw = 0.8 / len(vals)
                 for k, (val, col) in enumerate(zip(vals, cols)):
+                    if k == 0 and v["no_record"]:
+                        continue                                                           # no gauge file for these days: draw nothing
                     if k == 0 and v["no_flow"]:
                         ax.text(-0.4 + bw * 0.5, vmax * 0.015, "*", ha="center", va="bottom", fontsize=17, color=P.INK, fontweight="bold")
                         continue
                     ax.bar(-0.4 + bw * (k + 0.5), val, width=bw, color=col)
                 ax.set_xlim(-0.55, 0.55)
                 ax.set_ylim(0, vmax * 1.28)
+                if any(np.isfinite(x) and x > vmax * 1.28 for x in vals):
+                    ax.text(0.5, 0.74, "bars off scale", transform=ax.transAxes, ha="center", va="top", fontsize=6.3, color=P.INK_2, bbox=dict(facecolor="white", edgecolor="none", pad=1.2), zorder=5)
                 ax.set_xticks([])
-                gtxt = "*" if v["no_flow"] else f"{v['gauge']:.2f}"
-                ax.text(0.5, 0.985, f"{gtxt} / {v['runs'][0]:.2f}", transform=ax.transAxes, ha="center", va="top", fontsize=7.8, color=P.INK)
-                if v["gauge_hours"] < 0.97 * v["hours_expected"]:
+                gtxt = "n/a" if v["no_record"] else ("*" if v["no_flow"] else f"{v['gauge']:.2f}")
+                if year == "WY2020" and len(runs) >= 4:                                   # line 1: gauge / Re-tuned / Original; line 2: Kchan 0.5 / Kchan 0.2
+                    txt = " / ".join([gtxt] + [f"{x:.2f}" for x in v["runs"][:2]]) + "\n" + " / ".join(f"{x:.2f}" for x in v["runs"][2:4])
+                else:
+                    shown = v["runs"][:2] if len(runs) <= 2 else v["runs"][:1]           # WY2017: Re-tuned only
+                    txt = " / ".join([gtxt] + [f"{x:.2f}" for x in shown])
+                ax.text(0.5, 0.985, txt, transform=ax.transAxes, ha="center", va="top", fontsize=7.8, color=P.INK, bbox=dict(facecolor="white", edgecolor="none", pad=1.2), zorder=5)
+                if v["no_record"]:
+                    ax.text(0.5, 0.86, "no gauge record", transform=ax.transAxes, ha="center", va="top", fontsize=6.3, color=P.INK_2, bbox=dict(facecolor="white", edgecolor="none", pad=1.2), zorder=5)
+                elif v["gauge_hours"] < 0.97 * v["hours_expected"]:
                     ax.text(0.5, 0.86, f"gauge {v['gauge_hours']} of {v['hours_expected']} h", transform=ax.transAxes, ha="center", va="top",
-                            fontsize=6.3, color=P.INK_2)
+                            fontsize=6.3, color=P.INK_2, bbox=dict(facecolor="white", edgecolor="none", pad=1.2), zorder=5)
                 if c == 0:
                     ax.set_ylabel("Outlet volume (M m$^3$)\nover the storm window")
                 else:
@@ -206,17 +228,18 @@ def make_year_figure(out: Path, year: str, rows: list, d: pd.DataFrame, vols, ex
 
     handles = []
     if with_vol:
-        handles += [Patch(color=P.GAUGE_GRAY, label="USGS gauge")] + [Patch(color=c, label=l) for l, c, _ in RUNS]
+        handles += [Patch(color=P.GAUGE_GRAY, label="USGS gauge")] + [Patch(color=c, label=l) for l, c, _ in runs]
     handles += [Patch(color=P.RAIN_BLUE, label="radar rain, grid mean (all cells)"),
                 Line2D([], [], marker="o", ls="", color=P.RATIO3_COLOR, label="ratio, 3 gauges (with Mt. Ord)"),
                 Line2D([], [], marker="s", ls="", color=P.RATIO2_COLOR, label=f"ratio, 2 gauges (without {exclude})")]
-    fig.suptitle(f"{year}: storm by storm, all {n} storms in the storm table" + ("" if with_vol else "  (rain only: WY2020 flow and model results stay sealed)"),
+    fig.suptitle(f"{year}: storm by storm, all {n} storms in the storm table" + ("" if with_vol else "  (rain only)"),
                  x=0.01, y=0.992, ha="left", fontsize=12)
     fig.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, 0.035), ncol=5 if with_vol else 4, frameon=False, fontsize=8.3)
     foot = ("Ratio = radar 3x3-cell mean at each gauge / gauge rain over the storm days, summed over the gauges; the storm table has it only for the 20 mm list. "
             "Paler bars = day before and day after.\n")
     if with_vol:
-        foot += (f"Volume window: 00:00 on the first rain day to {AFTER_DAYS} days after the last rain day, or the next storm's first day if sooner. Numbers above the bars: gauge / Re-tuned volume (M m3). "
+        foot += (f"Volume window: 00:00 on the first rain day to {AFTER_DAYS} days after the last rain day, or the next storm's first day if sooner.\n"
+                 f"Numbers above the bars: gauge / Re-tuned" + (" / Original (WY2020: second line = Original with Kchan 0.5 / Kchan 0.2)" if year == "WY2020" else "") + " volume (M m3). "
                  f"* = USGS gauge recorded no flow in the window (under {NO_FLOW_MM3:g} M m3).")
     fig.text(0.01, 0.004, foot, fontsize=7.2, color=P.INK_2, va="bottom", ha="left")
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -260,13 +283,15 @@ def main(argv=None) -> int:
     ap.add_argument("--hourly-wy2017", default="hourly_basin_wy2017.csv")
     ap.add_argument("--hourly-wy2020", default="hourly_basin_wy2020.csv")
     ap.add_argument("--results", default=None, help="folder with the four *_Outlet.qout files (default <root>/results)")
-    ap.add_argument("--obs", default=None, help="USGS gauge file (default <root>/../init_data/sycamore_09510200_obs_flow_WY2017.csv)")
+    ap.add_argument("--obs", default=None, help="USGS gauge file, WY2017 (default <root>/../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv)")
+    ap.add_argument("--obs-wy2020", default=None, help="USGS gauge file, WY2020 (default <root>/../init_data/obs/sycamore_09510200_obs_flow_WY2020.csv)")
     ap.add_argument("--out-dir", default=None)
     ap.add_argument("--no-volumes", action="store_true")
     a = ap.parse_args(argv)
     root = Path(a.root)
     res = Path(a.results) if a.results else root / "results"
-    obs = Path(a.obs) if a.obs else root.parent / "init_data" / "sycamore_09510200_obs_flow_WY2017.csv"
+    obs_by_year = {"WY2017": Path(a.obs) if a.obs else root.parent / "init_data" / "obs" / "sycamore_09510200_obs_flow_WY2017.csv",
+                   "WY2020": Path(a.obs_wy2020) if a.obs_wy2020 else root.parent / "init_data" / "obs" / "sycamore_09510200_obs_flow_WY2020.csv"}
     out_dir = Path(a.out_dir) if a.out_dir else root / P.FIG_DIR
 
     tab = read_table(a.table)
@@ -291,9 +316,16 @@ def main(argv=None) -> int:
                 log(f"  WARNING: {r['event']}: grid rain {st['grid_mm']:.2f} mm here vs {float(r['grid_mm']):.2f} mm in the table")
             rows.append(st)
         vols = None
-        if year == "WY2017" and not a.no_volumes:
-            gq = read_obs(obs)
-            qs = [(lab, col, read_qout(res / f"{stem}_Outlet.qout")) for lab, col, stem in RUNS]
+        runs = [r_ for r_ in RUNS_BY_YEAR[year] if year != "WY2020" or "kchan" not in r_[2] or (res / f"{r_[2]}_Outlet.qout").is_file()]
+        if len(runs) < len(RUNS_BY_YEAR[year]):
+            log(f"  {year}: Kchan outlet file(s) not found in {res}: those bars are left out")
+        need = [obs_by_year[year]] + [res / f"{stem}_Outlet.qout" for _, _, stem in runs]
+        absent = [str(x) for x in need if not Path(x).is_file()]
+        if absent and not a.no_volumes:
+            log(f"  {year}: no volume row (file not found): " + "; ".join(absent))
+        if not a.no_volumes and not absent:
+            gq = read_obs(obs_by_year[year])
+            qs = [(lab, col, read_qout(res / f"{stem}_Outlet.qout", RUN_START[year])) for lab, col, stem in runs]
             vols = []
             for k_, st in enumerate(rows):
                 lo = st["first"]
@@ -301,22 +333,24 @@ def main(argv=None) -> int:
                 if k_ + 1 < len(rows):                                    # stop at the next storm's first day, so no flow is counted twice
                     hi = min(hi, rows[k_ + 1]["first"])
                 g, gh = volume(gq, lo, hi)
+                no_record = gh == 0                                       # the USGS file has no hours in this window (WY2020 September)
                 g = 0.0 if not np.isfinite(g) else g
                 v = {"gauge": g, "gauge_hours": gh, "hours_expected": int((hi - lo) / pd.Timedelta(hours=1)),
-                     "no_flow": g < NO_FLOW_MM3, "runs": [volume(q, lo, hi)[0] for _, _, q in qs]}
+                     "no_record": no_record, "no_flow": (g < NO_FLOW_MM3) and not no_record, "runs": [volume(q, lo, hi)[0] for _, _, q in qs]}
                 vols.append(v)
-            log("\nWY2017 volumes (M m3), window = first rain day 00:00 to 3 days after the last rain day (or the next storm's first day)")
+            log(f"\n{year} volumes (M m3), window = first rain day 00:00 to 3 days after the last rain day (or the next storm's first day)")
             for st, v in zip(rows, vols):
-                log(f"  {st['event']:14s} gauge {v['gauge']:.4f} ({v['gauge_hours']}/{v['hours_expected']} h){'  *' if v['no_flow'] else ''}  "
+                log(f"  {st['event']:14s} gauge {v['gauge']:.4f} ({v['gauge_hours']}/{v['hours_expected']} h){'  *' if v['no_flow'] else ''}{'  no gauge record' if v['no_record'] else ''}  "
                     + "  ".join(f"{x:.4f}" for x in v["runs"]))
         for i, st in enumerate(rows):
             rec = {"year": year, "event": st["event"], "first_day": st["first"].date(), "last_day": st["last"].date(), "grid_mm": st["grid_mm"],
                    "ratio_3g": st["ratio_3g"], "ratio_2g": st["ratio_2g"]}
             if vols is not None:
-                rec.update({"gauge_Mm3": vols[i]["gauge"], "gauge_no_flow": vols[i]["no_flow"]})
-                rec.update({lab: x for (lab, _, _), x in zip(RUNS, vols[i]["runs"])})
+                rec.update({"gauge_Mm3": float("nan") if vols[i]["no_record"] else vols[i]["gauge"], "gauge_no_flow": vols[i]["no_flow"],
+                            "gauge_no_record": vols[i]["no_record"]})
+                rec.update({lab: x for (lab, _, _), x in zip(runs, vols[i]["runs"])})
             out_rows.append(rec)
-        log("  wrote " + make_year_figure(out_dir / f"fig_storm_by_storm_all_{year.lower()}.png", year, rows, d, vols))
+        log("  wrote " + make_year_figure(out_dir / f"fig_storm_by_storm_all_{year.lower()}.png", year, rows, d, vols, runs))
     pd.DataFrame(out_rows).to_csv(out_dir / "storm_by_storm_all.csv", index=False)
     log("  wrote " + str(out_dir / "storm_by_storm_all.csv"))
     return 0

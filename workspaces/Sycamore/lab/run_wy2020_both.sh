@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# run_wy2020_both.sh   (v1.0, 2026-11-03)
+# run_wy2020_both.sh   (v1.1, 2026-11-04)
 # =============================================================================
-# Builds the WY2020 model inputs and runs tRIBS TWICE, one after the other:
-#     1. Re-tuned  (the frozen setting)
-#     2. Original  (what older notes call "as drawn")
-# Both start Sep 1 2019 and run 6,575 hours (to May 31 2020 23:00).
+# Builds the WY2020 model inputs and runs tRIBS once for each setting you list, one after the other. The settings:
+#     Re-tuned           the frozen setting, channel loss off                       (the default run 1; done 2026-11-04)
+#     Original           what older notes call "as drawn", channel loss off          (the default run 2; done 2026-11-04)
+#     Original-Kchan0.5  the Original with channel loss ON, Kchan 0.5 mm/hr          (added in v1.1)
+#     Original-Kchan0.2  the Original with channel loss ON, Kchan 0.2 mm/hr          (added in v1.1)
+# All start Sep 1 2019 and run 6,575 hours (to May 31 2020 23:00).
 #
 # For each setting it:
 #   a. runs Make_Sycamore_Model_WY2020.ipynb from top to bottom (SYCAMORE_SETTING tells it which setting),
@@ -13,12 +15,14 @@
 #   c. checks that the outlet file reached the end of the run (row count and last hour only)
 #
 # It runs them one at a time, never together, because both settings write their soil files into data/model/.
-# It does NOT open, score, plot or compare any flow. WY2020 is the validation year and stays sealed.
+# It does NOT open, score, plot or compare any flow. WY2020 was unsealed on 2026-11-04 under the logged scoring plan; this script still opens nothing.
 #
 # HOW TO RUN (from workspaces/Sycamore/lab/):
 #     chmod +x run_wy2020_both.sh          # once
 #     CHECK_ONLY=1 ./run_wy2020_both.sh    # builds both input files, does NOT run tRIBS (a dry run, a few minutes each)
-#     ./run_wy2020_both.sh                 # the real thing (roughly 2 hours in all; an estimate)
+#     ./run_wy2020_both.sh                 # the real thing for Re-tuned then Original (roughly 2 hours in all; an estimate)
+#     SETTINGS="Original-Kchan0.5 Original-Kchan0.2" ./run_wy2020_both.sh     # the two channel-loss runs (v1.1)
+#     CHECK_ONLY=1 SETTINGS="Original-Kchan0.5 Original-Kchan0.2" ./run_wy2020_both.sh   # their dry run first
 #
 # Keep the terminal open and the Codespace tab open while it runs. Do not run any other notebook that writes to data/model/.
 #
@@ -26,7 +30,7 @@
 #     TRIBS_BIN      the tRIBS program            (default /opt/tRIBS/build/tRIBS, else whatever "which tRIBS" finds)
 #     RADAR_DIR      the folder with the radar_*.asc files (default: searched for)
 #     PYTHON         python to use                (default python)
-#     SETTINGS       which settings, in order     (default "Re-tuned Original")
+#     SETTINGS       which settings, in order     (default "Re-tuned Original"; also Original-Kchan0.5, Original-Kchan0.2)
 #     CHECK_ONLY     1 = build inputs only
 #     TIMEOUT_MIN    stop a tRIBS run after this many minutes (default 240)
 # =============================================================================
@@ -165,9 +169,11 @@ START_ALL=$(date +%s)
 SUMMARY=()
 for SETTING in $SETTINGS; do
   case "$SETTING" in
-    Re-tuned) TAG=Retuned ;;
-    Original) TAG=Original ;;
-    *) die "unknown setting '$SETTING' (use Re-tuned or Original)." ;;
+    Re-tuned)          TAG=Retuned;           WANT_PERC=0; WANT_KCHAN="" ;;
+    Original)          TAG=Original;          WANT_PERC=0; WANT_KCHAN="" ;;
+    Original-Kchan0.5) TAG=Original_kchan0p5; WANT_PERC=1; WANT_KCHAN=0.5 ;;
+    Original-Kchan0.2) TAG=Original_kchan0p2; WANT_PERC=1; WANT_KCHAN=0.2 ;;
+    *) die "unknown setting '$SETTING' (use Re-tuned, Original, Original-Kchan0.5 or Original-Kchan0.2)." ;;
   esac
   INFILE="Sycamore_WY2020_${TAG}.in"
   if [ "$CHECK_ONLY" != "1" ] && [ -e "results/Sycamore_WY2020_${TAG}_Outlet.qout" ]; then
@@ -184,6 +190,12 @@ for SETTING in $SETTINGS; do
   [ "$RT" = "$RUN_HOURS" ] || die "$INFILE has RUNTIME $RT; expected $RUN_HOURS."
   [ "$SD" = "09/01/2019/00/00" ] || die "$INFILE has STARTDATE $SD; expected 09/01/2019/00/00."
   case "$OUTP" in *"WY2020_${TAG}") ;; *) die "$INFILE writes results to '$OUTP'; expected a name ending in WY2020_${TAG}." ;; esac
+  PERC=$(keyword_value "$INFILE" OPTPERCOLATION); KC=$(keyword_value "$INFILE" CHANNELCONDUCTIVITY)
+  say "$INFILE says: OPTPERCOLATION $PERC (channel loss $([ "$PERC" = 1 ] && echo ON || echo off)), CHANNELCONDUCTIVITY $KC"
+  [ "$PERC" = "$WANT_PERC" ] || die "$INFILE has OPTPERCOLATION $PERC; $SETTING needs $WANT_PERC."
+  if [ "$WANT_PERC" = "1" ]; then
+    awk -v a="$KC" -v b="$WANT_KCHAN" 'BEGIN {exit !(a+0 == b+0)}' || die "$INFILE has CHANNELCONDUCTIVITY $KC; $SETTING needs $WANT_KCHAN."
+  fi
   OUTLET="${OUTP}_Outlet.qout"
 
   if [ "$CHECK_ONLY" = "1" ]; then
@@ -204,6 +216,7 @@ say "ALL DONE in $(( ($(date +%s) - START_ALL) / 60 )) minutes."
 printf '  %s\n' "${SUMMARY[@]}"
 cat <<'MSG'
 
-WY2020 flow and model results are SEALED. They have not been opened, scored or plotted by this script.
-Do not open the results files, or compare with the gauge, until the scoring plan is written down.
+These runs have not been opened, scored or plotted by this script.
+Score them with the logged scoring plan (the same seven storms), side by side with Re-tuned and Original.
+They are comparison runs on the validation year: do not use them to pick or tune a WY2020 setting.
 MSG
