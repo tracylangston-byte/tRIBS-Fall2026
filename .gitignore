@@ -49,3 +49,21 @@ workspaces/Sycamore/init_data/solus/*.tif
 /workspaces/Sycamore/lab/W1TRIAL_*.in
 /workspaces/Sycamore/lab/*_logs/
 /workspaces/Sycamore/lab/w2.lock
+# Sycamore lab: generated figures, run outputs and logs (kept locally, not on GitHub)
+workspaces/Sycamore/lab/logs/
+workspaces/Sycamore/lab/figures/
+workspaces/Sycamore/lab/all_hydro_figs/
+workspaces/Sycamore/lab/season_figs/
+workspaces/Sycamore/lab/wy2020_hydro_figs/
+workspaces/Sycamore/lab/model_state_out/
+workspaces/Sycamore/lab/storm_features_out/
+workspaces/Sycamore/lab/timing_out/
+workspaces/Sycamore/lab/timing_out_all_storms/
+workspaces/Sycamore/lab/wy2017_slide_data/
+workspaces/Sycamore/lab/wy2020_slide_data/
+workspaces/Sycamore/lab/w5_files/
+workspaces/Sycamore/lab/Sycamore_landcover_figure.png
+workspaces/Sycamore/lab/Sycamore_mesh_figure.png
+workspaces/Sycamore/lab/Sycamore_soil_grids_figure.png
+workspaces/Sycamore/lab/soil_grid_gap_check.png
+workspaces/Sycamore/lab/spreadsheet.ipynb
