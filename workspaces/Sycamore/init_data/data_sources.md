@@ -58,7 +58,7 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 - **Units / time:** cfs, not yet converted (1 cfs = 0.0283168 m³/s). Daily mean for the Arizona calendar day (MST, no daylight saving).
 - **Used for:** Water-year screening (2026-10-08). WY2017 chosen as the calibration year (2026-10-09).
 - **WY2017 (2016-10-01 to 2017-09-30):** 365 of 365 days, all approved (252 A, 113 A:e). Largest daily mean 1,920 cfs on 2017-01-21. Volume about 15,000 acre-feet. Essentially no flow Oct–Dec 2016 or Jun–Sep 2017. Estimated days that matter: 2017-01-01 to 01-04 and 2017-01-25 (both event days). The rest are zero-flow days in Dec and May–Sep.
-- **Limits:** Daily means understate flood peaks. The 15-minute (instantaneous) series is pulled for WY2017 (see the next entry). Upstream diversions and regulation are not checked.
+- **Limits:** Daily means understate flood peaks. The 15-minute (instantaneous) series is pulled for WY2017, WY2020 and September 2019 (see the entries below). Upstream diversions and regulation are not checked.
 
 ### Streamflow, 15-minute: USGS 09510200 Sycamore Creek near Fort McDowell, AZ (WY2017)
 
@@ -82,9 +82,32 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 - **Checks:** 34,568 readings, all MST, none provisional; 355 of 355 compared days agree with USGS daily means within 5%; peak 7,800 cfs (220.9 m³/s) at 2017-01-21 01:35 MST.
 - **Quality codes:** A 24,620 and A:e 9,948 across all 15-minute files (checked 2026-10-15); no provisional codes.
 - **Example of why this file is needed:** on 2017-01-21 the daily mean is 1,920 cfs, while the 15-minute record peaks at 7,800 cfs at 01:35 MST. Confirm this from the merged file.
-**Units:** cfs in the raw files (1 cfs = 0.0283168 m3/s). The model-ready file made by make_obs_flow.py is in m3/s, Arizona time.- **Used for:** WY2017 calibration target for storm timing and peaks. The daily-mean file is used for volumes and for screening.
+- **Units:** cfs in the raw files (1 cfs = 0.0283168 m3/s). The model-ready file made by make_obs_flow.py is in m3/s, Arizona time.
+- **Used for:** WY2017 calibration target for storm timing and peaks. The daily-mean file is used for volumes and for screening.
 - **Done:** merge_inst_flow.py joined the pieces and make_obs_flow.py wrote the model-ready file (Mar 12 interpolated from the daily mean; Jan 1-2 outage excluded from scoring).
 - **Open items:** retry 2017-03-12 (try format=json if rdb keeps failing). Status as of 2026-10-15: No 2017-03-12 file exists in the folder (checked 2026-10-15).
+
+### Streamflow, 15-minute: USGS 09510200 (WY2020, validation year)
+
+- **What:** Same series as WY2017 (parameter 00060, cfs, time series 6802), from the NWIS instantaneous-values service.
+- **Pulled:** 2026-11-03 (about 3:30 AM Arizona time), with `curl -L`. The service now answers with a 301 redirect to nwis.waterservices.usgs.gov, so without `-L` the first attempt gave eight 0-byte files with exit 0.
+- **Saved in:** workspaces/Sycamore/init_data/obs/ as `ivwy2020_<start>_to_<end>.rdb` (Oct, Nov, Dec, Jan, Feb, Apr, May monthly pieces) and `ivwy2020_2020-03-DD.rdb` (March was pulled day by day because the monthly request returned 503). 37 files: 7 monthly + 30 daily.
+- **Period covered:** 2019-10-01 00:00 to 2020-05-31 23:45.
+- **Merged with:** merge_inst_flow.py. Outputs: `sycamore_09510200_inst_flow_WY2020.csv`, `..._gaps.csv`, log `merge_inst_flow_wy2020.log`.
+- **Checks:** 23,188 valid readings, all MST, all numbers. Quality codes: A 19,882 and A:e 3,306 (14.3% estimated), none provisional. Daily cross-check: 230 days compared, all within 5% of the USGS daily means.
+- **Gaps:** 48 gaps over 30 min (66.8 h total). Mostly 0.75-2 h dropouts in December 2019 (Dec 2-17 and Dec 27-30), a few in Nov, Jan, Feb, Apr. One 24.25 h gap, Mar 7 23:45 to Mar 9 00:00 (Mar 8 download refused with 503, not retried); make_obs_flow.py filled it with a straight line because the approved USGS daily means form a smooth recession (30.6 -> 28.9 -> 29.9 cfs). Eight 1-hour spacings on May 15 03:30-11:30 (hourly readings).
+- **Model-ready file:** `sycamore_09510200_obs_flow_WY2020.csv` plus `_fills.csv`, written by make_obs_flow.py on 2026-11-03 (Arizona). Same format as the WY2017 file: datetime, q_cms, q_cfs, tier, note; Arizona time, no DST.
+- **Used for:** WY2020 validation scoring and the one-change diagnostic screens.
+
+### Streamflow, 15-minute: USGS 09510200 (September 2019, display only)
+
+- **What:** Instantaneous discharge, parameter 00060 (ft3/s), statistic 00011, from a USGS "primary-time-series" CSV download (columns monitoring_location_id, parameter_code, statistic_id, time, value, unit_of_measure, approval_status, qualifier).
+- **Downloaded:** 2026-11-07. File name `ebe401fe-primary-time-series.csv`.
+- **Source page:** USGS Water Data for the Nation, monitoring location page for USGS-09510200, continuous discharge (00060), dates 2019-09-01 to 2019-10-01. The file was downloaded from this page (the newer USGS Water Data service, not the legacy NWIS web service used for the other 15-minute pulls): https://waterdata.usgs.gov/monitoring-location/USGS-09510200/#dataTypeId=continuous-00060-0&showFieldMeasurements=true&showMedian=true&startDT=2019-09-01&endDT=2019-10-01
+- **Contents:** 3,110 rows, all "Approved", no duplicate times. UTC times from 2019-09-01 07:00 to 2019-10-02 06:45, which is Sep 1 00:00 to Oct 1 23:45 Arizona time. 15-minute readings, 5-minute during the Sep 23 storm; one 1-hour gap about Sep 24 14:00. Every reading is 0.00 from Sep 1 to Sep 22.
+- **Why:** the WY2020 flow file starts Oct 1 2019 but model runs start Sep 1 2019, so this lets the September storm be shown in hydrograph figures. September is NOT scored.
+- **Processing:** add_sep2019_gauge_sycamore.py converts UTC to Arizona time and ft3/s to m3/s (x 0.028316846592), checks the overlap with the existing WY2020 file on Oct 1, and writes `sycamore_09510200_obs_flow_Sep2019_to_May2020.csv` (made 2026-11-08, Arizona). The WY2020 file itself is not changed.
+- **September gauge volume:** 3.495 M m3 for the month (3.424 M m3 in the Sep 23-27 storm window).
 
 ## Rainfall
 ### Radar rainfall, pre-Oct 2020 (candidate)
@@ -97,7 +120,7 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 - Tested: one file only (2019-07-20 21:00 UTC), saved outside the repo in ~/mrms_test.
   Grid is 7000 x 3500, 0.01 deg, lat/lon. Valid time matches the file name.
   -3 is the only negative value and means no coverage. Cells at the gauge read 0.0 (dry hour).
-- Downloaded for WY2017 only (see the WY2017 entry below).
+- Downloaded for WY2017 and WY2020 (see the entries below).
 - Open items:
   - Time label (start vs end of the hour): the archive stamp is assumed to mark the END of the accumulation hour (the GRIB metadata does not say). tRIBS reads the hour in a rain file name as the past hour (Josh Cederstrom, 2026-10-13), so the WY2017 files are labeled by the end of the hour (see the WY2017 entry below). Still to confirm against a gauge on a real storm.
   - GaugeCorr folder absent on 2015-01-15, present on 2015-07-20; start date unknown, so use WY2016 onward.
@@ -126,6 +149,19 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
 - Plausibility check against FCDMC ALERT gauges (Mt. Ord 2000, Sycamore Cr Upper 82200, Iron Dike 83000), using five by-hand historic reports (12/24/16, 12/31/16, 01/20/17, 07/14/17, 07/24/17 at 23:59 MST, from alert.fcd.maricopa.gov/php/prpt_hist.php): radar grid-mean 72-hr totals were 69-87% of the mean of the three gauges in four widespread storms; 07/14/17 was a localized storm (only 82200 recorded notable rain). Mt. Ord read ~0 on 01/20/17 (outage or unmelted snow; left out of that comparison). Comparison used the whole-grid mean, not radar at the gauge cells.
 - Known limits: tRIBS 6.0.0 reads gridded rain hourly only, which smooths convective peaks. The monthly values and the 550.6 mm total use the whole grid, not a basin outline.
 
+### Radar rainfall, hourly gridded (WY2020, validation year)
+
+- Product: same as WY2017: MRMS hourly `GaugeCorr_QPE_01H_00.00` (mm) from the Iowa State Mesonet MTArchive (`--source iem`). Not spliced with the AWS product (starts 2020-10-14).
+- Pulled and audited 2026-10-28 with build_mrms_radar_rainfall_tribs6.py. A one-week test (2019-09-01 to 2019-09-08, 168 files) passed first, then the full run reused those hours. Settings: --source iem --stamp-convention end --bbox -111.64 33.62 -111.31 34.06 --buffer-km 0 --start "2019-09-01 01:00" --end "2020-06-01 00:00". Working folder: ~/mrms_wk_wy2020 (`rain/` holds the .asc files tRIBS reads; `clips/` is kept so the grids can be relabeled without a re-download).
+- Period: 6,576 hourly files, labeled 2019-09-01 01:00 to 2020-06-01 00:00 Arizona time (UTC-7). The label is the END of the hour, same as WY2017. Archive stamps run 2019-09-01 08:00 to 2020-06-01 07:00 UTC.
+- Grid: identical to WY2017: 32 x 49 cells of 1,000 m, EPSG:26912, x 440,000-472,000, y 3,720,000-3,769,000. The WY2017 grid was reproduced from its domain.json. `data/preprocessing/Sycamore_boundary.shp` was NOT used (it gives a smaller 20 x 38 grid).
+- Missing from the archive: 2 of 6,576 hours (0.03%), written as all-zero grids (flagged filled_zero_missing_hour in manifest.csv): 2019-11-14 06:00 and 2020-04-03 06:00 (local labels). The hours before and after each were 0.0 mm, so no storm was lost.
+- Audit: PASS with 1 warning (the zero-filled hours). All files present and parse, one shared header, no NaN or negative values.
+- Whole-grid mean over the run: 537.4 mm; 469 hours above 0.1 mm/hr (7.1%). Monthly whole-grid means (mm): Sep 134.1, Oct 0.0, Nov 117.9, Dec 96.7, Jan 10.7, Feb 77.1, Mar 91.3, Apr 6.8, May 2.9. Wettest hour: 2019-09-23 15:00 (11.27 mm/hr). October 2019 had only 2 hours with any rain (wettest cell 0.09 mm): consistent with a dry month, not checked against gauges.
+- Backup: ~/mrms_wy2020_radar_endlabel_2026-10-28.tar.gz, downloaded to local computer.
+- Status: was sealed (not scored or tuned) until Stage 8; since early November WY2020 has been scored against the gauge and used for one-change diagnostic screens. Start-versus-end label question for Josh applies to both years.
+- Known limits: IEM has announced it will cut its raw MRMS archive (notices 2025-09-24 and 2026-08-06); the files were still there on 2026-10-28.
+
 ## Other weather
 ### Other weather: NLDAS-2 point stations (written 2026-10-13)
 
@@ -139,6 +175,19 @@ This log records every dataset used to build the Lower Sycamore Wash model (USGS
   - NLDAS_3 (north-east cell): easting 457187.2, northing 3754435.2, elevation 1435 m, lat 33.9295, lon -111.4632
 - Files: ../init_data/met/Master_Met.sdf and the met_NLDAS_*.mdf files beside it. NLDAS rain files written outside the repo (~/nldas_unused_precip/Precip_NLDAS_unused.sdf) and not used.
 - tRIBS check (source read 2026-10-14): TEMPLAPSE (default -0.0065 K/m) adjusts air temperature to each node's elevation, but not pressure. Whether 3 stations are enough across 540-2,330 m is open (in the plan doc’s Josh table). Whether the weather rows follow the "past hour" rule is open (in the plan doc’s Josh table).
+
+### Other weather: NLDAS-2 point stations, WY2020 window (written 2026-11-03)
+- Source: NLDAS-2 hourly primary forcing (NLDAS_FORA0125_H v2.0, 0.125 degree), NASA GES DISC, retrieved through the Giovanni time-series service with pytRIBS Met.get_nldas_point (pytRIBS 1.0.0).
+- Downloaded: 2026-11-03 (Arizona evening); saved pieces in ~/nldas_cache.
+- Variables: air temperature, specific humidity, surface pressure, 10 m wind (u and v), downward shortwave radiation. NLDAS rain was also downloaded but is NOT used (rain comes from the MRMS/IEM radar grids).
+- Window: 2019-09-01 00:00 to 2020-05-31 23:00 Arizona time (UTC-7); requested 2019-08-31 to 2020-06-01 UTC. Timestamp shift: gmt = -8 (LABEL_SHIFT_HOURS = -1, the same as the WY2017 files; start-versus-end-of-hour meaning NOT yet confirmed with Josh).
+- Conversion: pytRIBS convert_and_write_nldas_timeseries (Pa to hPa, K to C, specific humidity to RH, 10 m wind to 2 m, UTC to local). Gaps up to 3 hours filled by linear interpolation.
+- Stations: the same three as the WY2017 files (nearest-station rule; station elevation = NLDAS cell mean elevation). The files carry no extra lapse-rate correction; tRIBS applies its own TEMPLAPSE node by node.
+  - NLDAS_1 (south-west cell): easting 450970.2, northing 3730800.7, elevation 657 m, lat 33.7161, lon -111.5292
+  - NLDAS_2 (middle-east cell): easting 458992.2, northing 3741416.2, elevation 1247 m, lat 33.8122, lon -111.4431
+  - NLDAS_3 (north-east cell): easting 457187.2, northing 3754435.2, elevation 1435 m, lat 33.9295, lon -111.4632
+- Files: ../init_data/met_wy2020/Master_Met.sdf and the met_NLDAS_*.mdf files beside it. NLDAS rain files written outside the repo (~/nldas_unused_precip/Precip_NLDAS_unused_wy2020.sdf) and not used.
+- Used for: the WY2020 runs (validation scoring and one-change diagnostic screens). No streamflow or model result was read to make these files.
 
 ## Soils
 ### SOLUS100 soil properties and bedrock depth
