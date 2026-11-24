@@ -1,0 +1,11 @@
+year,storm,kind,first_day,last_day,window_hours,note
+WY2020,Sep 10,spin-up,2019-09-10,2019-09-10,0,storm is outside the radar record
+WY2020,Sep 23,spin-up,2019-09-23,2019-09-23,0,storm is outside the radar record
+WY2020,Nov 19-22,listed,2019-11-19,2019-11-22,0,storm is outside the radar record
+WY2020,Nov 28-30,listed,2019-11-28,2019-11-30,0,storm is outside the radar record
+WY2020,Dec 7-8,near-miss,2019-12-07,2019-12-08,0,storm is outside the radar record
+WY2020,Dec 23-28,listed,2019-12-23,2019-12-28,0,storm is outside the radar record
+WY2020,Feb 10-11,listed,2020-02-10,2020-02-11,0,storm is outside the radar record
+WY2020,Feb 22-23,listed,2020-02-22,2020-02-23,0,storm is outside the radar record
+WY2020,Mar 10-13,listed,2020-03-10,2020-03-13,0,storm is outside the radar record
+WY2020,Mar 18-19,listed,2020-03-18,2020-03-19,0,storm is outside the radar record

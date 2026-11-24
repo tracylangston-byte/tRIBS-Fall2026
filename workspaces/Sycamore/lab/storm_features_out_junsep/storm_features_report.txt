@@ -1,0 +1,83 @@
+storm_features_sycamore v1: rain-only features of each storm (radar, area-weighted over the basin)
+thresholds [2.2, 4.0] mm/h; the storm = whole local days from the first to the last rain day
+
+1. INTENSITY (mm; rain per hour in mm/h)
+  peak_Nh = the most rain in any N hours (mm).  top6h_share = share of the storm's rain in its six wettest hours.  t50_frac = how far through the storm half the rain had fallen.
+  year     storm      kind
+WY2020    Sep 10   spin-up
+WY2020    Sep 23   spin-up
+WY2020 Nov 19-22    listed
+WY2020 Nov 28-30    listed
+WY2020   Dec 7-8 near-miss
+WY2020 Dec 23-28    listed
+WY2020 Feb 10-11    listed
+WY2020 Feb 22-23    listed
+WY2020 Mar 10-13    listed
+WY2020 Mar 18-19    listed
+
+1b. RAIN ABOVE WHAT THE SOIL CAN TAKE
+  hours_ge/depth_ge use the basin mean; excess_ adds up, cell by cell, the part of the rain above the threshold (the better number).
+  year     storm      kind
+WY2020    Sep 10   spin-up
+WY2020    Sep 23   spin-up
+WY2020 Nov 19-22    listed
+WY2020 Nov 28-30    listed
+WY2020   Dec 7-8 near-miss
+WY2020 Dec 23-28    listed
+WY2020 Feb 10-11    listed
+WY2020 Feb 22-23    listed
+WY2020 Mar 10-13    listed
+WY2020 Mar 18-19    listed
+
+2. WHERE THE RAIN FELL AND HOW IT MOVED
+  dist_skew_km below zero = more rain than usual near the outlet.  Bearings are degrees clockwise from north (0 N, 90 E, 180 S, 270 W).  arrival_dir = where the rain moved TO; a speed is given only when R2 is 0.3 or more.
+  year     storm      kind
+WY2020    Sep 10   spin-up
+WY2020    Sep 23   spin-up
+WY2020 Nov 19-22    listed
+WY2020 Nov 28-30    listed
+WY2020   Dec 7-8 near-miss
+WY2020 Dec 23-28    listed
+WY2020 Feb 10-11    listed
+WY2020 Feb 22-23    listed
+WY2020 Mar 10-13    listed
+WY2020 Mar 18-19    listed
+
+3. STARTING CONDITIONS FROM RAIN ALONE (basin rain, mm)
+  season_mm = rain since Oct 1.  prev_event = the last rain event of 10 mm or more (grid mean) before the storm.  dry_days_before: days under 2 mm of basin rain in a row just before the storm.
+  year     storm      kind
+WY2020    Sep 10   spin-up
+WY2020    Sep 23   spin-up
+WY2020 Nov 19-22    listed
+WY2020 Nov 28-30    listed
+WY2020   Dec 7-8 near-miss
+WY2020 Dec 23-28    listed
+WY2020 Feb 10-11    listed
+WY2020 Feb 22-23    listed
+WY2020 Mar 10-13    listed
+WY2020 Mar 18-19    listed
+
+7. RADAR DATA QUALITY
+  hours inside the storm and the 24 hours before it when MRMS had no data (zero-filled) or the file is missing.
+  year     storm      kind  window_hours
+WY2020    Sep 10   spin-up             0
+WY2020    Sep 23   spin-up             0
+WY2020 Nov 19-22    listed             0
+WY2020 Nov 28-30    listed             0
+WY2020   Dec 7-8 near-miss             0
+WY2020 Dec 23-28    listed             0
+WY2020 Feb 10-11    listed             0
+WY2020 Feb 22-23    listed             0
+WY2020 Mar 10-13    listed             0
+WY2020 Mar 18-19    listed             0
+
+RULE CHECK: events found by the rule (consecutive days of at least 0.5 mm grid-mean rain, total 20 mm or more)
+  WY2020 (basin outline 426.2 km2):
+    Jul 21 2020 to Jul 25 2020     21.0 mm   NOT on the list  (summer: left out by decision)
+    LISTED but not found by the rule: Nov 19 to Nov 22
+    LISTED but not found by the rule: Nov 28 to Nov 30
+    LISTED but not found by the rule: Dec 23 to Dec 28
+    LISTED but not found by the rule: Feb 10 to Feb 11
+    LISTED but not found by the rule: Feb 22 to Feb 23
+    LISTED but not found by the rule: Mar 10 to Mar 13
+    LISTED but not found by the rule: Mar 18 to Mar 19

@@ -1,84 +1,111 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-score_timing_sycamore.py   (v1.3, 2026-11-17)
+score_timing_sycamore.py   (v1.4, 2026-11-22)
 =============================================
 
-Timing and shape scores for the Lower Sycamore Wash storms: WY2017 (the calibration year, 5 storms, 4 whole-year runs)
-and WY2020 (the validation year, 7 storms, 12 runs).
+Timing and shape scores for the Lower Sycamore Wash storms: WY2017 (5 storms) and WY2020 (7 storms), 12 storms in all.
 
-NEW IN v1.3: the pass 2 CSV has the `role` of every RUN (not every year) and a second column, `fixed_before_wy2020_results`.
-  Nothing else changed: every number, flag, blank and reason is identical to v1.2. See RUN_DESIGN below for the labels and why.
+NEW IN v1.4.  Every definition (t10/t50/t90, peak and its flags, the 80 percent second-bump rule, tail, lag within +/-12 h,
+the resolution note) is exactly as in v1.3.  What changed:
+  1. WINDOWS.  --windows step0 is the default: the 12 storm windows are read from step0_windows.csv (water_year, storm, start, end,
+     gauge_response), not derived from the first and last rain days.  Arizona local time, half-open [start, end), each hour named by its
+     start.  The script STOPS if any window's length in hours differs from the required list (see STEP0_HOURS).  The old rule is still
+     there: --windows as-scored (v1.3 behavior), cut, uncut.
+  2. RUNS.  Re-tuned, Original and the eight Phase 3 screens, both years, all started 1 September (WY2017 from 2016-09-01 00:00,
+     6,551 h; WY2020 from 2019-09-01 00:00, 6,575 h).  The start time and the expected length belong to each RUN, not to the year.
+     The script STOPS (after printing the inventory) if a file's last Time_hr does not match its run's expected length.  The four
+     Kchan runs are left out unless --include-kchan (the two WY2017 Kchan runs are the old 1 October whole-year runs, 8,759 h).
+     --wy2017-runs oct1 uses the four old WY2017 whole-year runs (v1.3 files) in place of the 1 September runs.
+  3. NO FLOOR.  --floor-mm3 is optional and off by default: every storm is scored and nothing is blanked for small volume.  The new
+     column no_gauge_response (from the windows table) lets you take medians with and without the two no-response storms.
+  4. VOLUME RATIO.  vol_ratio_gauge_hours = model volume over the gauge's hours with data / gauge volume (the thesis's volume ratio);
+     vol_ratio_model_over_gauge (all model hours) is still there.  With --windows step0 the old reference volumes (tied to the old
+     windows) are replaced by one check on Re-tuned and Original: vol_ratio_gauge_hours of the 10 storms with a gauge response must
+     match the per-storm ratios on record within 0.01, or the script stops.  The record is read from window_scores_R4.csv (the
+     window scorer's matched-hours volumes) when --ratio-source (or <root>/window_scores_R4.csv) is there; otherwise the typed values
+     in RATIO_TYPED are used and the printout says so.
+  5. The rain_* columns are DROPPED (storm_table.csv is matched on the old first rain days; it is no longer read).
+  6. pass2_medians.csv: one row per run, measure and storm set (median, min, max, n); both years pooled, plus each year alone.
+  7. --compare-old OLD_pass2_timing_long.csv: after a pass 2 run, compares the new rows with an old file line by line.
 
-READ-ONLY. It reads outlet files, the two gauge files and storm_table.csv. It runs no model, changes none of your
-files, and writes only into its own output folder (timing_out/ by default). Every definition it uses is written at the
-top of each CSV it makes (lines that start with "#"); `--definitions` prints them without running anything.
+READ-ONLY.  It reads outlet files, the two gauge files and step0_windows.csv.  It runs no model, changes none of your files, and
+writes only into its own output folder (timing_out_step0/ by default; timing_out_check_<mode>/ for the old window rules, so the old
+folders are never touched).  It will not overwrite a CSV that a different version of this script wrote.  Every definition it uses
+is written at the top of each CSV it makes (lines that start with "#"); --definitions prints them without running anything.
 
 WHAT IT DOES, IN ORDER
-  1. VOLUME CHECK (always first, in both passes). It recomputes the storm volumes you already have on record
-     (the WY2020 write-up, the volumes in storm_table.csv for WY2017, and the running-log volumes for S1, S9, S10, S11
-     and the seven-storm totals for S5 to S8) and compares them with what the outlet files and gauge files give now.
-     If any value differs by more than 0.005 M m3 it STOPS and writes nothing.
-  2. PASS 1  (--pass 1)   GAUGE ONLY. One row per storm, both years: window, gauge volume, gauge peak and its time,
-     the gauge times by which 10, 50 and 90 percent of the window volume had passed, flow at both window edges,
-     gauge quality, outage and gap flags, and the rain columns. It stops there so you can choose the "too small to
-     time" floor.
-  3. PASS 2  (--pass 2 --floor-mm3 X)   every run against the gauge, per storm (storms whose GAUGE volume is under X get no timing): volume-time differences, peak ratio and
-     peak-time difference with flags, hourly Pearson r, cross-correlation lag within +/-12 h, tail volume ratio.
-     Writes ONE long-format CSV. Then it prints CHECK 5 (the Original run on the WY2017 Feb 27-28 flood).
+  1. RUN INVENTORY AND WINDOW TABLE (always first): every run's file, its modified date, its start clock, first and last Time_hr and
+     its expected length; then the window table (water year, storm, start, end, hours, gauge response).
+  2. VOLUME CHECK (both passes): see item 4 above (step0), or the v1.3 check against the volumes on record (the old window rules).
+     A mismatch STOPS the run and writes nothing.
+  3. PASS 1  (--pass 1)   GAUGE ONLY.  One row per storm: window, gauge volume, gauge peak and its time, the gauge times by which 10,
+     50 and 90 percent of the window volume had passed, flow at both window edges, gauge quality, outage and gap flags.
+  4. PASS 2  (--pass 2)   every run against the gauge, per storm: volume-time differences, peak ratio and peak-time difference with
+     flags, hourly Pearson r, cross-correlation lag within +/-12 h, tail volume ratio.  Writes pass2_timing_long.csv and
+     pass2_medians.csv, prints the Re-tuned and Original medians, then CHECK 5.
 
 COMMANDS (from workspaces/Sycamore/lab/; one at a time, foreground)
-  python score_timing_sycamore.py --show-arrival              # step 0: prints the first-arrival rule in YOUR score_run_sycamore.py
-  python score_timing_sycamore.py --pass 1 --dry-run          # lists the files and windows it found; computes nothing
-  python score_timing_sycamore.py --pass 1                    # volume check, then the gauge-only table
-  python score_timing_sycamore.py --pass 2 --floor-mm3 0.05   # after you have chosen the floor (0.05 is only an example)
+  python score_timing_sycamore.py --dry-run                   # inventory + window table + volume check; computes no scores, writes nothing
+  python score_timing_sycamore.py --pass 2                    # the full run (no floor)
+  python score_timing_sycamore.py --pass 1                    # gauge-only table
   python score_timing_sycamore.py --definitions               # prints every definition
+  # reproduce the 20 Nov files (v1.3 behavior; the old folders are not touched):
+  python score_timing_sycamore.py --pass 2 --windows as-scored --wy2017-runs oct1 --include-kchan --floor-mm3 0 \\
+         --compare-old timing_out_all_storms/pass2_timing_long.csv
+  (the 2.0 M m3 file: the same with --floor-mm3 2.0 and --compare-old timing_out/pass2_timing_long.csv)
 
 OPTIONS YOU MAY NEED
-  --windows as-scored|cut|uncut   as-scored (default): each year's existing windows (WY2020 uncut, WY2017 cut at the next storm).
-                                  cut / uncut: one rule for every storm (storms with no reference volume then say NOT CHECKED).
-  --stem 2017:original=NAME       use another outlet-file name (without _Outlet.qout) for one run. Repeat the option as needed.
-                                  Years are 2017 or 2020; run keys are retuned, original, kchan05, kchan02, S1, S5 ... S11.
+  --windows step0|as-scored|cut|uncut   step0 (default): the table in step0_windows.csv.  as-scored: the v1.3 windows (WY2020 uncut,
+                                  WY2017 cut at the next storm).  cut / uncut: one rule for every storm.
+  --windows-file FILE             another windows table (default <root>/step0_windows.csv).
+  --ratio-source FILE             window_scores CSV from score_windows_sycamore.py for the ratio check (default <root>/window_scores_R4.csv).
+  --stem 2017:original=NAME       use another outlet-file name (without _Outlet.qout) for one run.  Repeat as needed.  The run keeps its
+                                  start and expected length.  Years are 2017 or 2020; run keys are retuned, original, S1, S5 ... S11,
+                                  kchan05, kchan02.
   --obs2017 FILE, --obs2020 FILE  other gauge files.   --results DIR   other outlet folder.   --out-dir DIR   other output folder.
   --print-all                     in pass 2, print every run (default prints Re-tuned and Original only).
-  --ignore-check-failure          DIAGNOSIS ONLY: carry on after a volume-check mismatch; every row then says MISMATCH.
+  --ignore-check-failure          DIAGNOSIS ONLY: carry on after a volume-check mismatch or a length mismatch; every row then says MISMATCH.
 
 WHAT IT READS (never changed)
-  results/<run>_Outlet.qout   columns Time_hr, Q (m3/s). Time_hr 0 = 2019-09-01 00:00 (WY2020) or 2016-10-01 00:00 (WY2017).
+  results/<run>_Outlet.qout   columns Time_hr, Q (m3/s).  Time_hr 0 = the run's own start (2016-09-01, 2016-10-01 or 2019-09-01 00:00).
   ../init_data/obs/sycamore_09510200_obs_flow_WY2017.csv                  datetime, q_cms [, tier]
   ../init_data/obs/sycamore_09510200_obs_flow_Sep2019_to_May2020.csv      (or ..._WY2020.csv if that one is missing)
-  storm_table.csv             only for the rain columns (matched on water year and first rain day)
+  step0_windows.csv           the 12 windows (step0 only)
+  window_scores_R4.csv        optional, the ratio check's record (step0 only)
   score_run_sycamore.py       only with --show-arrival
 
 WORDS
   hourly mean      the average of all readings in one clock hour. Hours with no reading are left out, never filled, never zero.
   M m3             million cubic meters.      cfs   cubic feet per second (m3/s divided by 0.0283168).
   volume time t50  hours from the window start by which 50 percent of the window's volume had passed.
-  window           00:00 on the first rain day to 00:00 four days after the last rain day (see --windows for the cut rule).
   Pearson r        the usual correlation between two hourly series (1 = same shape, 0 = unrelated).
   lag              the shift in hours that makes the model hourly series best match the gauge; positive = model later.
-  floor            gauge volume below which a storm is "too small to time"; you choose it after pass 1. It is applied to the GAUGE only.
-                   --model-floor-mm3 Y (optional) also blanks the timing of any run whose own volume is under Y.
+  vol_ratio_gauge_hours   model volume over the gauge's hours with data, divided by the gauge volume.
 """
 from __future__ import annotations
 
 import argparse
 import ast
 import hashlib
+import io
 import math
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-VERSION = "1.3"
+VERSION = "1.4"
 SELF_MARK = "score_timing_sycamore.py"
+SELF_VERSION_MARK = f"{SELF_MARK} v{VERSION}"
 HERE = Path(__file__).resolve().parent
 CFS_PER_CMS = 1.0 / 0.028316846592
 HOUR = pd.Timedelta(hours=1)
-TOL_M3 = 0.005                 # volume-check tolerance, M m3
+TOL_M3 = 0.005                 # volume-check tolerance of the old window rules, M m3
+RATIO_TOL = 0.01               # volume-ratio check tolerance (step0)
 LOW_VOL_RATIO = 0.5             # console note only: model volume under this fraction of the gauge's
 EDGE_H = 6.0                   # peak within this many hours of a window edge is flagged
 BUMP_FRAC = 0.8                # a second bump at least this fraction of the highest hourly flow is flagged
@@ -90,42 +117,48 @@ MAX_STEP_H = 3.0               # a rise through a level is not trusted across a 
 OLD_T50_PEAK_H = -0.58         # the old time-to-50%-of-gauge-peak figure for CHECK 5, hours (your record)
 OUTAGE = (pd.Timestamp("2017-01-01 00:00"), pd.Timestamp("2017-01-03 00:00"))   # the Jan 1-2 2017 gauge outage
 
+SEP1_2016 = pd.Timestamp("2016-09-01 00:00")
+OCT1_2016 = pd.Timestamp("2016-10-01 00:00")
+SEP1_2019 = pd.Timestamp("2019-09-01 00:00")
+HOURS_SEP1_2017, HOURS_OCT1_2017, HOURS_SEP1_2020 = 6551, 8759, 6575
+
 YEARS = {
-    "WY2017": dict(role="calibration", start=pd.Timestamp("2016-10-01 00:00"),
-                   obs=["sycamore_09510200_obs_flow_WY2017.csv"]),
-    "WY2020": dict(role="validation", start=pd.Timestamp("2019-09-01 00:00"),
-                   obs=["sycamore_09510200_obs_flow_Sep2019_to_May2020.csv", "sycamore_09510200_obs_flow_WY2020.csv"]),
+    "WY2017": dict(role="calibration", obs=["sycamore_09510200_obs_flow_WY2017.csv"]),
+    "WY2020": dict(role="validation", obs=["sycamore_09510200_obs_flow_Sep2019_to_May2020.csv", "sycamore_09510200_obs_flow_WY2020.csv"]),
 }
 
-# (key, label, outlet-file stem without _Outlet.qout)
-RUNS = {
-    "WY2020": [
-        ("retuned", "Re-tuned", "Sycamore_WY2020_Retuned"),
-        ("original", "Original", "Sycamore_WY2020_Original"),
-        ("kchan05", "Original + Kchan 0.5", "Sycamore_WY2020_Original_kchan0p5"),
-        ("kchan02", "Original + Kchan 0.2", "Sycamore_WY2020_Original_kchan0p2"),
-        ("S1", "S1", "Sycamore_WY2020_S1_Ks1p0"),
-        ("S5", "S5", "Sycamore_WY2020_S5_Ks1p0_Bed2p0"),
-        ("S6", "S6", "Sycamore_WY2020_S6_Ks0p5_Bed2p0"),
-        ("S7", "S7", "Sycamore_WY2020_S7_Ks1p0_Bed2p0_As500"),
-        ("S8", "S8", "Sycamore_WY2020_S8_Ks1p0_Bed2p0_f0p02"),
-        ("S9", "S9", "Sycamore_WY2020_S9_Ks1p0_Bed0p5"),
-        ("S10", "S10", "Sycamore_WY2020_S10_Ks1p0_GW0p5"),
-        ("S11", "S11", "Sycamore_WY2020_S11_Ks1p0_PsiB1p0"),
-    ],
-    "WY2017": [
-        ("retuned", "Re-tuned", "W5_d012_k10_f0p15_as300_ksx1p03_nocl"),
-        ("original", "Original", "W5_d012_k10_base_nocl"),
-        ("kchan05", "Original + Kchan 0.5", "W5_d012_k10_base_kchan0p5"),
-        ("kchan02", "Original + Kchan 0.2", "W5_d012_k10_base_kchan0p2"),
-    ],
+# ------------------------------------------------------------------------------------------------ runs
+# Outlet-file names (without _Outlet.qout).  WY2020 and WY2017 September-start names are the run names in window_scores_R4.csv
+# (score_windows_sycamore.py v1.2 bundle); the old WY2017 names are the 1 October whole-year runs of v1.3.
+STEMS_2020 = {
+    "retuned": "Sycamore_WY2020_Retuned", "original": "Sycamore_WY2020_Original",
+    "kchan05": "Sycamore_WY2020_Original_kchan0p5", "kchan02": "Sycamore_WY2020_Original_kchan0p2",
+    "S1": "Sycamore_WY2020_S1_Ks1p0", "S5": "Sycamore_WY2020_S5_Ks1p0_Bed2p0", "S6": "Sycamore_WY2020_S6_Ks0p5_Bed2p0",
+    "S7": "Sycamore_WY2020_S7_Ks1p0_Bed2p0_As500", "S8": "Sycamore_WY2020_S8_Ks1p0_Bed2p0_f0p02", "S9": "Sycamore_WY2020_S9_Ks1p0_Bed0p5",
+    "S10": "Sycamore_WY2020_S10_Ks1p0_GW0p5", "S11": "Sycamore_WY2020_S11_Ks1p0_PsiB1p0",
 }
+STEMS_2017_SEP1 = {
+    "retuned": "Sycamore_WY2017sep_Retuned", "original": "Sycamore_WY2017sep_Original",
+    "S1": "Sycamore_WY2017sep_S1_Ks1p0", "S5": "Sycamore_WY2017sep_S5_Ks1p0_Bed2p0", "S6": "Sycamore_WY2017sep_S6_Ks0p5_Bed2p0",
+    "S7": "Sycamore_WY2017sep_S7_Ks1p0_Bed2p0_As500", "S8": "Sycamore_WY2017sep_S8_Ks1p0_Bed2p0_f0p02",
+    "S9": "Sycamore_WY2017sep_S9_Ks1p0_Bed0p5", "S10": "Sycamore_WY2017sep_S10_Ks1p0_GW0p5", "S11": "Sycamore_WY2017sep_S11_Ks1p0_PsiB1p0",
+}
+STEMS_2017_OCT1 = {
+    "retuned": "W5_d012_k10_f0p15_as300_ksx1p03_nocl", "original": "W5_d012_k10_base_nocl",
+    "kchan05": "W5_d012_k10_base_kchan0p5", "kchan02": "W5_d012_k10_base_kchan0p2",
+}
+CORE_RUNS = [("retuned", "Re-tuned"), ("original", "Original")]
+KCHAN_RUNS = [("kchan05", "Original + Kchan 0.5"), ("kchan02", "Original + Kchan 0.2")]
+SCREEN_RUNS = [(1, "S1"), (2, "S5"), (3, "S6"), (4, "S7"), (5, "S8"), (6, "S9"), (7, "S10"), (8, "S11")]    # (Screen number, run key)
+ALL_KEYS = [k for k, _ in CORE_RUNS] + [k for k, _ in KCHAN_RUNS] + [k for _, k in SCREEN_RUNS]
 PRIORITY = ("retuned", "original")
 
 # Design role of each RUN (pass 2 only) and whether its settings were written down BEFORE any WY2020 gauge volume or model
 # result was opened.  (role, fixed_before_wy2020_results).  Sources: Tail_Screen_W4_Running_Log.md (Re-tuned frozen Nov 3 20:15,
 # Original named in the same entry; Kchan 0.5 and 0.2 written down Nov 4 02:10, after the gauge volumes and the Re-tuned and
 # Original results had been opened; their values came from the WY2017 probes) and the screen scripts (S1, S5 to S11 built from Nov 7 on).
+# v1.4: the eight screens also exist for WY2017 (September-start runs built Nov 20-21); their settings are the same ones, written down
+# after the WY2020 results had been opened, so they carry the same label ("post_validation_screen", "no").
 RUN_DESIGN = {
     ("WY2017", "retuned"): ("calibration", "n/a"),
     ("WY2017", "original"): ("calibration", "n/a"),
@@ -135,16 +168,70 @@ RUN_DESIGN = {
     ("WY2020", "original"): ("validation", "yes"),
     ("WY2020", "kchan05"): ("validation", "no"),
     ("WY2020", "kchan02"): ("validation", "no"),
-    **{("WY2020", k): ("post_validation_screen", "no") for k in ("S1", "S5", "S6", "S7", "S8", "S9", "S10", "S11")},
+    **{(y, k): ("post_validation_screen", "no") for y in ("WY2017", "WY2020") for k in ("S1", "S5", "S6", "S7", "S8", "S9", "S10", "S11")},
 }
-assert all((y, k) in RUN_DESIGN for y, runs_ in RUNS.items() for k, _, _ in runs_), "RUN_DESIGN must cover every run in RUNS"
+assert all((y, k) in RUN_DESIGN for y in ("WY2017", "WY2020") for k in ALL_KEYS), "RUN_DESIGN must cover every run key in both years"
 
 
 def run_design(year: str, key: str):
-    """(role, fixed_before_wy2020_results) for one run; a key that is not in RUNS (only possible in a unit test) is 'unassigned'."""
+    """(role, fixed_before_wy2020_results) for one run; a key that is not in RUN_DESIGN (only possible in a unit test) is 'unassigned'."""
     return RUN_DESIGN.get((year, key), ("unassigned", "n/a"))
 
-# (year, name, first rain day, last rain day, first day of the next storm in storm_table.csv or None)
+
+class Run:
+    """One outlet file: its key, label, stem, the clock its Time_hr 0 means, and the length it must have."""
+
+    def __init__(self, year, key, label, stem, start, hours):
+        self.year, self.key, self.label, self.stem = year, key, label, stem
+        self.start, self.hours = pd.Timestamp(start), int(hours)
+
+    @property
+    def fname(self):
+        return f"{self.stem}_Outlet.qout"
+
+
+def build_runs(wy2017_runs: str = "sep1", include_kchan: bool = False, overrides=()):
+    """The run list in v1.3 order (Re-tuned, Original, Kchan if asked, screens).  Start and expected length are set PER RUN."""
+    runs = []
+    for yr in ("WY2017", "WY2020"):
+        wanted = list(CORE_RUNS) + (list(KCHAN_RUNS) if include_kchan else []) + [(k, f"Screen {n} ({k})") for n, k in SCREEN_RUNS]
+        for key, label in wanted:
+            if yr == "WY2020":
+                runs.append(Run(yr, key, label, STEMS_2020[key], SEP1_2019, HOURS_SEP1_2020))
+            elif key in ("kchan05", "kchan02"):
+                runs.append(Run(yr, key, label, STEMS_2017_OCT1[key], OCT1_2016, HOURS_OCT1_2017))
+            elif wy2017_runs == "oct1":
+                if key in STEMS_2017_OCT1:
+                    runs.append(Run(yr, key, label, STEMS_2017_OCT1[key], OCT1_2016, HOURS_OCT1_2017))
+                # the old whole-year set has no screens: nothing to add
+            else:
+                runs.append(Run(yr, key, label, STEMS_2017_SEP1[key], SEP1_2016, HOURS_SEP1_2017))
+    for s in overrides:
+        m = re.fullmatch(r"(20(?:17|20)):([A-Za-z0-9_]+)=(\S+)", s.strip())
+        if not m:
+            die(f"--stem '{s}' is not in the form 2017:original=NAME")
+        yr, key, name = "WY" + m.group(1), m.group(2), m.group(3)
+        if name.endswith("_Outlet.qout"):
+            name = name[:-len("_Outlet.qout")]
+        hit = [r for r in runs if r.year == yr and r.key == key]
+        if not hit:
+            die(f"--stem: no run '{key}' for {yr} in this run list. Keys: {[r.key for r in runs if r.year == yr]}"
+                + ("  (the Kchan runs need --include-kchan)" if key.startswith("kchan") else ""))
+        hit[0].stem = name
+    return runs
+
+
+# ------------------------------------------------------------------------------------------------ windows
+# Required window lengths (hours) of the Step 0 windows.  The script stops if step0_windows.csv gives anything else.
+STEP0_HOURS = {
+    ("WY2017", "Dec 21-25"): 188, ("WY2017", "Dec 30-Jan 2"): 153, ("WY2017", "Jan 19-21"): 85, ("WY2017", "Feb 18-19"): 135,
+    ("WY2017", "Feb 27-28"): 121, ("WY2020", "Nov 19-22"): 160, ("WY2020", "Nov 28-30"): 141, ("WY2020", "Dec 23-28"): 210,
+    ("WY2020", "Feb 10-11"): 132, ("WY2020", "Feb 22-23"): 121, ("WY2020", "Mar 10-13"): 187, ("WY2020", "Mar 18-19"): 120,
+}
+NO_RESPONSE = {("WY2017", "Dec 21-25"), ("WY2020", "Nov 19-22")}        # gauge_response = none
+OUTAGE_STORM = ("WY2017", "Dec 30-Jan 2")
+
+# (year, name, first rain day, last rain day, first day of the next storm in storm_table.csv or None) -- the v1.3 window rule
 STORMS = [
     ("WY2017", "Dec 21-25", "2016-12-21", "2016-12-25", "2016-12-30"),
     ("WY2017", "Dec 30-Jan 2", "2016-12-30", "2017-01-02", "2017-01-13"),
@@ -160,23 +247,108 @@ STORMS = [
     ("WY2020", "Mar 18-19", "2020-03-18", "2020-03-19", None),
 ]
 
-RAIN_COLS = ["basin_mm", "peak_1h_mm", "peak_3h_mm", "peak_6h_mm", "top6h_share", "t50_frac", "dry_days_before", "prev7_mm", "prev30_mm"]
-# the same nine columns under the readable headers of the lab storm_table.csv (short name first, then the readable one)
-RAIN_ALIASES = {
-    "basin_mm": ["basin_mm", "Basin rain (mm)"],
-    "peak_1h_mm": ["peak_1h_mm", "Peak 1 h (mm)"],
-    "peak_3h_mm": ["peak_3h_mm", "Peak 3 h (mm)"],
-    "peak_6h_mm": ["peak_6h_mm", "Peak 6 h (mm)"],
-    "top6h_share": ["top6h_share", "Top-6 h share (fraction)"],
-    "t50_frac": ["t50_frac", "Half-rain point (fraction)"],
-    "dry_days_before": ["dry_days_before", "Dry days before (d)"],
-    "prev7_mm": ["prev7_mm", "Prior 7 days (mm)"],
-    "prev30_mm": ["prev30_mm", "Prior 30 days (mm)"],
+WINDOW_SET_NAMES = {
+    "step0": "Step 0 windows (the 12 explicit windows of step0_windows.csv; not derived from rain days)",
+    "as-scored": "old rule, as-scored (v1.3: WY2020 uncut, WY2017 cut at the next storm; 00:00 first rain day to 00:00 four days after the last rain day)",
+    "cut": "old rule, cut (every storm cut at the next storm's first day)",
+    "uncut": "old rule, uncut (no storm cut)",
 }
 
-# ------------------------------------------------------------------------------------------------ reference volumes (M m3)
+
+class Win:
+    """One scored window [lo, hi)."""
+
+    def __init__(self, year, name, lo, hi, rule, gauge_response="yes", hi_uncut=None):
+        self.year, self.name = year, name
+        self.lo, self.hi = pd.Timestamp(lo), pd.Timestamp(hi)
+        self.hours = int(round((self.hi - self.lo) / HOUR))
+        self.rule = rule
+        self.gauge_response = gauge_response
+        self.hi_uncut = pd.Timestamp(hi_uncut) if hi_uncut is not None else self.hi
+        self.role = YEARS[year]["role"]
+
+    @property
+    def key(self):
+        return (self.year, self.name)
+
+    @property
+    def no_gauge_response(self):
+        return "yes" if self.gauge_response == "none" else "no"
+
+
+def legacy_windows(mode: str):
+    """The v1.3 window rules: as-scored, cut, uncut."""
+    out = []
+    for y, n, f, l, nx in STORMS:
+        first, last = pd.Timestamp(f), pd.Timestamp(l)
+        hi_uncut = last + pd.Timedelta(days=4)
+        hi_cut = min(hi_uncut, pd.Timestamp(nx)) if nx else hi_uncut
+        hi = hi_uncut if mode == "uncut" else hi_cut if mode == "cut" else (hi_uncut if y == "WY2020" else hi_cut)
+        rule = "cut at the next storm's first day" if hi < hi_uncut else "last rain day + 4 d"
+        out.append(Win(y, n, first, hi, rule, "none" if (y, n) in NO_RESPONSE else "yes", hi_uncut=hi_uncut))
+    return out
+
+
+def load_step0_windows(path: Path):
+    """Read step0_windows.csv; STOP on anything that is not exactly the 12 windows with the required lengths."""
+    if not path.is_file():
+        die(f"cannot find the windows table: {path}\n  It belongs next to this script (step0_windows.csv), or give --windows-file.")
+    raw = pd.read_csv(path, comment="#", dtype=str, keep_default_na=False)
+    raw.columns = [c.strip() for c in raw.columns]
+    need = ["water_year", "storm", "start", "end", "gauge_response"]
+    miss = [c for c in need if c not in raw.columns]
+    if miss:
+        die(f"{path.name} has no column {miss}. Columns found: {list(raw.columns)}")
+    wins, problems, seen = [], [], set()
+    for i, r in raw.iterrows():
+        yr = "WY" + re.sub(r"\D", "", r["water_year"])[-4:]
+        name = r["storm"].strip()
+        key = (yr, name)
+        if key in seen:
+            problems.append(f"{yr} {name}: listed twice")
+            continue
+        seen.add(key)
+        if key not in STEP0_HOURS:
+            problems.append(f"{yr} {name}: not one of the 12 Step 0 storms")
+            continue
+        try:
+            lo, hi = pd.Timestamp(r["start"].strip()), pd.Timestamp(r["end"].strip())
+        except Exception:
+            problems.append(f"{yr} {name}: start or end is not a date and time ({r['start']!r}, {r['end']!r})")
+            continue
+        if lo.minute or lo.second or hi.minute or hi.second:
+            problems.append(f"{yr} {name}: start and end must be whole hours (each hour is named by its start); got {lo} and {hi}")
+            continue
+        gr = r["gauge_response"].strip().lower()
+        if gr not in ("yes", "none"):
+            problems.append(f"{yr} {name}: gauge_response must be yes or none, got {r['gauge_response']!r}")
+            continue
+        hours = int(round((hi - lo) / HOUR))
+        if hours != STEP0_HOURS[key]:
+            problems.append(f"{yr} {name}: {hours} h from {lo:%Y-%m-%d %H:%M} to {hi:%Y-%m-%d %H:%M}, but {STEP0_HOURS[key]} h is required")
+            continue
+        wins.append(Win(yr, name, lo, hi, "Step 0 window (step0_windows.csv)", gr))
+    missing = [f"{y} {n}" for (y, n) in STEP0_HOURS if (y, n) not in seen]
+    if missing:
+        problems.append("missing windows: " + "; ".join(missing))
+    if problems:
+        die(f"{path.name} does not match the required Step 0 windows:\n  " + "\n  ".join(problems))
+    order = {k: i for i, k in enumerate(STEP0_HOURS)}
+    wins.sort(key=lambda w: order[w.key])
+    return wins
+
+
+def window_table_lines(wins):
+    L = ["  {:<7}{:<14}{:<18}{:<18}{:>6}   {}".format("year", "storm", "start", "end", "hours", "gauge response")]
+    for w in wins:
+        L.append("  {:<7}{:<14}{:<18}{:<18}{:>6}   {}".format(w.year, w.name, f"{w.lo:%Y-%m-%d %H:%M}", f"{w.hi:%Y-%m-%d %H:%M}", w.hours, w.gauge_response))
+    return L
+
+
+# ------------------------------------------------------------------------------------------------ reference volumes of the OLD window rules (M m3)
 # Source labels: W = WY2020 write-up (as coded in add_wy2020_results_to_storm_table.py); T = storm_table.csv (WY2017 columns);
 # L = running log (Soil_Storage_Running_Log / part 2).  Order of the WY2020 tuples: gauge, retuned, original, kchan05, kchan02.
+# Used ONLY with --windows as-scored|cut|uncut.  (They are tied to the old windows and the old Oct-1 WY2017 runs.)
 WY2020_EXPECTED = {
     "Nov 19-22": (0.015, 2.800, 3.165, 3.019, 3.091), "Nov 28-30": (1.473, 3.235, 3.538, 3.341, 3.433),
     "Dec 23-28": (4.069, 0.218, 0.154, 0.044, 0.083), "Feb 10-11": (0.386, 1.767, 1.765, 1.641, 1.700),
@@ -203,7 +375,7 @@ WY2017_MATCHED_RATIO = ("Dec 30-Jan 2", 0.58, 0.01)   # Re-tuned model over the 
 
 
 def build_refs():
-    """(year, storm) -> list of (window_end, {series_key: (value, source)}, gauge_hours_text or None)."""
+    """(year, storm) -> list of (window_end, {series_key: (value, source)}, gauge_hours_text or None).  Old window rules only."""
     refs = {}
     for name, tup in WY2020_EXPECTED.items():
         first, last = [(f, l) for y, n, f, l, _ in STORMS if y == "WY2020" and n == name][0]
@@ -227,6 +399,42 @@ def build_refs():
 
 REFS = build_refs()
 
+# ------------------------------------------------------------------------------------------------ volume-ratio record (step0)
+# vol_ratio_gauge_hours per storm on record, Re-tuned and Original, for the 10 storms with a gauge response.  Typed by Tracy
+# (rounded to 2 decimals); they equal 1 + PBIAS/100 of window_scores_R4.csv, i.e. vol_model_Mm3 / vol_gauge_Mm3 on matched hours.
+RATIO_STORMS = [("WY2017", "Dec 30-Jan 2"), ("WY2017", "Jan 19-21"), ("WY2017", "Feb 18-19"), ("WY2017", "Feb 27-28"),
+                ("WY2020", "Nov 28-30"), ("WY2020", "Dec 23-28"), ("WY2020", "Feb 10-11"), ("WY2020", "Feb 22-23"),
+                ("WY2020", "Mar 10-13"), ("WY2020", "Mar 18-19")]
+RATIO_TYPED = {
+    "retuned": (0.58, 1.32, 1.90, 0.92, 2.22, 0.05, 4.28, 1.16, 0.15, 0.31),
+    "original": (0.78, 1.42, 1.70, 0.84, 2.43, 0.04, 4.27, 1.20, 0.08, 0.25),
+}
+RATIO_SETTING_NAMES = {"Retuned": "retuned", "Original": "original"}      # the setting names in window_scores_R4.csv
+
+
+def read_ratio_source(path: Path):
+    """{(run key, year, storm): vol_model_Mm3 / vol_gauge_Mm3} from a window_scores CSV (score_windows_sycamore.py), storm rows only."""
+    try:
+        df = pd.read_csv(path, comment="#", dtype=str, keep_default_na=False)
+    except Exception as exc:
+        die(f"cannot read the ratio source {path}: {exc}")
+    need = ["setting", "kind", "name", "years", "vol_gauge_Mm3", "vol_model_Mm3"]
+    miss = [c for c in need if c not in df.columns]
+    if miss:
+        die(f"the ratio source {path.name} has no column {miss}. Columns found: {list(df.columns)[:12]}")
+    out = {}
+    for _, r in df[df["kind"] == "storm"].iterrows():
+        key = RATIO_SETTING_NAMES.get(r["setting"])
+        if key is None:
+            continue
+        try:
+            g, m = float(r["vol_gauge_Mm3"]), float(r["vol_model_Mm3"])
+        except ValueError:
+            continue
+        if g > 0:
+            out[(key, "WY" + r["years"].strip(), r["name"].strip())] = m / g
+    return out
+
 
 # ------------------------------------------------------------------------------------------------ small helpers
 def log(msg: str = "") -> None:
@@ -249,37 +457,13 @@ def cfs(q_cms) -> float:
     return float(q_cms) * CFS_PER_CMS
 
 
-class Win:
-    """One scored window."""
-
-    def __init__(self, year, name, first, last, nxt, mode):
-        self.year, self.name = year, name
-        self.first, self.last = pd.Timestamp(first), pd.Timestamp(last)
-        self.next_first = pd.Timestamp(nxt) if nxt else None
-        self.lo = self.first
-        self.hi_uncut = self.last + pd.Timedelta(days=4)
-        self.hi_cut = min(self.hi_uncut, self.next_first) if self.next_first is not None else self.hi_uncut
-        if mode == "uncut":
-            self.hi = self.hi_uncut
-        elif mode == "cut":
-            self.hi = self.hi_cut
-        else:
-            self.hi = self.hi_uncut if year == "WY2020" else self.hi_cut
-        self.hours = int(round((self.hi - self.lo) / HOUR))
-        self.rule = ("cut at the next storm's first day" if self.hi < self.hi_uncut else "last rain day + 4 d")
-        self.role = YEARS[year]["role"]
-
-    @property
-    def key(self):
-        return (self.year, self.name)
-
-
-def make_windows(mode: str):
-    return [Win(y, n, f, l, nx, mode) for y, n, f, l, nx in STORMS]
+def make_windows(mode: str, windows_file=None):
+    return legacy_windows(mode) if mode != "step0" else load_step0_windows(Path(windows_file))
 
 
 # ------------------------------------------------------------------------------------------------ readers
-def read_qout(path: Path, start: pd.Timestamp) -> pd.Series:
+def read_qout_frame(path: Path) -> pd.DataFrame:
+    """Time_hr and Q of an outlet file (comma or whitespace separated), numeric rows only."""
     with open(path) as fh:
         fh.readline()
         second = fh.readline()
@@ -289,9 +473,16 @@ def read_qout(path: Path, start: pd.Timestamp) -> pd.Series:
         raw = pd.read_csv(path, sep=r"\s+", skiprows=1, header=None)
     raw = raw.iloc[:, :2].copy()
     raw.columns = ["Time_hr", "Q"]
-    raw = raw.apply(pd.to_numeric, errors="coerce").dropna()
+    return raw.apply(pd.to_numeric, errors="coerce").dropna()
+
+
+def qout_series(raw: pd.DataFrame, start: pd.Timestamp) -> pd.Series:
     s = pd.Series(raw["Q"].to_numpy(float), index=start + pd.to_timedelta(raw["Time_hr"].to_numpy(float), unit="h"))
     return s[~s.index.duplicated(keep="last")].sort_index()
+
+
+def read_qout(path: Path, start: pd.Timestamp) -> pd.Series:
+    return qout_series(read_qout_frame(path), start)
 
 
 def read_gauge(path: Path) -> pd.DataFrame:
@@ -307,33 +498,76 @@ def read_gauge(path: Path) -> pd.DataFrame:
     return df
 
 
-def read_rain_table(path: Path):
-    """Returns (dict (year, first_day) -> {col: text}, notes list). Soft: problems become notes, not stops."""
-    notes = []
-    if not path.is_file():
-        return {}, [f"storm table not found: {path}. The rain columns are blank."]
-    raw = pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8-sig")
-    need = {"year": ["year", "Water year"], "first_day": ["first_day", "First rain day"], "last_day": ["last_day", "Last rain day"]}
-    hdr = {}
-    for k, opts in need.items():
-        hit = [c for c in opts if c in raw.columns]
-        if not hit:
-            return {}, [f"storm table {path.name} has no '{opts[0]}' column; the rain columns are blank. Columns found: {list(raw.columns)[:12]}"]
-        hdr[k] = hit[0]
-    out = {}
-    src = {}                                   # short name -> the header actually found in this table
-    for c in RAIN_COLS:
-        hit = [h for h in RAIN_ALIASES[c] if h in raw.columns]
-        if hit:
-            src[c] = hit[0]
-    missing = [c for c in RAIN_COLS if c not in src]
-    if missing:
-        notes.append(f"storm table {path.name} has no column for {missing} (looked for the short headers and the readable ones); "
-                     f"those rain columns are blank. Columns found: {list(raw.columns)[:14]} ...")
-    for _, r in raw.iterrows():
-        out[(("WY" + re.sub(r"\D", "", r[hdr["year"]])[-4:]), str(r[hdr["first_day"]]).strip())] = {
-            **{c: (r[src[c]].strip() if c in src else "") for c in RAIN_COLS}, "_last": str(r[hdr["last_day"]]).strip()}
-    return out, notes
+def fmt_mtime(path: Path) -> str:
+    return datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+
+
+def run_file_info(run: Run, path: Path, raw: pd.DataFrame) -> dict:
+    """First and last Time_hr of a run's file, its row step, and whether its length matches the run's expected hours."""
+    t = raw["Time_hr"].to_numpy(float)
+    first, last = float(t.min()), float(t.max())
+    step = float(np.median(np.diff(np.sort(t)))) if len(t) > 1 else float("nan")
+    tol = max(0.1, 1.5 * step) if math.isfinite(step) else 0.1
+    ok = (first <= tol) and abs(last - run.hours) <= tol
+    why = ""
+    if not ok:
+        why = f"last Time_hr {last:g}, first {first:g}; {run.hours} h expected"
+        if abs(last - HOURS_OCT1_2017) <= tol and run.hours != HOURS_OCT1_2017:
+            why += " (8,759 h is the old 1 October whole-year run: wrong file for a 1 September run)"
+        elif abs(last - HOURS_SEP1_2017) <= tol and run.hours != HOURS_SEP1_2017:
+            why += " (6,551 h is a 1 September WY2017 run)"
+        elif abs(last - HOURS_SEP1_2020) <= tol and run.hours != HOURS_SEP1_2020:
+            why += " (6,575 h is a 1 September WY2020 run)"
+    return {"path": path, "modified": fmt_mtime(path), "first": first, "last": last, "rows": len(t), "step": step, "ok": ok, "why": why}
+
+
+def load_models(runs, results: Path):
+    """Read every run's outlet file. Returns (models {year: {key: Series}}, infos {(year, key): dict}, missing list)."""
+    models, infos, missing = {"WY2017": {}, "WY2020": {}}, {}, []
+    for r in runs:
+        p = results / r.fname
+        if not p.is_file():
+            missing.append(r)
+            continue
+        raw = read_qout_frame(p)
+        if len(raw) == 0:
+            infos[(r.year, r.key)] = {"path": p, "modified": fmt_mtime(p), "first": float("nan"), "last": float("nan"), "rows": 0,
+                                      "step": float("nan"), "ok": False, "why": "no numeric rows"}
+            continue
+        infos[(r.year, r.key)] = run_file_info(r, p, raw)
+        models[r.year][r.key] = qout_series(raw, r.start)
+    return models, infos, missing
+
+
+def inventory_lines(runs, infos):
+    L = ["  {:<7}{:<9}{:<22}{:<42}{:<17}{:<17}{:>10}{:>11}{:>9}  {}".format(
+        "year", "key", "label", "stem", "modified", "Time_hr 0 =", "first hr", "last hr", "expect", "status")]
+    for r in runs:
+        i = infos.get((r.year, r.key))
+        if i is None:
+            L.append("  {:<7}{:<9}{:<22}{:<42}{:<17}{:<17}{:>10}{:>11}{:>9}  {}".format(
+                r.year, r.key, r.label, r.stem, "-", f"{r.start:%Y-%m-%d %H:%M}", "-", "-", r.hours, "NOT FOUND"))
+        else:
+            L.append("  {:<7}{:<9}{:<22}{:<42}{:<17}{:<17}{:>10}{:>11}{:>9}  {}".format(
+                r.year, r.key, r.label, r.stem, i["modified"], f"{r.start:%Y-%m-%d %H:%M}", fnum(i["first"], 4), fnum(i["last"], 4),
+                r.hours, "ok" if i["ok"] else "LENGTH DOES NOT MATCH: " + i["why"]))
+    return L
+
+
+def candidate_lines(results: Path, runs):
+    """Outlet files in results/ that could be a WY2017 run (names with WY2017, or the old W5_ runs), with what they are used as."""
+    used = {r.stem: f"{r.year} {r.key}" for r in runs}
+    cands = sorted(f for f in results.glob("*_Outlet.qout") if "WY2017" in f.name or f.name.startswith("W5_") or used.get(f.name[:-len("_Outlet.qout")], "").startswith("WY2017"))
+    L = []
+    for f in cands:
+        stem = f.name[:-len("_Outlet.qout")]
+        try:
+            raw = read_qout_frame(f)
+            fl = f"first {raw['Time_hr'].min():g}, last {raw['Time_hr'].max():g}, {len(raw):,} rows"
+        except Exception as exc:
+            fl = f"could not be read ({exc})"
+        L.append(f"    {stem:<46} {fmt_mtime(f)}   {fl}   " + (f"<- used as {used[stem]}" if stem in used else "(not in the run list)"))
+    return L
 
 
 # ------------------------------------------------------------------------------------------------ series numbers
@@ -344,6 +578,11 @@ def hourly(s: pd.Series, lo, hi) -> pd.Series:
 
 def vol_mm3(h: pd.Series) -> float:
     return float(h.sum() * 3600.0 / 1e6) if len(h) else float("nan")
+
+
+def vol_over_gauge_hours(gh: pd.Series, mh: pd.Series) -> float:
+    """Model volume (M m3) over the hours the gauge has data."""
+    return vol_mm3(mh.reindex(gh.index).dropna())
 
 
 def volume_times(h: pd.Series, lo, fracs=(0.1, 0.5, 0.9)):
@@ -541,14 +780,10 @@ def gauge_bundle(w: Win, gdf: pd.DataFrame) -> dict:
             "left": left, "right": right, "quality": quality, "gap_before_t90": gap_before, "touches_outage": touches, "why": why}
 
 
-def rain_cells(rain, w: Win):
-    r = rain.get((w.year, w.first.strftime("%Y-%m-%d")))
-    return {f"rain_{c}": (r[c] if r else "") for c in RAIN_COLS}
-
-
-# ------------------------------------------------------------------------------------------------ volume check
-def volume_check(wins, gauges, models, tol=TOL_M3):
-    """Returns (status dict {(year, storm, series_key): 'MATCH'|'MISMATCH'|'NOT CHECKED'}, mismatches list, printable lines)."""
+# ------------------------------------------------------------------------------------------------ volume check, old window rules (v1.3)
+def volume_check(wins, gauges, models, tol=TOL_M3, skip_models=frozenset()):
+    """Old window rules only.  Returns (status dict {(year, storm, series_key): 'MATCH'|'MISMATCH'|'NOT CHECKED'}, mismatches list, printable lines).
+    skip_models: {(year, key)} whose model volumes are not on record (e.g. the 1 September WY2017 runs): their volumes are NOT CHECKED."""
     status, bad, lines = {}, [], []
     here = {}
     for w in wins:
@@ -557,7 +792,8 @@ def volume_check(wins, gauges, models, tol=TOL_M3):
         here[(w.year, w.name, "gauge_hours")] = f"{len(gh)}/{w.hours}"
         for key, q in models[w.year].items():
             here[(w.year, w.name, key)] = vol_mm3(hourly(q, w.lo, w.hi))
-    labels = {k: l for yr in RUNS for k, l, _ in RUNS[yr]}
+    labels = {k: l for k, l in CORE_RUNS + KCHAN_RUNS}
+    labels.update({k: f"Screen {n} ({k})" for n, k in SCREEN_RUNS})
     labels["gauge"] = "gauge"
     for yr in ("WY2017", "WY2020"):
         lines.append(f"  {yr}")
@@ -570,7 +806,7 @@ def volume_check(wins, gauges, models, tol=TOL_M3):
             keys = ["gauge"] + list(models[yr].keys())
             for key in keys:
                 got = here[(yr, w.name, key)]
-                if ref is not None and key in ref[1]:
+                if ref is not None and key in ref[1] and (yr, key) not in skip_models:
                     exp, src = ref[1][key]
                     ok = isnum(got) and abs(got - exp) <= tol
                     status[(yr, w.name, key)] = "MATCH" if ok else "MISMATCH"
@@ -603,7 +839,7 @@ def volume_check(wins, gauges, models, tol=TOL_M3):
     # like-for-like ratio for the outage storm (Re-tuned), from the table's note
     nm, exp, tl = WY2017_MATCHED_RATIO
     w = [x for x in wins if x.year == "WY2017" and x.name == nm][0]
-    if "retuned" in models["WY2017"] and any(r[0] == w.hi for r in REFS[w.key]):
+    if "retuned" in models["WY2017"] and ("WY2017", "retuned") not in skip_models and any(r[0] == w.hi for r in REFS[w.key]):
         gh = hourly(gauges["WY2017"]["q_cms"], w.lo, w.hi)
         mh = hourly(models["WY2017"]["retuned"], w.lo, w.hi).reindex(gh.index).dropna()
         gv = vol_mm3(gh)
@@ -626,21 +862,64 @@ def volume_check(wins, gauges, models, tol=TOL_M3):
                     bad.append(f"WY2020 {key} seven-storm total: here {fnum(tot, 3)} vs {exp} (running log)")
     else:
         lines.append("    WY2020 S5-S8 seven-storm totals not checked (the WY2020 windows are not the scorer's).")
+    skipped = sorted({f"{y} {k}" for (y, k) in skip_models if k in models.get(y, {})})
+    if skipped:
+        lines.append("    Model volumes NOT CHECKED for " + ", ".join(skipped) + ": the volumes on record belong to the old 1 October runs (--wy2017-runs oct1).")
+    return status, bad, lines
+
+
+# ------------------------------------------------------------------------------------------------ volume-ratio check (step0)
+def ratio_check(wins, gauges, models, source=None, tol=RATIO_TOL):
+    """Step 0 check: vol_ratio_gauge_hours of Re-tuned and Original on the 10 storms with a gauge response against the record.
+    source = {(key, year, storm): ratio} from window_scores_R4.csv, or None to use RATIO_TYPED.
+    Returns (status dict, mismatches list, printable lines)."""
+    status, bad, lines = {}, [], []
+    by = {w.key: w for w in wins}
+    lines.append("    {:<7}{:<14}{:>9}{:>9}{:>9}   {:>9}{:>9}{:>9}   {}".format(
+        "year", "storm", "Re-tuned", "record", "diff", "Original", "record", "diff", "result"))
+    for i, (yr, nm) in enumerate(RATIO_STORMS):
+        w = by[(yr, nm)]
+        gh = hourly(gauges[yr]["q_cms"], w.lo, w.hi)
+        gv = vol_mm3(gh)
+        cells, res = [], []
+        for key in PRIORITY:
+            mq = models[yr][key]
+            mh = hourly(mq, w.lo, w.hi)
+            got = vol_over_gauge_hours(gh, mh) / gv if (isnum(gv) and gv > 0 and len(mh) == w.hours) else float("nan")
+            exp = source[(key, yr, nm)] if source is not None and (key, yr, nm) in source else RATIO_TYPED[key][i] if source is None else float("nan")
+            ok = isnum(got) and isnum(exp) and abs(got - exp) <= tol
+            status[(yr, nm, key)] = "MATCH" if ok else "MISMATCH"
+            res.append(ok)
+            cells.append((got, exp))
+            if not ok:
+                bad.append(f"{yr} {nm} {key}: vol_ratio_gauge_hours here {fnum(got, 3)} vs record {fnum(exp, 3)} (tolerance {tol:g})")
+        lines.append("    {:<7}{:<14}{:>9}{:>9}{:>9}   {:>9}{:>9}{:>9}   {}".format(
+            yr, nm, fnum(cells[0][0], 3), fnum(cells[0][1], 3), fnum(cells[0][0] - cells[0][1], 3) if isnum(cells[0][0]) and isnum(cells[0][1]) else "-",
+            fnum(cells[1][0], 3), fnum(cells[1][1], 3), fnum(cells[1][0] - cells[1][1], 3) if isnum(cells[1][0]) and isnum(cells[1][1]) else "-",
+            "ok" if all(res) else "MISMATCH"))
     return status, bad, lines
 
 
 # ------------------------------------------------------------------------------------------------ definitions
-def definition_lines(mode: str, floor, model_floor=None):
-    m = {"as-scored": "WY2020 uncut (exactly as score_wy2020_run_sycamore.py: Nov 28-30 runs to Dec 4); WY2017 cut at the next storm's first day when that comes sooner (only Jan 19-21 is affected: it ends Jan 23, not Jan 25)",
+def definition_lines(mode: str, floor, model_floor=None, ratio_source_text=""):
+    m = {"step0": "the 12 storm windows of the Step 0 window finder, read from step0_windows.csv: Arizona local time, half-open [start, end), each hour named by its start; the two storms that the named storm days join (21-25 Dec 2016 and 23-28 Dec 2019) are as the finder joined them; nothing is derived from rain days here",
+         "as-scored": "WY2020 uncut (exactly as score_wy2020_run_sycamore.py: Nov 28-30 runs to Dec 4); WY2017 cut at the next storm's first day when that comes sooner (only Jan 19-21 is affected: it ends Jan 23, not Jan 25)",
          "cut": "every storm cut at the next storm's first day when that comes sooner (WY2020 Nov 28-30 ends Dec 3; WY2017 Jan 19-21 ends Jan 23)",
          "uncut": "no storm is cut (WY2020 Nov 28-30 ends Dec 4; WY2017 Jan 19-21 ends Jan 25, which includes the Jan 23-24 storm)"}[mode]
+    window_line = (f"WINDOW: Step 0 window of each storm (--windows step0): start and end are read from step0_windows.csv, [start, end), the hour named by its start. Rule used in this run: {m}."
+                   if mode == "step0" else
+                   "WINDOW: starts 00:00 on the first rain day; ends 00:00 four days after the last rain day. Rule used in this run (--windows " + mode + "): " + m + ".")
     L = [
-        f"{SELF_MARK} v{VERSION} (2026-11-17). READ-ONLY: reads outlet files, gauge files and storm_table.csv; changes none of them.",
-        "ROLES: in the pass 2 CSV the role belongs to the RUN: calibration = the four WY2017 whole-year runs; validation = the WY2020 frozen setting (Re-tuned) and its three comparison runs (Original, Original + Kchan 0.5, Original + Kchan 0.2); post_validation_screen = the eight WY2020 one-change screens S1 and S5 to S11, built after the WY2020 gauge and the Re-tuned and Original results had been opened, so they are NOT out of sample. In the pass 1 CSV (gauge only, one row per storm) the role is the storm's year: WY2017 calibration, WY2020 validation. Times are Arizona local time, as in the gauge and model files.",
-        "fixed_before_wy2020_results (pass 2 only): yes = the run's settings were written down before any WY2020 gauge volume or model result was opened (Re-tuned, frozen Nov 3 20:15; Original, named as a comparison in the same entry); no = written down or built after results had been opened (Kchan 0.5 and 0.2, Nov 4 02:10, with values taken from the WY2017 probes; the eight screens, Nov 7 onward); n/a = WY2017 runs (calibration year). Source: Tail_Screen_W4_Running_Log.md and the screen scripts; this script does not read them, the labels are fixed in RUN_DESIGN.",
+        f"{SELF_MARK} v{VERSION} (2026-11-22). READ-ONLY: reads outlet files, gauge files" + (" and step0_windows.csv" if mode == "step0" else "") + "; changes none of them.",
+        "WINDOW SET USED IN THIS FILE: " + WINDOW_SET_NAMES[mode] + ".",
+        "RAIN COLUMNS: the rain_* columns of v1.3 are DROPPED in v1.4. storm_table.csv is matched on the old first rain days, which are not these windows, so it is no longer read.",
+        "RUN START TIMES: set per RUN, not per year. Time_hr 0 = 2016-09-01 00:00 (WY2017 September-start runs, 6,551 h), 2016-10-01 00:00 (the old WY2017 whole-year runs, 8,759 h) or 2019-09-01 00:00 (WY2020 runs, 6,575 h). The script stops if a file's last Time_hr does not match its run's length.",
+        "ROLES: in the pass 2 CSV the role belongs to the RUN: calibration = the WY2017 Re-tuned and Original runs (and the two WY2017 Kchan runs when included); validation = the WY2020 frozen setting (Re-tuned) and its three comparison runs (Original, Original + Kchan 0.5, Original + Kchan 0.2); post_validation_screen = the eight one-change screens S1 and S5 to S11, built after the WY2020 gauge and the Re-tuned and Original results had been opened, so they are NOT out of sample (the same label is given to their WY2017 runs). In the pass 1 CSV (gauge only, one row per storm) the role is the storm's year: WY2017 calibration, WY2020 validation. Times are Arizona local time, as in the gauge and model files.",
+        "fixed_before_wy2020_results (pass 2 only): yes = the run's settings were written down before any WY2020 gauge volume or model result was opened (Re-tuned, frozen Nov 3 20:15; Original, named as a comparison in the same entry); no = written down or built after results had been opened (Kchan 0.5 and 0.2, Nov 4 02:10, with values taken from the WY2017 probes; the eight screens, Nov 7 onward); n/a = WY2017 Re-tuned, Original and Kchan runs (calibration year). Source: Tail_Screen_W4_Running_Log.md and the screen scripts; this script does not read them, the labels are fixed in RUN_DESIGN.",
         "HOURLY MEAN: average of all readings in one clock hour [hh:00, hh+1:00), m3/s. Hours with no reading are left out (never filled, never zero). Same as score_wy2020_run_sycamore.py.",
         "VOLUME: sum of hourly means x 3600 s over the hours that have data, M m3 (million cubic meters). A gauge window with missing hours gives a minimum volume. The model volume counts all its hours.",
-        "WINDOW: starts 00:00 on the first rain day; ends 00:00 four days after the last rain day. Rule used in this run (--windows " + mode + "): " + m + ".",
+        "VOLUME RATIO (v1.4): vol_ratio_gauge_hours = model volume over the gauge's hours with data (model_vol_gauge_hours_Mm3) / gauge volume (the thesis's volume ratio). vol_ratio_model_over_gauge = model volume over ALL its hours in the window / gauge volume (as in v1.3). They differ only where the gauge has missing hours (Dec 30 2016-Jan 2 2017).",
+        window_line,
         "VOLUME TIME tNN (NN = 10, 50, 90): hours from the window start by which NN percent of the window volume had passed. Cumulative sum of the hourly volumes, each hour's volume spread evenly over its own hour, linear inside the hour where the target is crossed. Gauge hours with no data add no volume.",
         "TIME DIFFERENCES are always model minus gauge, in hours: positive = the model is later than the gauge.",
         "RESOLUTION: the gauge is read every 15 min and the model written every 3.75 min, so an hourly mean of gauge readings is centered about 5.6 min (0.09 h) earlier in true time than the model's. In the volume-time columns the model therefore looks about 0.09 h earlier than it is (checked on synthetic data). Differences smaller than about 0.1 h are inside this convention (the one the existing scorers use). The peak, lag-free arrival and peak-time columns use the raw readings and do not have this offset, but are limited by the 15-min gauge spacing.",
@@ -650,23 +929,30 @@ def definition_lines(mode: str, floor, model_floor=None):
         f"LAG: shift in whole hours, within +/-{MAX_LAG_H} h, at which the model hourly series correlates best with the gauge hourly series (positive = model later; ties go to the smaller shift). Only shifts with at least {MIN_COMMON_H} common hours count. xcorr_at_limit = the best lag is at +/-{MAX_LAG_H}.",
         "TAIL: the tail starts at the GAUGE's t90 (so both series use the same clock interval) and runs to the window end. Tail volume ratio = model volume in the tail / gauge volume in the tail. model_tail_fraction = model volume in the tail / the model's own window volume (the gauge's is 0.10 by construction). Hours with no gauge data add no tail volume.",
         "BLANKS: an undefined value is left blank and the reason is in blank_reasons; never zero.",
-        ("FLOOR: " + (f"{floor:g} M m3 (your choice), applied to the GAUGE window volume only. If the gauge window volume is below it, the timing columns (t10, t50, t90 differences, peak-time difference, lag, tail, arrival extras) are blank with that reason; volumes, peak ratio and Pearson r are still shown. A run whose own volume is small still gets timing numbers: read them next to vol_ratio_model_over_gauge (the printed table adds a note when the model has under " + f"{LOW_VOL_RATIO:.0%} of the gauge volume; that note is display only)." + ((" MODEL FLOOR " + f"{model_floor:g} M m3 (your choice, --model-floor-mm3): a run whose own window volume is below it also gets blank timing columns; below_floor says which side.") if model_floor is not None else " No model floor was set.") if floor is not None else "not applied in pass 1 (you choose it after seeing this table).")),
+        ("FLOOR: " + (f"{floor:g} M m3 (your choice), applied to the GAUGE window volume only. If the gauge window volume is below it, the timing columns (t10, t50, t90 differences, peak-time difference, lag, tail, arrival extras) are blank with that reason; volumes, peak ratio and Pearson r are still shown. A run whose own volume is small still gets timing numbers: read them next to vol_ratio_model_over_gauge (the printed table adds a note when the model has under " + f"{LOW_VOL_RATIO:.0%} of the gauge volume; that note is display only)." + ((" MODEL FLOOR " + f"{model_floor:g} M m3 (your choice, --model-floor-mm3): a run whose own window volume is below it also gets blank timing columns; below_floor says which side.") if model_floor is not None else " No model floor was set.") if floor is not None else "none. Every storm is scored and nothing is blanked for small volume (v1.4 default; --floor-mm3 is optional). Read the timing columns next to vol_ratio_gauge_hours and no_gauge_response (the printed table adds a note when the model has under " + f"{LOW_VOL_RATIO:.0%} of the gauge volume; that note is display only).")),
+        "no_gauge_response: yes for the storms the windows table marks gauge_response = none (21-25 Dec 2016 and 19-22 Nov 2019), otherwise no; use it to take medians with and without those two storms.",
         "EXTRA COLUMNS ON A FRACTION OF THE GAUGE PEAK (labeled that way, not used in anything else): extra_arr20_of_gauge_peak_diff_h and extra_arr50_of_gauge_peak_diff_h = model minus gauge time of the first rise through 20% / 50% of the GAUGE's highest reading, linear between readings, not trusted across a reading gap longer than 3 h.",
         "EDGE FLOWS: hourly mean of the first hour and of the last hour of the window, cfs.",
         "GAUGE QUALITY: from the 'tier' column of the gauge file. pct_interp_or_est = readings tagged estimated or filled_interp as a percent of the window's readings that have a value; pct_filled_zero and pct_provisional likewise; pct_missing_hours = hours with no gauge data / hours in the window. Blank if the file has no 'tier' column.",
-        "OUTAGE: jan1_2_outage_flag is set when the window overlaps 2017-01-01 00:00 to 2017-01-03 00:00. gauge_missing_intervals lists every run of hours with no gauge data in the window (this also catches the WY2020 dropouts). gap_before_t90 = yes when any missing gauge hour starts before the gauge's t90, so the gauge volume times are then biased.",
-        "RAIN COLUMNS (rain_*): copied unchanged from storm_table.csv for the storm with the same water year and first rain day: basin rain (mm), highest 1, 3 and 6 h rain (mm), share of the rain in the six wettest hours, timing of half the rain (t50_frac, as defined there), dry days before, rain in the previous 7 and 30 days (mm). Not recomputed here.",
-        "VOLUME CHECK: before anything else the volumes already on record (write-up, storm_table.csv, running log) are recomputed; volume_check = MATCH / MISMATCH / NOT CHECKED per run and storm (tolerance 0.005 M m3).",
+        "OUTAGE: jan1_2_outage_flag is set when the window overlaps 2017-01-01 00:00 to 2017-01-03 00:00. gauge_missing_intervals lists every run of hours with no gauge data in the window (this also catches the WY2020 dropouts). gap_before_t90 = yes when any missing gauge hour starts before the gauge's t90, so the gauge volume times are then biased. The outage storm (30 Dec 2016-2 Jan 2017) is scored.",
+        ("VOLUME CHECK (Step 0): before anything else, for Re-tuned and Original in both years, vol_ratio_gauge_hours of the 10 storms with a gauge response is recomputed and compared with the record, tolerance " + f"{RATIO_TOL:g}" + "; MATCH or the script stops. Record used: " + (ratio_source_text or "the typed per-storm ratios (RATIO_TYPED)") + ". volume_check = MATCH / MISMATCH / NOT CHECKED per run and storm.")
+        if mode == "step0" else
+        "VOLUME CHECK: before anything else the volumes already on record (write-up, storm_table.csv, running log) are recomputed; volume_check = MATCH / MISMATCH / NOT CHECKED per run and storm (tolerance " + f"{TOL_M3}" + " M m3). They belong to the old windows and the old Oct-1 WY2017 runs.",
     ]
     return L
 
 
-def write_csv(path: Path, header_lines, df: pd.DataFrame):
+def guard_overwrite(path: Path):
+    """Stop if path exists and was not written by this version of the script."""
     if path.exists():
         with open(path, encoding="utf-8") as fh:
             first = fh.readline()
-        if SELF_MARK not in first:
-            die(f"{path} already exists and was not written by this script. Move it or use --out-dir.")
+        if SELF_VERSION_MARK not in first:
+            die(f"{path} already exists and was not written by {SELF_VERSION_MARK}. Move it or use --out-dir.")
+
+
+def write_csv(path: Path, header_lines, df: pd.DataFrame):
+    guard_overwrite(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as fh:
         for ln in header_lines:
@@ -679,19 +965,19 @@ def r4(x):
 
 
 # ------------------------------------------------------------------------------------------------ pass 1
-P1_COLS = ["water_year", "role", "storm", "window_rule", "window_start", "window_end", "window_hours",
+P1_COLS = ["water_year", "role", "storm", "no_gauge_response", "window_rule", "window_start", "window_end", "window_hours",
            "gauge_vol_Mm3", "gauge_volume_check", "gauge_hours_with_data", "gauge_peak_cfs", "gauge_peak_time",
            "gauge_peak_hourly_cfs", "gauge_t10_h", "gauge_t50_h", "gauge_t90_h", "gauge_left_edge_cfs", "gauge_right_edge_cfs",
            "pct_interp_or_est", "pct_filled_zero", "pct_provisional", "pct_missing_hours", "jan1_2_outage_flag",
-           "gauge_missing_intervals", "gap_before_t90", "gauge_peak_flag"] + [f"rain_{c}" for c in RAIN_COLS] + ["blank_reasons"]
+           "gauge_missing_intervals", "gap_before_t90", "gauge_peak_flag", "blank_reasons"]
 
 
-def pass1_row(w: Win, G: dict, status, rain):
+def pass1_row(w: Win, G: dict, status):
     q = G["quality"]
     why = list(G["why"])
     t = G["times"]
     row = {
-        "water_year": w.year, "role": w.role, "storm": w.name, "window_rule": w.rule,
+        "water_year": w.year, "role": w.role, "storm": w.name, "no_gauge_response": w.no_gauge_response, "window_rule": w.rule,
         "window_start": f"{w.lo:%Y-%m-%d %H:%M}", "window_end": f"{w.hi:%Y-%m-%d %H:%M}", "window_hours": w.hours,
         "gauge_vol_Mm3": r4(G["tot"]), "gauge_volume_check": status.get((w.year, w.name, "gauge"), "NOT CHECKED"),
         "gauge_hours_with_data": len(G["h"]),
@@ -709,7 +995,6 @@ def pass1_row(w: Win, G: dict, status, rain):
         "gauge_peak_flag": G["peak"]["flags"] if G["peak"] else "",
         "blank_reasons": " | ".join(why),
     }
-    row.update(rain_cells(rain, w))
     return row
 
 
@@ -736,8 +1021,9 @@ def print_pass1(rows):
 
 
 # ------------------------------------------------------------------------------------------------ pass 2
-P2_COLS = ["water_year", "role", "fixed_before_wy2020_results", "run_key", "run_label", "run_stem", "storm", "window_rule", "window_start", "window_end",
-           "volume_check", "gauge_vol_Mm3", "model_vol_Mm3", "vol_ratio_model_over_gauge", "below_floor",
+P2_COLS = ["water_year", "role", "fixed_before_wy2020_results", "run_key", "run_label", "run_stem", "storm", "no_gauge_response",
+           "window_rule", "window_start", "window_end",
+           "volume_check", "gauge_vol_Mm3", "model_vol_Mm3", "model_vol_gauge_hours_Mm3", "vol_ratio_model_over_gauge", "vol_ratio_gauge_hours", "below_floor",
            "gauge_t10_h", "model_t10_h", "t10_model_minus_gauge_h",
            "gauge_t50_h", "model_t50_h", "t50_model_minus_gauge_h",
            "gauge_t90_h", "model_t90_h", "t90_model_minus_gauge_h",
@@ -746,19 +1032,19 @@ P2_COLS = ["water_year", "role", "fixed_before_wy2020_results", "run_key", "run_
            "pearson_r_hourly", "n_hours_r", "xcorr_best_lag_h", "xcorr_best_r", "xcorr_at_limit",
            "tail_gauge_Mm3", "tail_model_Mm3", "tail_volume_ratio", "model_tail_fraction",
            "extra_arr20_of_gauge_peak_diff_h", "extra_arr50_of_gauge_peak_diff_h",
-           "jan1_2_outage_flag", "gauge_missing_intervals", "gap_before_t90"] + [f"rain_{c}" for c in RAIN_COLS] + ["blank_reasons"]
+           "jan1_2_outage_flag", "gauge_missing_intervals", "gap_before_t90", "blank_reasons"]
 
 
-def pass2_row(w: Win, G: dict, key, label, stem, mq: pd.Series, floor: float, status, rain, model_floor=None):
+def pass2_row(w: Win, G: dict, key, label, stem, mq: pd.Series, floor, status, model_floor=None):
     R = []
     row = {c: None for c in P2_COLS}
     role, fixed = run_design(w.year, key)
     row.update({"water_year": w.year, "role": role, "fixed_before_wy2020_results": fixed, "run_key": key, "run_label": label, "run_stem": stem, "storm": w.name,
+                "no_gauge_response": w.no_gauge_response,
                 "window_rule": w.rule, "window_start": f"{w.lo:%Y-%m-%d %H:%M}", "window_end": f"{w.hi:%Y-%m-%d %H:%M}",
                 "volume_check": status.get((w.year, w.name, key), "NOT CHECKED"),
                 "jan1_2_outage_flag": "touches the Jan 1-2 2017 outage" if G["touches_outage"] else "",
                 "gauge_missing_intervals": fmt_runs(G["runs"]), "gap_before_t90": G["gap_before_t90"]})
-    row.update(rain_cells(rain, w))
     gh = G["h"]
     mh = hourly(mq, w.lo, w.hi)
     gtot, mtot = G["tot"], vol_mm3(mh)
@@ -767,8 +1053,11 @@ def pass2_row(w: Win, G: dict, key, label, stem, mq: pd.Series, floor: float, st
         R.append(f"model: the outlet file has hourly means for only {len(mh)} of the window's {w.hours} h; every model-based value is blank")
         row["blank_reasons"] = " | ".join(R)
         return row
+    mgh = vol_over_gauge_hours(gh, mh)
+    row["model_vol_gauge_hours_Mm3"] = r4(mgh)
     if isnum(gtot) and gtot > 0:
         row["vol_ratio_model_over_gauge"] = r4(mtot / gtot)
+        row["vol_ratio_gauge_hours"] = r4(mgh / gtot)
     else:
         R.append("vol_ratio: gauge volume is zero or missing")
     gt, gpk = G["times"], G["peak"]
@@ -796,7 +1085,7 @@ def pass2_row(w: Win, G: dict, key, label, stem, mq: pd.Series, floor: float, st
         R.append("pearson_r_hourly: " + rwhy)
     else:
         row["pearson_r_hourly"] = r4(r)
-    # floor gate for the timing block
+    # floor gate for the timing block (only when a floor was asked for)
     gate = None
     below = []
     if floor is not None and (not isnum(gtot) or gtot < floor):
@@ -806,8 +1095,6 @@ def pass2_row(w: Win, G: dict, key, label, stem, mq: pd.Series, floor: float, st
     if below:
         row["below_floor"] = " and ".join(below)
         gate = "; ".join(f"{s} volume {fnum(gtot if s == 'gauge' else mtot, 4)} M m3 is below the {'floor' if s == 'gauge' else 'model floor'} {(floor if s == 'gauge' else model_floor):g}" for s in below)
-    timing_keys = ["t10_model_minus_gauge_h", "t50_model_minus_gauge_h", "t90_model_minus_gauge_h", "peak_time_model_minus_gauge_h",
-                   "xcorr_best_lag_h", "tail_volume_ratio", "extra_arr20_of_gauge_peak_diff_h"]
     if gate:
         R.append("timing columns (t10/t50/t90 difference, peak time, lag, tail, arrival extras): " + gate)
         row["blank_reasons"] = " | ".join(R)
@@ -867,6 +1154,8 @@ def print_pass2(rows, print_all):
         if not print_all and r["run_key"] not in PRIORITY:
             continue
         fl = []
+        if r["no_gauge_response"] == "yes":
+            fl.append("NO GAUGE RESPONSE")
         if r["below_floor"]:
             fl.append("BELOW FLOOR: " + r["below_floor"])
         vr = r["vol_ratio_model_over_gauge"]
@@ -886,7 +1175,7 @@ def print_pass2(rows, print_all):
             fnum(r["pearson_r_hourly"], 2), fnum(r["xcorr_best_lag_h"], 0), fnum(r["tail_volume_ratio"], 2), "; ".join(fl)))
 
 
-def check5(rows):
+def check5(rows, mode):
     lines = ["CHECK 5: Original (loss off), WY2017 Feb 27-28 flood: 50% volume time next to the old time-to-50%-of-gauge-peak figure"]
     sel = [r for r in rows if r["water_year"] == "WY2017" and r["storm"] == "Feb 27-28" and r["run_key"] in ("original", "retuned")]
     if not [r for r in sel if r["run_key"] == "original"]:
@@ -898,7 +1187,131 @@ def check5(rows):
         lines.append(f"     extra (fraction of the GAUGE peak): first rise through 50%: {fnum(r['extra_arr50_of_gauge_peak_diff_h'], 2)} h;  through 20%: {fnum(r['extra_arr20_of_gauge_peak_diff_h'], 2)} h")
     lines.append(f"  old figure on record, time to 50% of the gauge peak: {OLD_T50_PEAK_H:+.2f} h")
     lines.append("  (My 50%/20% arrival columns use linear interpolation between readings and this script's window; the old scorer's exact interpolation was not compared.)")
+    if mode == "step0":
+        lines.append("  (Step 0 window: Feb 27 13:00 to Mar 4 14:00; the old figure used the old window, which started Feb 27 00:00.)")
     return lines
+
+
+# ------------------------------------------------------------------------------------------------ medians file
+MEASURES = [("peak ratio", "peak_ratio_model_over_gauge"), ("peak time (h)", "peak_time_model_minus_gauge_h"),
+            ("t10 (h)", "t10_model_minus_gauge_h"), ("t50 (h)", "t50_model_minus_gauge_h"), ("t90 (h)", "t90_model_minus_gauge_h"),
+            ("lag (h)", "xcorr_best_lag_h"), ("tail ratio", "tail_volume_ratio"), ("Pearson r", "pearson_r_hourly")]
+STORM_SETS = [("a", "storms with a gauge response"),
+              ("b", "storms with a gauge response, without 30 Dec 2016-2 Jan 2017 (outage)"),
+              ("c", "all 12 storms, where defined")]
+SCOPES = [("both years", None), ("WY2017", "WY2017"), ("WY2020", "WY2020")]
+P3_COLS = ["run_key", "run_label", "years", "years_scored", "storm_set", "storm_set_description", "measure", "median", "min", "max", "n", "n_storms_in_set"]
+
+
+def storm_set_mask(df: pd.DataFrame, sid: str):
+    if sid == "a":
+        return df["no_gauge_response"] == "no"
+    if sid == "b":
+        return (df["no_gauge_response"] == "no") & ~((df["water_year"] == OUTAGE_STORM[0]) & (df["storm"] == OUTAGE_STORM[1]))
+    return pd.Series(True, index=df.index)
+
+
+def build_medians(rows):
+    """One row per run, years, storm set and measure: median, min, max over the storms where the measure is defined; n = how many."""
+    df = pd.DataFrame(rows)
+    out = []
+    for key in list(dict.fromkeys(df["run_key"])):
+        sub = df[df["run_key"] == key]
+        label = sub["run_label"].iloc[0]
+        for scope, yr in SCOPES:
+            s2 = sub if yr is None else sub[sub["water_year"] == yr]
+            if s2.empty:
+                continue
+            scored = "+".join(sorted(set(sub["water_year"])))
+            for sid, desc in STORM_SETS:
+                s3 = s2[storm_set_mask(s2, sid)]
+                for mlabel, col in MEASURES:
+                    v = pd.to_numeric(s3[col], errors="coerce").dropna()
+                    out.append({"run_key": key, "run_label": label, "years": scope, "years_scored": scored, "storm_set": sid,
+                                "storm_set_description": desc, "measure": mlabel,
+                                "median": r4(v.median()) if len(v) else None, "min": r4(v.min()) if len(v) else None,
+                                "max": r4(v.max()) if len(v) else None, "n": int(len(v)), "n_storms_in_set": int(len(s3))})
+    return out
+
+
+def print_medians(med, keys=PRIORITY):
+    log("\nMEDIANS (pass2_medians.csv rows for Re-tuned and Original; model minus gauge in hours; * = fewer storms than in the set had the value defined, n in brackets)")
+    mlabels = [m for m, _ in MEASURES]
+    for key in keys:
+        rows = [m for m in med if m["run_key"] == key]
+        if not rows:
+            continue
+        log(f"\n  {rows[0]['run_label']}   (years scored: {rows[0]['years_scored']})")
+        for what in ("median", "min .. max"):
+            log("  " + what)
+            wd = 16 if what == "median" else 22
+            log("    {:<11}{:<5}{:>6}".format("years", "set", "storms") + "".join(f"{m:>{wd}}" for m in mlabels))
+            for scope, _ in SCOPES:
+                for sid, _ in STORM_SETS:
+                    cells = [m for m in rows if m["years"] == scope and m["storm_set"] == sid]
+                    if not cells:
+                        continue
+                    n_set = cells[0]["n_storms_in_set"]
+                    txt = ""
+                    for ml in mlabels:
+                        c = [x for x in cells if x["measure"] == ml][0]
+                        if what == "median":
+                            s = fnum(c["median"], 2)
+                        else:
+                            s = "-" if c["min"] is None else f"{c['min']:.2f}..{c['max']:.2f}"
+                        if c["n"] < n_set:
+                            s += f"*({c['n']})"
+                        txt += f"{s:>{wd}}"
+                    log("    {:<11}({}){:>6}{}".format(scope, sid, n_set, txt))
+    log("\n  storm sets: " + "; ".join(f"({s}) {d}" for s, d in STORM_SETS))
+
+
+# ------------------------------------------------------------------------------------------------ compare with an old pass 2 file
+def compare_old(rows, old_path: Path):
+    """Line-by-line comparison of the new pass 2 rows with an old pass2_timing_long.csv (any version), keyed on water_year, run_key, storm.
+    Returns (lines, ok)."""
+    L = [f"COMPARE WITH OLD FILE: {old_path}"]
+    if not old_path.is_file():
+        return L + ["  The old file was not found, nothing compared."], False
+    old = pd.read_csv(old_path, comment="#", dtype=str, keep_default_na=False)
+    buf = io.StringIO()
+    pd.DataFrame(rows, columns=P2_COLS, dtype=object).to_csv(buf, index=False)
+    buf.seek(0)
+    new = pd.read_csv(buf, dtype=str, keep_default_na=False)
+    keys = ["water_year", "run_key", "storm"]
+    if any(k not in old.columns for k in keys):
+        return L + [f"  The old file has no columns {keys}; nothing compared."], False
+    skip = {"run_label"}                         # screens are labeled 'Screen n (Sx)' from v1.4 on
+    shared = [c for c in new.columns if c in old.columns and c not in skip]
+    new_only = [c for c in new.columns if c not in old.columns]
+    old_only = [c for c in old.columns if c not in new.columns]
+    o = old.set_index(keys, drop=False)
+    n = new.set_index(keys, drop=False)
+    common = [k for k in n.index if k in o.index]
+    only_new = sorted({k[1] for k in n.index if k not in o.index})
+    only_old = sorted({k[1] for k in o.index if k not in n.index})
+    diffs = []
+    for k in common:
+        for c in shared:
+            if str(o.loc[k, c]) != str(n.loc[k, c]):
+                diffs.append((k, c, o.loc[k, c], n.loc[k, c]))
+    L.append(f"  rows: old {len(old)}, new {len(new)}, in both {len(common)}; columns compared {len(shared)}")
+    if new_only:
+        L.append("  columns only in the new file (not compared): " + ", ".join(new_only))
+    if old_only:
+        L.append("  columns only in the old file (not compared): " + ", ".join(old_only))
+    if only_new:
+        L.append("  runs only in the new file: " + ", ".join(only_new))
+    if only_old:
+        L.append("  runs only in the old file: " + ", ".join(only_old) + "  (add --include-kchan, or --wy2017-runs oct1, to reproduce them)")
+    L.append(f"  cells that differ: {len(diffs)}")
+    for k, c, a, b in diffs[:20]:
+        L.append(f"    {k[0]} {k[1]} {k[2]}  {c}: old {a!r}  new {b!r}")
+    if len(diffs) > 20:
+        L.append(f"    ... and {len(diffs) - 20} more")
+    ok = (not diffs) and not only_new and not only_old and len(common) > 0
+    L.append("  RESULT: " + ("IDENTICAL on every compared cell, and the same rows." if ok else "NOT IDENTICAL (see above)."))
+    return L, ok
 
 
 # ------------------------------------------------------------------------------------------------ --show-arrival
@@ -933,17 +1346,21 @@ def show_arrival(path: Path) -> int:
 # ------------------------------------------------------------------------------------------------ main
 def build_parser():
     ap = argparse.ArgumentParser(description="Timing and shape scores for the Lower Sycamore storms (read-only; see the top of this file).")
-    ap.add_argument("--pass", dest="pass_", type=int, choices=[1, 2], help="1 = gauge only, 2 = every run against the gauge")
-    ap.add_argument("--floor-mm3", type=float, default=None, help="pass 2: volume (M m3) below which a storm is too small to time")
-    ap.add_argument("--model-floor-mm3", type=float, default=None, help="pass 2, optional: also blank the timing of any run whose own volume (M m3) is below this")
+    ap.add_argument("--pass", dest="pass_", type=int, choices=[1, 2], help="1 = gauge only, 2 = every run against the gauge (--dry-run alone means 2)")
+    ap.add_argument("--floor-mm3", type=float, default=None, help="OPTIONAL (off by default): gauge volume (M m3) below which a storm's timing is blanked")
+    ap.add_argument("--model-floor-mm3", type=float, default=None, help="optional, with --floor-mm3: also blank the timing of any run whose own volume (M m3) is below this")
     ap.add_argument("--root", default=str(HERE), help="the lab folder (default: the folder this script is in)")
     ap.add_argument("--results", default=None, help="folder with the outlet files (default <root>/results)")
-    ap.add_argument("--table", default=None, help="storm_table.csv (default <root>/storm_table.csv)")
     ap.add_argument("--obs2017", default=None)
     ap.add_argument("--obs2020", default=None)
-    ap.add_argument("--out-dir", default=None, help="output folder (default <root>/timing_out)")
-    ap.add_argument("--windows", choices=["as-scored", "cut", "uncut"], default="as-scored")
-    ap.add_argument("--stem", action="append", default=[], metavar="YEAR:KEY=NAME", help="other outlet-file name for one run, e.g. 2017:original=W5_xxx")
+    ap.add_argument("--out-dir", default=None, help="output folder (default <root>/timing_out_step0; timing_out_check_<mode> for the old window rules)")
+    ap.add_argument("--windows", choices=["step0", "as-scored", "cut", "uncut"], default="step0")
+    ap.add_argument("--windows-file", default=None, help="the Step 0 windows table (default <root>/step0_windows.csv)")
+    ap.add_argument("--wy2017-runs", choices=["sep1", "oct1"], default="sep1", help="sep1 (default): the 1 September 2016 runs; oct1: the four old 1 October whole-year runs")
+    ap.add_argument("--include-kchan", action="store_true", help="also score the four Kchan runs (left out by default)")
+    ap.add_argument("--ratio-source", default=None, help="window_scores CSV for the Step 0 ratio check (default <root>/window_scores_R4.csv; typed values if absent)")
+    ap.add_argument("--compare-old", default=None, metavar="OLD_CSV", help="pass 2: compare the new rows with an old pass2_timing_long.csv, line by line")
+    ap.add_argument("--stem", action="append", default=[], metavar="YEAR:KEY=NAME", help="other outlet-file name for one run, e.g. 2017:original=NAME")
     ap.add_argument("--print-all", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--ignore-check-failure", action="store_true", help="diagnosis only")
@@ -952,36 +1369,19 @@ def build_parser():
     return ap
 
 
-def apply_stem_overrides(specs):
-    runs = {y: list(v) for y, v in RUNS.items()}
-    for s in specs:
-        m = re.fullmatch(r"(20(?:17|20)):([A-Za-z0-9_]+)=(\S+)", s.strip())
-        if not m:
-            die(f"--stem '{s}' is not in the form 2017:original=NAME")
-        yr, key, name = "WY" + m.group(1), m.group(2), m.group(3)
-        if name.endswith("_Outlet.qout"):
-            name = name[:-len("_Outlet.qout")]
-        hit = [i for i, (k, _, _) in enumerate(runs[yr]) if k == key]
-        if not hit:
-            die(f"--stem: no run '{key}' for {yr}. Keys: {[k for k, _, _ in runs[yr]]}")
-        k, l, _ = runs[yr][hit[0]]
-        runs[yr][hit[0]] = (k, l, name)
-    return runs
-
-
 def main(argv=None) -> int:
     a = build_parser().parse_args(argv)
     root = Path(a.root)
+    mode = a.windows
     if a.definitions:
-        log("\n".join(definition_lines(a.windows, a.floor_mm3, a.model_floor_mm3)))
+        log("\n".join(definition_lines(mode, a.floor_mm3, a.model_floor_mm3)))
         return 0
     if a.show_arrival is not None:
         return show_arrival(Path(a.show_arrival) if a.show_arrival else root / "score_run_sycamore.py")
+    if a.dry_run and a.pass_ is None:
+        a.pass_ = 2
     if a.pass_ is None:
-        die("choose --pass 1 or --pass 2 (or --show-arrival, or --definitions). See the top of this file.")
-    if a.pass_ == 2 and a.floor_mm3 is None and not a.dry_run:
-        die("pass 2 needs --floor-mm3 X: the volume (M m3) below which a storm is too small to time. Look at the pass 1 table and choose it; "
-            "for example  python score_timing_sycamore.py --pass 2 --floor-mm3 0.05")
+        die("choose --pass 1 or --pass 2 (or --dry-run, --show-arrival, --definitions). See the top of this file.")
     if a.floor_mm3 is not None and not (math.isfinite(a.floor_mm3) and a.floor_mm3 >= 0):
         die("--floor-mm3 must be a number of 0 or more.")
     if a.model_floor_mm3 is not None:
@@ -989,17 +1389,20 @@ def main(argv=None) -> int:
             die("--model-floor-mm3 must be a number of 0 or more.")
         if a.floor_mm3 is None:
             die("--model-floor-mm3 is an extra on top of --floor-mm3 X; give both.")
+    if a.compare_old and a.pass_ != 2:
+        die("--compare-old compares pass 2 rows; use --pass 2.")
 
     results = Path(a.results) if a.results else root / "results"
-    table = Path(a.table) if a.table else root / "storm_table.csv"
-    out_dir = Path(a.out_dir) if a.out_dir else root / "timing_out"
+    out_dir = Path(a.out_dir) if a.out_dir else root / ("timing_out_step0" if mode == "step0" else "timing_out_check_" + mode.replace("-", "_"))
     if out_dir.resolve() == results.resolve():
         die("--out-dir is the results folder. This script never writes there.")
-    runs = apply_stem_overrides(a.stem)
+    runs = build_runs(a.wy2017_runs, a.include_kchan, a.stem)
     if not results.is_dir():
         die(f"cannot find the results folder: {results}\n  Run this from workspaces/Sycamore/lab/, or point to it with --results.")
 
-    log(f"\nscore_timing_sycamore v{VERSION}   pass {a.pass_}   windows: {a.windows}" + ("   [DRY RUN]" if a.dry_run else ""))
+    log(f"\nscore_timing_sycamore v{VERSION}   pass {a.pass_}   windows: {mode}   WY2017 runs: {a.wy2017_runs}   Kchan: {'included' if a.include_kchan else 'left out'}"
+        + ("   [DRY RUN]" if a.dry_run else ""))
+    log(f"  floor: " + ("none (every storm is scored)" if a.floor_mm3 is None else f"{a.floor_mm3:g} M m3 (asked for)") + f"   output folder: {out_dir}")
     # gauges
     gauges, gpaths = {}, {}
     for yr, spec in YEARS.items():
@@ -1014,93 +1417,140 @@ def main(argv=None) -> int:
         g = gauges[yr]
         log(f"  {yr} gauge: {hit[0].name}: {int(g['q_cms'].notna().sum()):,} readings, {g.index.min():%Y-%m-%d} to {g.index.max():%Y-%m-%d}"
             + ("" if "tier" in g.columns else "   (no 'tier' column: gauge quality percentages will be blank)"))
+    # windows
+    wfile = Path(a.windows_file) if a.windows_file else root / "step0_windows.csv"
+    wins = make_windows(mode, wfile)
+    log(f"\nWINDOW TABLE ({WINDOW_SET_NAMES[mode]}; Arizona local time, [start, end), hours named by their start)")
+    for ln in window_table_lines(wins):
+        log(ln)
+    if mode == "step0":
+        log(f"  window lengths: all 12 match the required list ({', '.join(str(STEP0_HOURS[k]) for k in STEP0_HOURS)}).")
     # outlet files
-    models, missing = {"WY2017": {}, "WY2020": {}}, []
-    for yr in ("WY2017", "WY2020"):
-        for key, label, stem in runs[yr]:
-            p = results / f"{stem}_Outlet.qout"
-            if not p.is_file():
-                missing.append((yr, key, label, p))
-                continue
-            q = read_qout(p, YEARS[yr]["start"])
-            models[yr][key] = q
-            log(f"  {yr} {label:<22} {stem}_Outlet.qout   {len(q):,} rows, last hour {(q.index.max() - YEARS[yr]['start']) / HOUR:.1f}")
+    models, infos, missing = load_models(runs, results)
+    log("\nRUN INVENTORY (Time_hr is read as hours after the run's own start; file dates are this machine's clock, a Codespace shows UTC)")
+    for ln in inventory_lines(runs, infos):
+        log(ln)
+    bad_len = [(r, infos[(r.year, r.key)]) for r in runs if (r.year, r.key) in infos and not infos[(r.year, r.key)]["ok"]]
+    if missing or a.dry_run:
+        w17 = [r for r in runs if r.year == "WY2017"]
+        if any(r in missing for r in w17) or a.dry_run:
+            log("\nWY2017 outlet files in results/ (candidates; compare with the run list above and confirm the screen names):")
+            cl = candidate_lines(results, runs)
+            for ln in cl:
+                log(ln)
+            if not cl:
+                log("    (none: no outlet file in results/ has WY2017 or W5_ in its name)")
     if missing:
         log("\nOUTLET FILES NOT FOUND (these runs are skipped):")
-        for yr, key, label, p in missing:
-            log(f"  {yr} {label:<22} {p.name}   (key {key})")
-        have = sorted(f.name[:-len('_Outlet.qout')] for f in results.glob("*_Outlet.qout")) if results.is_dir() else []
-        w5 = [h for h in have if h.startswith("W5_")]
-        if w5 and any(y == "WY2017" for y, *_ in missing):
-            log("  Outlet files in results/ that start with W5_ (use --stem 2017:original=NAME if one of these is the run):")
-            for h in w5[:30]:
-                log("    " + h)
+        for r in missing:
+            log(f"  {r.year} {r.label:<22} {r.fname}   (key {r.key})")
+    if bad_len and not (a.ignore_check_failure and not a.dry_run):
+        msg = "a run file's length does not match its expected hours, so reading it with its start would shift every time:\n  " + "\n  ".join(
+            f"{r.year} {r.label} ({r.fname}): {i['why']}" for r, i in bad_len)
+        if a.dry_run:
+            log("\nLENGTH CHECK FAILED (a real run would stop here): " + msg)
+        else:
+            die(msg + "\n  Use --stem YEAR:KEY=NAME to point the run at the right file.")
+    elif bad_len:
+        log("\n  --ignore-check-failure was given: carrying on with files whose length does not match.")
+    # priority runs
     for yr in ("WY2017", "WY2020"):
-        if not any(k in models[yr] for k in PRIORITY):
-            die(f"neither Re-tuned nor Original was found for {yr}, and they are the priority runs. See the list above; "
-                f"check the names or use --stem {yr[2:]}:retuned=NAME.")
-    rain, rnotes = read_rain_table(table)
-    for n in rnotes:
-        log("  NOTE: " + n)
-    wins = make_windows(a.windows)
-    # sanity: storm_table agrees with the storms and last rain days used here
-    for w in wins:
-        r = rain.get((w.year, w.first.strftime("%Y-%m-%d")))
-        if rain and r is None:
-            log(f"  NOTE: storm_table.csv has no row for {w.year} {w.name} (first day {w.first:%Y-%m-%d}); its rain columns are blank.")
-        elif r is not None and r["_last"] and r["_last"][:10] != w.last.strftime("%Y-%m-%d"):
-            log(f"  NOTE: storm_table.csv gives the last rain day of {w.year} {w.name} as {r['_last']}, but this script uses {w.last:%Y-%m-%d}.")
-
-    log("\nWINDOWS (start to end, hours):")
-    for w in wins:
-        log(f"  {w.year}  {w.name:<13} {w.lo:%Y-%m-%d %H:%M} to {w.hi:%Y-%m-%d %H:%M}  {w.hours:>4} h   {w.rule}")
-    if a.dry_run:
-        log("\nDRY RUN: every input was read and the windows listed. Nothing was computed or written.")
-        return 0
-
+        have = [k for k in PRIORITY if k in models[yr]]
+        need = len(PRIORITY) if mode == "step0" else 1
+        if len(have) < need:
+            msg = (f"{'both Re-tuned and Original are' if need == 2 else 'neither Re-tuned nor Original was found; they are'} needed for {yr}"
+                   f" (the Step 0 ratio check covers both). See the inventory above; check the names or use --stem {yr[2:]}:retuned=NAME.")
+            if a.dry_run:
+                log("\nWOULD STOP: " + msg)
+            else:
+                die(msg)
+    # ratio source
+    ratio_source, ratio_text = None, ""
+    if mode == "step0":
+        rs = Path(a.ratio_source) if a.ratio_source else root / "window_scores_R4.csv"
+        if a.ratio_source and not rs.is_file():
+            die(f"cannot find the ratio source {rs}")
+        if rs.is_file():
+            ratio_source = read_ratio_source(rs)
+            ratio_text = f"{rs.name} (vol_model_Mm3 / vol_gauge_Mm3, matched hours, from score_windows_sycamore.py)"
+            need_keys = [(k, y, n) for k in PRIORITY for (y, n) in RATIO_STORMS]
+            nf = [k for k in need_keys if k not in ratio_source]
+            if nf:
+                die(f"the ratio source {rs.name} has no storm row for: " + "; ".join(f"{k[0]} {k[1]} {k[2]}" for k in nf[:6])
+                    + (" ..." if len(nf) > 6 else ""))
+        else:
+            ratio_text = "the typed per-storm ratios (RATIO_TYPED; window_scores_R4.csv was not found next to this script)"
     # 1. volume check
-    log("\nVOLUME CHECK (recomputed volumes against the volumes on record; M m3; ratio = model / gauge)")
-    status, bad, lines = volume_check(wins, gauges, models)
+    can_check = all(k in models[y] for y in ("WY2017", "WY2020") for k in (PRIORITY if mode == "step0" else ()))
+    if mode == "step0":
+        log(f"\nVOLUME CHECK (Step 0): vol_ratio_gauge_hours of Re-tuned and Original, 10 storms with a gauge response, tolerance {RATIO_TOL:g}\n  record: {ratio_text}")
+        if can_check:
+            status, bad, lines = ratio_check(wins, gauges, models, ratio_source)
+        else:
+            status, bad, lines = {}, ["Re-tuned or Original is missing for a year, so the check cannot be made"], ["    (cannot be made)"]
+    else:
+        log("\nVOLUME CHECK (old window rules; recomputed volumes against the volumes on record; M m3; ratio = model / gauge)")
+        skip = frozenset((r.year, r.key) for r in runs if r.year == "WY2017" and r.start != OCT1_2016)
+        status, bad, lines = volume_check(wins, gauges, models, skip_models=skip)
     for ln in lines:
         log(ln)
     if bad:
-        log(f"\nVOLUME CHECK: MISMATCH ({len(bad)} value(s) differ by more than {TOL_M3} M m3):")
+        log(f"\nVOLUME CHECK: MISMATCH ({len(bad)} value(s)):")
         for b in bad:
             log("  " + b)
-        if not a.ignore_check_failure:
+        if a.dry_run:
+            log("  (a real run would stop here; nothing is written in a dry run)")
+        elif not a.ignore_check_failure:
             die("the volumes do not reproduce, so nothing was written. Do not use any timing number until this is explained.")
-        log("  --ignore-check-failure was given: carrying on. Rows are labeled MISMATCH.")
+        else:
+            log("  --ignore-check-failure was given: carrying on. Rows are labeled MISMATCH.")
     else:
         n_m = sum(1 for v in status.values() if v == "MATCH")
-        log(f"\nVOLUME CHECK: MATCH. {n_m} run-and-storm volumes (plus the gauge) reproduce the record within {TOL_M3} M m3; the rest have no reference (NOT CHECKED).")
+        log(f"\nVOLUME CHECK: MATCH. {n_m} run-and-storm values reproduce the record" + (f" within {RATIO_TOL:g}." if mode == "step0" else f" within {TOL_M3} M m3; the rest have no reference (NOT CHECKED)."))
 
+    if a.dry_run:
+        n_found = sum(1 for r in runs if (r.year, r.key) in infos)
+        log(f"\nDRY RUN: {len(wins)} windows, {n_found} of {len(runs)} run files found"
+            + (", every length matches" if not bad_len else ", LENGTH PROBLEMS ABOVE") + ". No scores were computed and nothing was written.")
+        return 0 if not (bad or bad_len or missing) else 1
+
+    # headers
     bundles = {w.key: gauge_bundle(w, gauges[w.year]) for w in wins}
-    header = definition_lines(a.windows, a.floor_mm3 if a.pass_ == 2 else None, a.model_floor_mm3 if a.pass_ == 2 else None)
+    header = definition_lines(mode, a.floor_mm3 if a.pass_ == 2 else None, a.model_floor_mm3 if a.pass_ == 2 else None, ratio_text)
     header.append("VOLUME CHECK RESULT: " + ("MISMATCH, carried on with --ignore-check-failure" if bad else "MATCH") + ". Gauge files: "
                   + "; ".join(f"{y} {p.name}" for y, p in gpaths.items()) + ".")
+    header.append("WINDOW TABLE: " + "; ".join(f"{w.year} {w.name} {w.lo:%Y-%m-%d %H:%M} to {w.hi:%Y-%m-%d %H:%M} ({w.hours} h, gauge response {w.gauge_response})" for w in wins) + ".")
+    for r in runs:
+        i = infos.get((r.year, r.key))
+        if i:
+            header.append(f"RUN FILE: {r.year} {r.key} '{r.label}' {r.fname}; modified {i['modified']} (machine clock); Time_hr 0 = {r.start:%Y-%m-%d %H:%M}; first Time_hr {i['first']:g}, last Time_hr {i['last']:g}; expected {r.hours} h.")
     if missing:
-        header.append("RUNS NOT FOUND (skipped): " + "; ".join(f"{y} {l}" for y, _, l, _ in missing))
+        header.append("RUNS NOT FOUND (skipped): " + "; ".join(f"{r.year} {r.label}" for r in missing))
 
+    for fn in (("pass1_gauge_table.csv",) if a.pass_ == 1 else ("pass2_timing_long.csv", "pass2_medians.csv")) + (("step0_windows.csv",) if mode == "step0" else ()):
+        guard_overwrite(out_dir / fn)
     # 2. pass 1
     if a.pass_ == 1:
-        rows = [pass1_row(w, bundles[w.key], status, rain) for w in wins]
+        rows = [pass1_row(w, bundles[w.key], status) for w in wins]
         print_pass1(rows)
         path = out_dir / "pass1_gauge_table.csv"
         write_csv(path, header, pd.DataFrame(rows, columns=P1_COLS, dtype=object))
         log(f"\nWrote {len(rows)} rows to {path}")
-        log("\nPASS 1 DONE. Stopping here as agreed: look at the table, choose the 'too small to time' floor, then run pass 2.")
+        save_windows_copy(out_dir, wins, header, mode, wfile)
+        log("\nPASS 1 DONE.")
         return 0
 
     # 3. pass 2
     rows = []
-    for yr in ("WY2017", "WY2020"):
-        for key, label, stem in runs[yr]:
-            if key not in models[yr]:
-                continue
-            for w in [x for x in wins if x.year == yr]:
-                rows.append(pass2_row(w, bundles[w.key], key, label, stem, models[yr][key], a.floor_mm3, status, rain, a.model_floor_mm3))
+    for r in runs:
+        if r.key not in models[r.year]:
+            continue
+        for w in [x for x in wins if x.year == r.year]:
+            rows.append(pass2_row(w, bundles[w.key], r.key, r.label, r.stem, models[r.year][r.key], a.floor_mm3, status, a.model_floor_mm3))
     print_pass2(rows, a.print_all)
-    c5 = check5(rows)
+    med = build_medians(rows)
+    print_medians(med)
+    c5 = check5(rows, mode)
     log("")
     for ln in c5:
         log(ln)
@@ -1110,7 +1560,32 @@ def main(argv=None) -> int:
     path = out_dir / "pass2_timing_long.csv"
     write_csv(path, header, pd.DataFrame(rows, columns=P2_COLS, dtype=object))
     log(f"Wrote {len(rows)} rows to {path}")
+    mh_ = list(header)
+    mh_.insert(2, "THIS FILE (pass2_medians.csv): one row per run, years, storm set and measure; median, min, max over the storms where the measure is defined; n = how many storms had it defined; n_storms_in_set = storms in the set. Measures: peak ratio, peak time (model minus gauge, h), t10, t50, t90 (model minus gauge, h), lag (h), tail volume ratio, Pearson r (hourly). Storm sets: " + "; ".join(f"({s}) {d}" for s, d in STORM_SETS) + ". 'both years' pools WY2017 and WY2020 storms of the same run key; years_scored says which years that run was scored for.")
+    mpath = out_dir / "pass2_medians.csv"
+    write_csv(mpath, mh_, pd.DataFrame(med, columns=P3_COLS, dtype=object))
+    log(f"Wrote {len(med)} rows to {mpath}")
+    save_windows_copy(out_dir, wins, header, mode, wfile)
+    if a.compare_old:
+        cl, ok = compare_old(rows, Path(a.compare_old))
+        log("")
+        for ln in cl:
+            log(ln)
     return 0
+
+
+def save_windows_copy(out_dir: Path, wins, header, mode: str, src: Path):
+    """step0_windows.csv in the output folder: the table the run used (with hours), headed with the window set."""
+    if mode != "step0":
+        return
+    dst = out_dir / "step0_windows.csv"
+    if src.exists() and dst.exists() and src.resolve() == dst.resolve():
+        return
+    df = pd.DataFrame([{"water_year": w.year, "storm": w.name, "start": f"{w.lo:%Y-%m-%d %H:%M}", "end": f"{w.hi:%Y-%m-%d %H:%M}",
+                        "hours": w.hours, "gauge_response": w.gauge_response} for w in wins], dtype=object)
+    hl = [header[0], header[1], f"THIS FILE (step0_windows.csv): the table the run read from {src.name}, with the hours. Required hours: " + ", ".join(f"{k[1]} {k[0][2:]} {v}" for k, v in STEP0_HOURS.items()) + "."]
+    write_csv(dst, hl, df)
+    log(f"Wrote {len(df)} rows to {dst}")
 
 
 if __name__ == "__main__":

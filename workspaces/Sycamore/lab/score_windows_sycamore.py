@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-score_windows_sycamore.py   (v1.0, 2026-11-21)
+score_windows_sycamore.py   (v1.2, 2026-11-21)
 ==============================================
 
 Scores the Lower Sycamore runs against the USGS 09510200 gauge by WINDOW, with storm windows found from the RAIN (not from the flow),
 and writes tables of PBIAS, KGE', peak flow, timing and the runoff mechanisms. It also compares the new Sep-1-start WY2017 runs with the
 old Oct-1-start WY2017 runs (the spin-up check). READ-ONLY: it opens result files and writes CSV and text files into an output folder.
 It runs no model and never overwrites a file it did not write itself.
+
+LABEL FIX (text only, no numbers changed): v1.2 first described Sbsrf as 'subsurface stormflow' and Satsrf as 'saturation excess'. The tRIBS source
+and docs say Sbsrf is saturation excess and Satsrf is groundwater exfiltration. The columns, files and values were always read by their tRIBS names.
+CHANGES from v1.1: adds TOTAL VOLUME ERROR over two FIXED window sets (the 12 scored storms; the whole of Oct-May cut into every storm of 5 mm or more
+plus the dry stretches between them): volume the model is too high, too low, net, and the total of both, as a percent of the gauge volume.
+New files volume_error_totals.csv and volume_error_pieces.csv.
+CHANGES from v1.0: reads the real .mrf files ('-nan' columns; the extra last row flagged only in RainMin), ignores *_fills.csv gauge files, adds the
+gauge-quality columns (gauge_pct_*), the model-side check, the dry-gap and threshold tests of the windows command, and the month-by-month spin-up table.
 
 THREE COMMANDS
   windows     finds the 12 storm windows from the basin-mean rain (.mrf file), tests the rain threshold, the dry gap and R (days after the
@@ -63,19 +71,34 @@ THE METRICS (model = the run, gauge = USGS; both turned into HOURLY MEANS first)
   OFF rows            volume, PBIAS (only if the gauge class is ok) and the number of days whose highest flow is above 1 cfs and above
                       10 cfs, for the model and for the gauge (days with data only). No KGE', peak or timing.
   Mechanisms          from the .rft file: the runoff the model MADE on the land (all cells added, BEFORE routing, so not outlet flow):
-                      Hsrf infiltration excess, Sbsrf subsurface stormflow, Psrf perched-water runoff, Satsrf saturation excess.
+                      Hsrf infiltration excess, Sbsrf saturation excess, Psrf perched return flow, Satsrf groundwater exfiltration
+                      (the tRIBS 5.3.1 and 6.0.0 source comments and the tRIBS output documentation, Table 8.8).
                       Volume = hourly value (m3/s) x 3,600 s, in M m3, over the window. Shares are percent of the four added. They are
                       described, not scored. rain_mm is the basin-mean rain from the .mrf file over the window. The .mrf and .rft files
                       label each hour by its END; this script moves the label back one hour, so an hour belongs to the window it falls in.
+
+TOTAL VOLUME ERROR (volume_error_totals.csv, volume_error_pieces.csv; made by the score command)
+  Two FIXED window sets. Storms12 = the 12 scored storm windows. Season = all of Oct-May cut into pieces that touch and never overlap: the 24 storm windows
+  (every storm of 5 mm or more in the storm table, with the same rule as the 12: first rain hour to the last rain hour + R days or the next storm) and the dry
+  stretches between them. In each piece, over = model volume above the gauge's, under = gauge volume above the model's (matched hours). Added over all pieces:
+    over_pct, under_pct   each as a percent of the gauge volume in the set       net_pct = over_pct - under_pct = the PBIAS of the set (it cancels)
+    total_abs_pct         over_pct + under_pct: the errors cannot cancel; a model that never makes flow scores 100 %; over-prediction is not capped
+    volumetric_efficiency = 1 - total_abs_pct/100 (Criss and Winston 2008 use the same form on single readings)
+    total_abs_pct_if_one_window = |net_pct|;  total_abs_pct_hourly = the same sum over single hours (timing errors included)
+  The total GROWS as the cut gets finer, so compare totals only when they were made with the same windows (these two sets are fixed in this script).
+  Zero-flow storms need no special case: their error is in the numerator and the denominator is the gauge volume of the whole set.
 
 THE SPIN-UP CHECK
   The new runs (Sycamore_WY2017sep_*, Time_hr 0 = Sep 1 2016) are compared with the old Oct-1-start WY2017 runs for Re-tuned and Original.
   Both are put on one clock using each run's own start date (from its .in file, else from its name), then scored in exactly the same
   2017 windows. The check is the same table for both, plus the difference (new minus old).
 
+MODEL-SIDE CHECK (score command): the model volumes over the OLD window rule are compared with the volumes recorded in the project for the old
+  W5 Re-tuned and Original runs and for the WY2020 Re-tuned and Original runs. The windows command does the same for the gauge files.
+
 WHAT IT READS (from --data, searched below it): *_Outlet.qout, the .mrf and .rft files, the .in files, and the gauge CSV files.
-WHAT IT WRITES (to --out-dir): storm_windows.csv, windows_grid_test.csv, windows_R_test.csv (windows command);
-  window_scores.csv, window_mechanisms.csv, spinup_check.csv, score_report.txt (score command). Every CSV starts with a line that marks
+WHAT IT WRITES (to --out-dir): storm_windows.csv, windows_grid_test.csv, windows_threshold_test.csv, windows_R_test.csv (windows command);
+  window_scores.csv, window_mechanisms.csv, volume_error_totals.csv, volume_error_pieces.csv, spinup_check.csv, spinup_convergence.csv, score_report.txt (score command). Every CSV starts with a line that marks
   it as written by this script and with comment lines (#) that define the columns; read it with comment='#'.
 """
 from __future__ import annotations
@@ -91,7 +114,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-VERSION = "1.0"
+VERSION = "1.2"
 SELF_MARK = "# written by score_windows_sycamore.py"
 HOUR = pd.Timedelta(hours=1)
 DAY = pd.Timedelta(days=1)
@@ -200,13 +223,17 @@ def read_qout(path: Path, start: pd.Timestamp) -> pd.Series:
     return s[~s.index.duplicated(keep="last")].sort_index()
 
 
-def read_gauge(path: Path) -> pd.Series:
+def read_gauge(path: Path):
+    """Gauge file (datetime, q_cms, ..., tier). Returns (flow in m3/s with NaN where the file has no value, tier text for each reading)."""
     o = pd.read_csv(path)
     for c in ("datetime", "q_cms"):
         if c not in o.columns:
-            die("{} has no column '{}'. Columns found: {}".format(path, c, list(o.columns)[:10]))
-    s = pd.Series(pd.to_numeric(o["q_cms"], errors="coerce").to_numpy(float), index=pd.to_datetime(o["datetime"]))
-    return s[~s.index.duplicated(keep="last")].sort_index()
+            die("{} has no column '{}' (is this a *_fills.csv file?). Columns found: {}".format(path, c, list(o.columns)[:10]))
+    idx = pd.to_datetime(o["datetime"])
+    s = pd.Series(pd.to_numeric(o["q_cms"], errors="coerce").to_numpy(float), index=idx)
+    tier = pd.Series(o["tier"].astype(str).to_numpy() if "tier" in o.columns else [""] * len(o), index=idx)
+    keep = ~s.index.duplicated(keep="last")
+    return s[keep].sort_index(), tier[keep].sort_index()
 
 
 def _hour_start_index(time_hr, start) -> pd.DatetimeIndex:
@@ -215,17 +242,42 @@ def _hour_start_index(time_hr, start) -> pd.DatetimeIndex:
     return start + pd.to_timedelta(secs, unit="s") - HOUR
 
 
-def read_mrf(path: Path, start) -> pd.Series:
+FLAG_COLS = ("MAP_mm_hr", "RainMax_mm_hr", "RainMin_mm_hr", "Srf_m3_s")
+
+
+def drop_unfilled(d: pd.DataFrame, max_hr) -> pd.DataFrame:
+    """tRIBS writes one extra last row (hour RUNTIME + 1). Its values are flagged 9999.99 in the rain columns of the .mrf, but not in the .rft.
+    A column can hold '-nan' (read as NaN); that is normal and is not a reason to drop a row."""
+    for c in FLAG_COLS:
+        if c in d.columns:
+            d = d[~(d[c] >= 9000)]
+    if max_hr is not None:
+        d = d[d["Time_hr"] <= max_hr + 1e-6]
+    return d
+
+
+def read_mrf(path: Path, start, max_hr=None) -> pd.Series:
     d = pd.read_csv(path)
     if "MAP_mm_hr" not in d.columns or "Time_hr" not in d.columns:
         die("{} has no Time_hr / MAP_mm_hr columns. Columns found: {}".format(path, list(d.columns)))
     d = d.apply(pd.to_numeric, errors="coerce").dropna(subset=["Time_hr", "MAP_mm_hr"])
-    d = d[(d.drop(columns=["Time_hr"]) < 9000).all(axis=1)]            # an unfilled last row is flagged 9999
+    d = drop_unfilled(d, max_hr)
     s = pd.Series(d["MAP_mm_hr"].to_numpy(float), index=_hour_start_index(d["Time_hr"], start))
     return s[~s.index.duplicated(keep="last")].sort_index()
 
 
-def read_rft(path: Path, start) -> pd.DataFrame:
+def read_mrf_col(path: Path, start, col, max_hr=None):
+    """Any one column of the .mrf (for example MDGW_mm, the mean depth to the water table in mm) on hour-start labels; None if the file has no such column."""
+    d = pd.read_csv(path)
+    if col not in d.columns or "Time_hr" not in d.columns:
+        return None
+    d = d.apply(pd.to_numeric, errors="coerce").dropna(subset=["Time_hr", col])
+    d = drop_unfilled(d, max_hr)
+    s = pd.Series(d[col].to_numpy(float), index=_hour_start_index(d["Time_hr"], start))
+    return s[~s.index.duplicated(keep="last")].sort_index()
+
+
+def read_rft(path: Path, start, max_hr=None) -> pd.DataFrame:
     d = pd.read_csv(path)
     want = ["Time_hr"] + ["{}_m3_s".format(t) for t in MECH_TYPES]
     miss = [c for c in want if c not in d.columns]
@@ -233,6 +285,7 @@ def read_rft(path: Path, start) -> pd.DataFrame:
         die("{} has no column(s) {}. Columns found: {}".format(path, miss, list(d.columns)))
     d = d[want].apply(pd.to_numeric, errors="coerce").dropna()
     d = d[(d[want[1:]] < 9000).all(axis=1)]
+    d = drop_unfilled(d, max_hr)
     out = d[want[1:]].copy()
     out.index = _hour_start_index(d["Time_hr"], start)
     return out[~out.index.duplicated(keep="last")].sort_index()
@@ -306,33 +359,40 @@ def setting_sort_key(s: str):
 
 
 class Gauge:
-    def __init__(self, year, path, raw):
+    def __init__(self, year, path, raw, tier):
         self.year, self.path, self.raw = year, path, raw
+        self.tier = tier.reindex(raw.index)
         self.h = hourly(raw)
+
+
+def run_clock(paths: dict, set_name: str):
+    """(start time, RUNTIME in hours or None, where the start came from, the name's default start) for one run."""
+    default = pd.Timestamp(DEFAULT_START[set_name])
+    start, src, runtime = default, "run name", None
+    if paths.get("in"):
+        kv = read_in(paths["in"])
+        sd = parse_startdate(kv.get("STARTDATE", ""))
+        if sd is not None:
+            start, src = sd, ".in file"
+        try:
+            runtime = float(kv.get("RUNTIME", ""))
+        except ValueError:
+            runtime = None
+    return start, runtime, src, default
 
 
 class RunYear:
     def __init__(self, stem, info, paths, notes):
         self.stem, self.info, self.paths = stem, info, paths
-        default = pd.Timestamp(DEFAULT_START[info["set"]])
-        start, src = default, "run name"
-        self.runtime = None
-        if paths.get("in"):
-            kv = read_in(paths["in"])
-            sd = parse_startdate(kv.get("STARTDATE", ""))
-            if sd is not None:
-                start, src = sd, ".in file"
-                if sd != default:
-                    notes.append("{}: STARTDATE in the .in file ({:%Y-%m-%d %H:%M}) differs from the name's default ({:%Y-%m-%d %H:%M}); the .in file is used.".format(stem, sd, default))
-            try:
-                self.runtime = float(kv.get("RUNTIME", ""))
-            except ValueError:
-                self.runtime = None
+        start, self.runtime, src, default = run_clock(paths, info["set"])
+        if src == ".in file" and start != default:
+            notes.append("{}: STARTDATE in the .in file ({:%Y-%m-%d %H:%M}) differs from the name's default ({:%Y-%m-%d %H:%M}); the .in file is used.".format(stem, start, default))
         self.start, self.start_source = start, src
         self.raw = read_qout(paths["qout"], start)
         self.h = hourly(self.raw)
-        self.rain = read_mrf(paths["mrf"], start) if paths.get("mrf") else None
-        self.rft = read_rft(paths["rft"], start) if paths.get("rft") else None
+        self.rain = read_mrf(paths["mrf"], start, self.runtime) if paths.get("mrf") else None
+        self.mdgw = read_mrf_col(paths["mrf"], start, "MDGW_mm", self.runtime) if paths.get("mrf") else None
+        self.rft = read_rft(paths["rft"], start, self.runtime) if paths.get("rft") else None
         if self.runtime is not None and len(self.raw):
             last_h = (self.raw.index[-1] - start) / HOUR
             if last_h < self.runtime - 1.0:
@@ -378,7 +438,7 @@ def discover(data: Path, old_map: dict, only=None):
 
 
 def load_gauges(a, data: Path):
-    cands = sorted(p for p in data.rglob("sycamore_09510200_obs_flow*.csv"))
+    cands = sorted(p for p in data.rglob("sycamore_09510200_obs_flow*.csv") if "fills" not in p.name.lower())
     chosen = {}
     for year, opt, keys in ((2017, getattr(a, "gauge_2017", None), ("WY2017",)), (2020, getattr(a, "gauge_2020", None), ("WY2020", "Sep2019", "2020"))):
         if opt:
@@ -387,12 +447,12 @@ def load_gauges(a, data: Path):
             fs = [p for p in cands if any(k in p.name for k in keys)]
         if not fs:
             die("no gauge file found for WY{} under {} (looked for sycamore_09510200_obs_flow*{}*.csv). Use --gauge-{}.".format(year, data, keys[0], year))
-        reads = [(p, read_gauge(p)) for p in fs]
-        p0, s0 = reads[0]
+        reads = [(p,) + read_gauge(p) for p in fs]
+        p0, s0, t0 = reads[0]
         if len(reads) > 1:
             lo, hi = PERIODS[year]
             h0 = sel(hourly(s0), lo, hi)
-            for p, s in reads[1:]:
+            for p, s, _t in reads[1:]:
                 h1 = sel(hourly(s), lo, hi)
                 both = h0.index.intersection(h1.index)
                 dmax = float((h0[both] - h1[both]).abs().max()) if len(both) else float("nan")
@@ -400,7 +460,7 @@ def load_gauges(a, data: Path):
                 log("  gauge files for WY{}: {} and {} {} over Oct-May (largest hourly difference {:.2g} m3/s; hours only in one: {}). Using {}.".format(
                     year, p0.name, p.name, "agree" if (isnum(dmax) and dmax < 1e-6 and same_idx) else "DIFFER", dmax,
                     len(h0.index.symmetric_difference(h1.index)), p0.name))
-        chosen[year] = Gauge(year, p0, s0)
+        chosen[year] = Gauge(year, p0, s0, t0)
     return chosen
 
 
@@ -466,7 +526,7 @@ def build_storm_windows(rain_by_year, thr, gap_h, R_days, min_next_mm):
 
 
 def evaluate_params(rain_by_year, thr, gap_h, min_next_mm):
-    named_clean = named_split = named_missing = small_found = small_total = unlisted = n_next = 0
+    named_clean = named_split = named_missing = small_found = small_total = unlisted = n_next = merged = 0
     for year in (2017, 2020):
         p0, p1 = PERIODS[year]
         cl = find_clusters(rain_by_year[year], thr, gap_h, p0, p1)
@@ -488,8 +548,12 @@ def evaluate_params(rain_by_year, thr, gap_h, min_next_mm):
         for _, c in big.iterrows():
             if not any(c["start"] < r1 and c["end"] > r0 for r0, r1 in listed):
                 unlisted += 1
+        for _, c in cl.iterrows():
+            n_in = sum(1 for r0, r1 in listed if c["start"] < r1 and c["end"] > r0)
+            merged += max(0, n_in - 1)
     return {"thr_mm_h": thr, "gap_h": gap_h, "named_one_cluster": named_clean, "named_split": named_split, "named_missing": named_missing,
-            "table_small_storms_found": "{}/{}".format(small_found, small_total), "clusters_ge_min_next": n_next, "unlisted_clusters_ge_min_next": unlisted}
+            "table_small_storms_found": "{}/{}".format(small_found, small_total), "table_storms_merged": merged,
+            "clusters_ge_min_next": n_next, "unlisted_clusters_ge_min_next": unlisted}
 
 
 def gauge_hourly_stats(gh: pd.Series, lo, hi):
@@ -530,6 +594,44 @@ def r_test(storms: pd.DataFrame, gauges: dict, Rs=R_TEST):
     return pd.DataFrame(rows)
 
 
+# Model volumes (M m3, ALL model hours) over the OLD window rule, as recorded in the project (storm_table.csv, Tail_Screen_W4_Running_Log.md).
+# Used only to check that this script reads the model files, clocks and hourly means the way the earlier scoring did. The old WY2017 Original value for
+# Dec 30-Jan 2 (0.8435) is left out: it is on a basis this script does not reproduce (the gauge has the Jan 1 outage that day).
+MODEL_RECORD = {
+    ("Retuned_old", 2017): {"Dec 21-25": 1.1794, "Dec 30-Jan 2": 0.7723, "Jan 19-21": 7.3129, "Feb 18-19": 2.4445, "Feb 27-28": 3.5866},
+    ("Original_old", 2017): {"Dec 21-25": 1.3767, "Jan 19-21": 7.8355, "Feb 18-19": 2.1989, "Feb 27-28": 3.2561},
+    ("Retuned", 2020): {"Nov 19-22": 2.800, "Nov 28-30": 3.235, "Dec 23-28": 0.218, "Feb 10-11": 1.767, "Feb 22-23": 4.839, "Mar 10-13": 0.875, "Mar 18-19": 1.031},
+    ("Original", 2020): {"Nov 19-22": 3.165, "Nov 28-30": 3.538, "Dec 23-28": 0.154, "Feb 10-11": 1.765, "Feb 22-23": 4.981, "Mar 10-13": 0.493, "Mar 18-19": 0.841},
+}
+MODEL_RECORD_TOL = 0.0006     # the records are rounded to 3 or 4 decimals
+
+
+def old_rule_window(year, name):
+    """00:00 on the first rain day to 00:00 four days after the last rain day; WY2017 also cut at the first day of the next storm in the table."""
+    tab = [t for t in STORM_TABLE if t[0] == year]
+    for i, (_, nm, f, l, mm, named) in enumerate(tab):
+        if nm == name:
+            lo, hi = pd.Timestamp(f), pd.Timestamp(l) + 4 * DAY
+            if year == 2017 and i + 1 < len(tab):
+                hi = min(hi, pd.Timestamp(tab[i + 1][2]))
+            return lo, hi
+    raise KeyError(name)
+
+
+def model_record_check(all_runs: dict):
+    """[(setting, year, storm, volume_now, volume_on_record, ok)] for every run in all_runs that has a record."""
+    out = []
+    for (st, y), rec in MODEL_RECORD.items():
+        run = all_runs.get((st, y))
+        if run is None:
+            continue
+        for name, exp in rec.items():
+            lo, hi = old_rule_window(y, name)
+            v = vol_mm3(sel(run.h, lo, hi).to_numpy())
+            out.append((st, y, name, v, exp, abs(v - exp) <= MODEL_RECORD_TOL))
+    return out
+
+
 def old_rule_gauge_check(gauges: dict):
     """Gauge volume over the OLD window rule for the 12 storms, against the numbers on record. A check on the gauge FILES only."""
     out = []
@@ -559,11 +661,8 @@ def load_rain(year, by_setting, notes):
         if not ent or "mrf" not in ent[2] or ent[1]["set"] == "WY2017old":
             continue
         stem, info, paths = ent
-        run_start = DEFAULT_START[info["set"]]
-        if paths.get("in"):
-            sd = parse_startdate(read_in(paths["in"]).get("STARTDATE", ""))
-            run_start = sd if sd is not None else run_start
-        s = read_mrf(paths["mrf"], pd.Timestamp(run_start))
+        run_start, run_len, _src, _d = run_clock(paths, info["set"])
+        s = read_mrf(paths["mrf"], run_start, run_len)
         if ref is None:
             ref, ref_stem = s, stem
         else:
@@ -574,8 +673,8 @@ def load_rain(year, by_setting, notes):
             ent = by_setting[st].get(year)
             if ent and "mrf" in ent[2]:
                 stem, info, paths = ent
-                run_start = pd.Timestamp(DEFAULT_START[info["set"]])
-                ref, ref_stem = read_mrf(paths["mrf"], run_start), stem
+                run_start, run_len, _src, _d = run_clock(paths, info["set"])
+                ref, ref_stem = read_mrf(paths["mrf"], run_start, run_len), stem
                 break
     if ref is None:
         die("no .mrf file found for WY{}: the storm windows need the basin-mean rain from one run's .mrf file.".format(year))
@@ -591,6 +690,46 @@ def load_rain(year, by_setting, notes):
             notes.append("WY{}: the rain in {} differs from {} by up to {:.3g} mm/h".format(year, stem, ref_stem, d))
         worst = max(worst, d if isnum(d) else 0.0)
     return ref, ref_stem, len(others), worst
+
+
+def gap_summary(rain_by_year, thr):
+    """Longest dry break INSIDE a named storm and shortest dry gap BETWEEN two different storms of the table (hours), from the raw rain spells."""
+    inside, between = [], []
+    for year in (2017, 2020):
+        p0, p1 = PERIODS[year]
+        cl = find_clusters(rain_by_year[year], thr, 1, p0, p1)
+        tab = [t for t in STORM_TABLE if t[0] == year]
+        spans = []
+        for (_, name, f, l, mm, named) in tab:
+            r0, r1 = pd.Timestamp(f), pd.Timestamp(l) + DAY
+            ov = cl[(cl["start"] < r1) & (cl["end"] > r0)].reset_index(drop=True)
+            spans.append((name, ov))
+            if named and len(ov) > 1:
+                for i in range(len(ov) - 1):
+                    inside.append(((ov.loc[i + 1, "start"] - ov.loc[i, "end"]) / HOUR, "{} {}".format(year, name)))
+        for i in range(len(spans) - 1):
+            (na, a_), (nb, b_) = spans[i], spans[i + 1]
+            if len(a_) and len(b_):
+                between.append(((b_["start"].min() - a_["end"].max()) / HOUR, "{} {} -> {}".format(year, na, nb)))
+    return (max(inside) if inside else (np.nan, "-")), (min(between) if between else (np.nan, "-"))
+
+
+def start_end_sensitivity(rain_by_year, gap_h, min_next, ref_thr):
+    """Hours by which the storm window start and the last rain hour move with the rain threshold, relative to ref_thr (positive = later)."""
+    res = {}
+    for thr in GRID_THR:
+        st, _ = build_storm_windows(rain_by_year, thr, gap_h, 4, min_next)
+        res[thr] = st.set_index("storm_id")
+    ref = build_storm_windows(rain_by_year, ref_thr, gap_h, 4, min_next)[0].set_index("storm_id")
+    rows = []
+    for sid, r in ref.iterrows():
+        row = {"storm_id": sid, "year": int(r["year"]), "name": r["name"]}
+        for thr in GRID_THR:
+            if sid in res[thr].index:
+                row["start_shift_h_thr{:g}".format(thr)] = (res[thr].loc[sid, "window_start"] - r["window_start"]) / HOUR
+                row["lastrain_shift_h_thr{:g}".format(thr)] = (res[thr].loc[sid, "rain_last_end"] - r["rain_last_end"]) / HOUR
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 # ================================================================================================ the windows command
@@ -622,10 +761,24 @@ def cmd_windows(a) -> int:
     nbad = sum(1 for c in chk if not c[6])
     log("   -> {}".format("all 12 match" if nbad == 0 else "{} of 12 do NOT match: a gauge file or a window rule differs from the earlier scoring. Do not use the results until this is explained.".format(nbad)))
 
-    log("\n2. RAIN THRESHOLD AND DRY GAP, tested on the 12 named storms (rain only). A storm is clean when exactly ONE rain cluster covers its named days.")
+    log("\n2. RAIN THRESHOLD AND DRY GAP, tested on the storm table (rain only).")
+    log("   named_one_cluster / named_split: a named storm is 'split' when more than one rain cluster covers its named days. A split is harmless here:")
+    log("   the named days decide which clusters belong to a storm, and the pieces are joined into one window.")
+    log("   table_storms_merged: places where two DIFFERENT storms of the storm table fall in one cluster. THAT is the error to avoid (it would hide a next storm).")
     log("   MIN_NEXT (smallest rain cluster that counts as a 'next storm') = {:g} mm".format(a.min_next))
     grid = pd.DataFrame([evaluate_params(rain, t, g, a.min_next) for t in GRID_THR for g in GRID_GAP])
     log(grid.to_string(index=False))
+    (inside_h, inside_n), (between_h, between_n) = gap_summary(rain, a.thr)
+    log("   Longest dry break INSIDE a named storm (THR {:g}): {:.0f} h ({}).".format(a.thr, inside_h, inside_n))
+    log("   Shortest dry gap BETWEEN two different storms of the table: {:.0f} h ({}).".format(between_h, between_n))
+    if isnum(inside_h) and isnum(between_h) and inside_h >= between_h - 1e-9:
+        log("   -> The inside break is NOT shorter than the between gap, so no dry-gap value separates them. The named days decide, and GAP only needs to be small.")
+    elif isnum(inside_h) and isnum(between_h):
+        log("   -> A GAP between {:.0f} and {:.0f} h separates them.".format(inside_h, between_h))
+    sens = start_end_sensitivity(rain, a.gap, a.min_next, a.thr)
+    log("\n   How far the window START and the LAST RAIN HOUR move with the rain threshold (hours, relative to THR {:g}; positive = later):".format(a.thr))
+    cols = ["storm_id", "year", "name"] + ["start_shift_h_thr{:g}".format(t) for t in GRID_THR] + ["lastrain_shift_h_thr{:g}".format(t) for t in GRID_THR]
+    log(sens[[c for c in cols if c in sens.columns]].rename(columns=lambda c: c.replace("start_shift_h_thr", "start@").replace("lastrain_shift_h_thr", "lastrain@")).to_string(index=False, float_format=lambda x: "{:.0f}".format(x)))
 
     log("\n3. THE 12 STORM WINDOWS with THR = {:g} mm/h, GAP = {} h, MIN_NEXT = {:g} mm, R = {} days".format(a.thr, a.gap, a.min_next, a.R))
     storms, warns = build_storm_windows(rain, a.thr, a.gap, a.R, a.min_next)
@@ -652,8 +805,11 @@ def cmd_windows(a) -> int:
     first = rt[rt["R_days"] == 4].set_index("name")["hours_after_last_rain_to_5pct_of_peak"].rename("h_to_5%peak")
     log(pv.join(first).to_string(float_format=lambda x: "{:.2f}".format(x)))
 
-    write_csv(out / "windows_grid_test.csv", ["THR (mm/h) and GAP (dry hours) tested on the 12 named storms; MIN_NEXT = {:g} mm".format(a.min_next),
-                                              "named_one_cluster = storms covered by exactly one rain cluster; named_split = more than one; named_missing = none"], grid)
+    write_csv(out / "windows_grid_test.csv", ["THR (mm/h) and GAP (dry hours) tested on the storm table; MIN_NEXT = {:g} mm".format(a.min_next),
+                                              "named_one_cluster = named storms covered by exactly one rain cluster; named_split = more than one (harmless: the named days join the pieces); named_missing = none",
+                                              "table_storms_merged = places where two different storms of the storm table fall in one cluster (the error to avoid)",
+                                              "longest dry break inside a named storm = {:.0f} h ({}); shortest dry gap between two different table storms = {:.0f} h ({}); THR {:g}".format(inside_h, inside_n, between_h, between_n, a.thr)], grid)
+    write_csv(out / "windows_threshold_test.csv", ["hours by which the window start and the last rain hour move with the rain threshold, relative to THR {:g} (GAP {} h); positive = later".format(a.thr, a.gap)], sens)
     write_csv(out / "windows_R_test.csv", ["gauge volume and right-edge flow of every storm window for R = 3, 4, 5 and 7 days after the last rain (cut at the next storm)",
                                            "edge_flow_cfs = last gauge hourly mean in the window; edge_pct_of_peak = that as a percent of the gauge hourly peak"], rt)
     hdr = ["storm windows found from the basin-mean hourly rain in the .mrf file (times are Arizona local time; window = [window_start, window_end))",
@@ -662,7 +818,7 @@ def cmd_windows(a) -> int:
            "(a rain cluster of at least min_next_mm), whichever is first",
            "n_clusters_merged = rain clusters inside the storm's named days that were joined into one storm"]
     write_csv(out / "storm_windows.csv", hdr, storms)
-    log("\nWROTE {}, {}, {}".format(out / "storm_windows.csv", out / "windows_grid_test.csv", out / "windows_R_test.csv"))
+    log("\nWROTE {}, {}, {}, {}".format(out / "storm_windows.csv", out / "windows_grid_test.csv", out / "windows_threshold_test.csv", out / "windows_R_test.csv"))
     return 1 if (len(storms) != 12 or nbad) else 0
 
 
@@ -909,6 +1065,21 @@ def score_window(win: Window, runs: dict, gauges: dict, basis: str):
             row["days_model_gt{:g}cfs".format(thr)], row["days_gauge_gt{:g}cfs".format(thr)] = dm, dg
         row["model_max_cfs"] = float(max((sel(runs[y].raw, lo, hi).max() for (y, lo, hi) in win.parts), default=np.nan) / CFS)
         row["gauge_max_cfs"] = float(max((sel(gauges[y].raw, lo, hi).max() for (y, lo, hi) in win.parts), default=np.nan) / CFS)
+    est = fil = tot = 0.0
+    n_slots = n_nan = 0
+    for (y, lo, hi) in win.parts:
+        g = gauges[y]
+        r = sel(g.raw, lo, hi)
+        t = g.tier.reindex(r.index).astype(str)
+        n_slots += len(r)
+        n_nan += int(r.isna().sum())
+        q = r.fillna(0.0).to_numpy(float) * 900.0
+        tot += float(q.sum())
+        est += float(q[(t == "estimated").to_numpy()].sum())
+        fil += float(q[t.str.startswith("filled").to_numpy()].sum())
+    row["gauge_pct_missing"] = 100.0 * n_nan / n_slots if n_slots else np.nan
+    row["gauge_pct_vol_estimated"] = 100.0 * est / tot if tot > 0 else np.nan
+    row["gauge_pct_vol_filled"] = 100.0 * fil / tot if tot > 0 else np.nan
     row["notes"] = " | ".join(notes)
     row["blank_reasons"] = " | ".join(why)
     return row
@@ -975,7 +1146,7 @@ SCORE_COLS = ["setting", "window", "kind", "name", "years", "runs", "start", "en
               "vol_gauge_Mm3", "vol_model_Mm3", "vol_diff_Mm3", "vol_model_allhours_Mm3", "pbias_pct", "kge_prime", "kge_r", "kge_beta", "kge_gamma",
               "peak_gauge_cfs", "peak_model_cfs", "peak_diff_cfs", "peak_ratio", "dt_peak_h", "dt10_h", "dt50_h", "dt90_h", "arr20_diff_h", "arr50_diff_h",
               "lag_h", "tail_vol_ratio", "days_model_gt1cfs", "days_gauge_gt1cfs", "days_model_gt10cfs", "days_gauge_gt10cfs", "model_max_cfs", "gauge_max_cfs",
-              "n_ok_storms", "n_storms", "notes", "blank_reasons"]
+              "n_ok_storms", "n_storms", "gauge_pct_vol_estimated", "gauge_pct_vol_filled", "gauge_pct_missing", "notes", "blank_reasons"]
 MECH_COLS = ["setting", "window", "kind", "name", "years", "runs", "rain_mm", "rain_Mm3", "Hsrf_Mm3", "Sbsrf_Mm3", "Psrf_Mm3", "Satsrf_Mm3", "made_total_Mm3",
              "Hsrf_pct", "Sbsrf_pct", "Psrf_pct", "Satsrf_pct", "made_over_rain_pct", "notes"]
 
@@ -988,6 +1159,7 @@ DEF_LINES = [
     "dt10/50/90_h = time by which 10/50/90% of window volume passed; arr20/50_diff_h = first rise through 20/50% of the GAUGE peak (blank = model never reaches it); tail_vol_ratio = model/gauge volume after the gauge t90.",
     "AllStorms rows: pbias and KGE' pooled over the storm windows; peak and timing columns are medians over storms with gauge_class ok. OFF rows: no KGE', peak or timing.",
     "days_*_gt1cfs / gt10cfs = number of days whose highest flow is above 1 / 10 cfs (gauge: days with data only).",
+    "gauge_pct_vol_estimated = share of the window's gauge volume (15-minute readings) that the gauge file marks 'estimated' (USGS provisional, estimated); gauge_pct_vol_filled = share marked 'filled_*' (a gap we filled); gauge_pct_missing = share of the window's 15-minute slots with no value.",
     "Noise floor: the model is written every 3.75 min and the gauge every 15 min, so even identical flow gives dt10/50/90 differences of about 0.1 h (6 min). Treat timing differences under about 0.25 h as zero.",
 ]
 
@@ -1030,6 +1202,148 @@ def spinup_pairs(df: pd.DataFrame, mech: pd.DataFrame):
     return pd.DataFrame(rows)
 
 
+def spinup_convergence(all_runs: dict, gauges: dict):
+    """Month by month: basin rain, gauge volume, model volume of the new (Sep 1 start) and old (Oct 1 start) WY2017 runs, and the mean depth to the
+    water table (MDGW) in each at the first hour of the month. If the two starts converge, the differences go to zero after the first month or two."""
+    rows = []
+    for base in ("Retuned", "Original"):
+        new, old = all_runs.get((base, 2017)), all_runs.get((base + "_old", 2017))
+        if new is None or old is None:
+            continue
+        months = pd.date_range(new.start.normalize().replace(day=1), "2017-06-01", freq="MS")
+        for a, b in zip(months[:-1], months[1:]):
+            b = min(b, PERIODS[2017][1])
+            gh = sel(gauges[2017].h, a, b)
+            has_old = a >= old.start
+            vn = vol_mm3(sel(new.h, a, b).to_numpy())
+            vo = vol_mm3(sel(old.h, a, b).to_numpy()) if has_old else np.nan
+            mn = new.mdgw.get(a, np.nan) if new.mdgw is not None else np.nan
+            mo = old.mdgw.get(a, np.nan) if (has_old and old.mdgw is not None) else np.nan
+            rows.append({"setting": base, "month": a.strftime("%Y-%m"),
+                         "rain_mm": float(sel(new.rain, a, b).sum()) if new.rain is not None else np.nan,
+                         "gauge_Mm3": vol_mm3(gh.to_numpy()) if len(gh) else np.nan,
+                         "model_new_Sep1_Mm3": vn, "model_old_Oct1_Mm3": vo, "new_minus_old_Mm3": (vn - vo) if isnum(vo) else np.nan,
+                         "MDGW_new_mm": float(mn), "MDGW_old_mm": float(mo), "MDGW_new_minus_old_mm": float(mn - mo) if (isnum(mn) and isnum(mo)) else np.nan})
+    return pd.DataFrame(rows)
+
+
+# ================================================================================================ total volume error over fixed window sets
+def parse_window_params(path: Path):
+    """(thr, gap_h, min_next, R) from the '# PARAMETERS' line that the windows command writes into storm_windows.csv; None if it is missing."""
+    with open(path, encoding="utf-8") as fh:
+        for ln in fh:
+            if ln.startswith("# PARAMETERS"):
+                kv = dict(re.findall(r"(\w+)=([0-9.]+)", ln))
+                try:
+                    return float(kv["thr_mm_h"]), int(float(kv["gap_h"])), float(kv["min_next_mm"]), int(float(kv["R_days"]))
+                except KeyError:
+                    return None
+    return None
+
+
+def build_partition(storms: pd.DataFrame, rain_by_year: dict, params):
+    """Oct 1 to May 31 23:00 of each year cut into pieces that touch and never overlap: the 12 scored storm windows (as written in storm_windows.csv), the other
+    storms of the storm table (same rule), and the dry stretches between them. Returns (list of piece dicts, notes)."""
+    thr, gap_h, _min_next, R = params
+    pieces, notes = [], []
+    for year in (2017, 2020):
+        p0, p1 = PERIODS[year]
+        cl = find_clusters(rain_by_year[year], thr, gap_h, p0, p1)
+        items, scored_names = [], set()
+        for _, s_ in storms[storms["year"] == year].iterrows():
+            scored_names.add(s_["name"])
+            items.append({"name": s_["name"], "scored": True, "start": s_["window_start"], "rain_end": s_["rain_last_end"], "end": s_["window_end"]})
+        for (_, name, f, l, _mm, _named) in [t for t in STORM_TABLE if t[0] == year]:
+            if name in scored_names:
+                continue
+            r0, r1 = pd.Timestamp(f), pd.Timestamp(l) + DAY
+            m = cl[(cl["start"] < r1) & (cl["end"] > r0)]
+            if m.empty:
+                notes.append("{} {}: no rain cluster in the named days; it has no storm window of its own (its time is part of a dry stretch)".format(year, name))
+                continue
+            items.append({"name": name, "scored": False, "start": m["start"].min(), "rain_end": m["end"].max(), "end": None})
+        items.sort(key=lambda x: x["start"])
+        for i, it in enumerate(items):
+            nxt = items[i + 1]["start"] if i + 1 < len(items) else p1
+            if it["end"] is None:
+                it["end"] = min(it["rain_end"] + R * DAY, nxt, p1)
+            elif it["end"] > nxt:
+                notes.append("{} {}: its window ends {:%b %d %H:%M}, after the next storm starts; it is cut at {:%b %d %H:%M} in the whole-season pieces only".format(year, it["name"], it["end"], nxt))
+                it["end"] = nxt
+        rows = [(it["start"], it["end"], "storm", it["name"], it["scored"]) for it in items]
+        for lo, hi in complement((p0, p1), [(it["start"], it["end"]) for it in items]):
+            rows.append((lo, hi, "dry", "dry stretch {:%b %d %H:%M} to {:%b %d %H:%M}".format(lo, hi), False))
+        rows.sort(key=lambda x: x[0])
+        for n, (lo, hi, kind, name, scored) in enumerate(rows, 1):
+            pieces.append({"year": year, "piece": "{}-P{:02d}".format(year, n), "kind": kind, "name": name, "scored": bool(scored), "start": lo, "end": hi})
+    return pieces, notes
+
+
+def piece_error(run, gauge, lo, hi) -> dict:
+    """Matched hours of one piece: gauge volume, model volume and the sum of the hourly absolute differences (M m3)."""
+    gh = sel(gauge.h, lo, hi)
+    mh = run.h.reindex(gh.index)
+    ok = mh.notna()
+    g, m = gh[ok].to_numpy(float), mh[ok].to_numpy(float)
+    return {"hours": int(ok.sum()), "gauge": vol_mm3(g), "model": vol_mm3(m), "abs_hourly": float(np.sum(np.abs(m - g)) * 3600.0 / 1e6)}
+
+
+VE_TOTAL_COLS = ["setting", "window_set", "scope", "n_pieces", "matched_hours", "gauge_Mm3", "over_Mm3", "under_Mm3", "net_Mm3", "total_abs_Mm3",
+                 "over_pct", "under_pct", "net_pct", "total_abs_pct", "volumetric_efficiency", "total_abs_pct_if_one_window", "total_abs_pct_hourly"]
+VE_PIECE_COLS = ["setting", "year", "piece", "kind", "name", "scored", "start", "end", "matched_hours", "gauge_Mm3", "model_Mm3", "diff_Mm3", "abs_share_of_season_error_pct"]
+
+
+def volume_error_tables(all_runs: dict, gauges: dict, pieces: list, settings: list):
+    trows, prows = [], []
+    for st in settings:
+        if st.endswith("_old"):
+            continue
+        yrs = [y for y in (2017, 2020) if (st, y) in all_runs]
+        rec = []
+        for p in pieces:
+            if p["year"] in yrs:
+                e = piece_error(all_runs[(st, p["year"])], gauges[p["year"]], p["start"], p["end"])
+                rec.append({**p, **e, "diff": e["model"] - e["gauge"]})
+        if not rec:
+            continue
+        season_abs = sum(abs(r["diff"]) for r in rec)
+        for r in rec:
+            prows.append({"setting": st, "year": r["year"], "piece": r["piece"], "kind": r["kind"], "name": r["name"], "scored": r["scored"], "start": r["start"], "end": r["end"],
+                          "matched_hours": r["hours"], "gauge_Mm3": r["gauge"], "model_Mm3": r["model"], "diff_Mm3": r["diff"],
+                          "abs_share_of_season_error_pct": 100.0 * abs(r["diff"]) / season_abs if season_abs > 0 else np.nan})
+        for scope, sy in (("2017", [2017]), ("2020", [2020]), ("both", [2017, 2020])):
+            if any(y not in yrs for y in sy):
+                continue
+            for wset in ("Storms12", "Season"):
+                sub = [r for r in rec if r["year"] in sy and (wset == "Season" or r["scored"])]
+                if not sub:
+                    continue
+                G = sum(r["gauge"] for r in sub)
+                over = sum(r["diff"] for r in sub if r["diff"] > 0)
+                under = -sum(r["diff"] for r in sub if r["diff"] < 0)
+                hab = sum(r["abs_hourly"] for r in sub)
+                pc = (lambda x: 100.0 * x / G) if G > 0 else (lambda x: np.nan)
+                trows.append({"setting": st, "window_set": wset, "scope": scope, "n_pieces": len(sub), "matched_hours": sum(r["hours"] for r in sub), "gauge_Mm3": G,
+                              "over_Mm3": over, "under_Mm3": under, "net_Mm3": over - under, "total_abs_Mm3": over + under,
+                              "over_pct": pc(over), "under_pct": pc(under), "net_pct": pc(over - under), "total_abs_pct": pc(over + under),
+                              "volumetric_efficiency": (1.0 - (over + under) / G) if G > 0 else np.nan,
+                              "total_abs_pct_if_one_window": pc(abs(over - under)), "total_abs_pct_hourly": pc(hab)})
+    tdf = pd.DataFrame(trows, columns=VE_TOTAL_COLS)
+    pdf = pd.DataFrame(prows, columns=VE_PIECE_COLS)
+    return tdf, pdf
+
+
+def net_check(df: pd.DataFrame, tdf: pd.DataFrame) -> float:
+    """Largest difference (percentage points) between net_pct and the PBIAS of AllStorms (Storms12) / Both (Season)."""
+    worst = 0.0
+    for wset, win in (("Storms12", "AllStorms"), ("Season", "Both")):
+        for _, r in tdf[(tdf["window_set"] == wset) & (tdf["scope"] == "both")].iterrows():
+            x = df[(df["setting"] == r["setting"]) & (df["window"] == win)]
+            if len(x) and isnum(x.iloc[0]["pbias_pct"]) and isnum(r["net_pct"]):
+                worst = max(worst, abs(float(x.iloc[0]["pbias_pct"]) - float(r["net_pct"])))
+    return worst
+
+
 def cmd_score(a) -> int:
     data = Path(a.data)
     out = Path(a.out_dir)
@@ -1060,10 +1374,12 @@ def cmd_score(a) -> int:
 
     rows, mech_rows = [], []
     run_notes = []
+    all_runs = {}
     for st in settings:
         runs = {}
         for year, (stem, info, paths) in sorted(by_setting[st].items()):
             runs[year] = RunYear(stem, info, paths, run_notes)
+            all_runs[(st, year)] = runs[year]
             r = runs[year]
             log("  loaded {:<46} year {} start {:%Y-%m-%d %H:%M} (from {}), {} outlet rows, .mrf {}, .rft {}".format(
                 stem, year, r.start, r.start_source, len(r.raw), "yes" if r.rain is not None else "NO", "yes" if r.rft is not None else "NO"))
@@ -1098,6 +1414,22 @@ def cmd_score(a) -> int:
             mech[c] = np.nan
     mech = mech[MECH_COLS]
     spin = spinup_pairs(df, mech)
+    conv = spinup_convergence(all_runs, gauges)
+    ve_t, ve_p, ve_notes, ve_chk = pd.DataFrame(columns=VE_TOTAL_COLS), pd.DataFrame(columns=VE_PIECE_COLS), [], None
+    prm_vals = parse_window_params(Path(a.windows))
+    if prm_vals is None:
+        ve_notes.append("TOTAL VOLUME ERROR skipped: the '# PARAMETERS' line is missing from {} (run the windows command of this version).".format(a.windows))
+    else:
+        try:
+            rain_y = {y: load_rain(y, by_setting, [])[0] for y in (2017, 2020)}
+        except SystemExit:
+            rain_y = None
+            ve_notes.append("TOTAL VOLUME ERROR skipped: no .mrf rain file found for one of the years.")
+        if rain_y is not None:
+            parts, pnotes = build_partition(storms, rain_y, prm_vals)
+            ve_notes += pnotes
+            ve_t, ve_p = volume_error_tables(all_runs, gauges, parts, settings)
+            ve_chk = net_check(df, ve_t)
 
     # ---- the report
     L = ["score_windows_sycamore.py v{}   window scores".format(VERSION), "windows file: {}   KGE' basis: {}".format(a.windows, a.kge_basis), ""]
@@ -1107,6 +1439,13 @@ def cmd_score(a) -> int:
         prm = [ln.strip() for ln in fh if ln.startswith("# PARAMETERS")]
     L += ["STORM WINDOWS ({})".format(prm[0][2:] if prm else "parameters not recorded"),
           fmt_df(wf, ["storm_id", "year", "name", "window_start", "window_end", "window_hours", "cut_by_next_storm", "cluster_rain_mm"], nd=1), ""]
+    mchk = model_record_check(all_runs)
+    L += ["MODEL-SIDE CHECK: model volumes over the OLD window rule against the values on record in the project (all model hours; tolerance {:g} M m3)".format(MODEL_RECORD_TOL)]
+    for (st, y, name, v, exp, ok) in mchk:
+        L.append("   {:<13} {} {:<13} now {:7.4f}  on record {:7.4f}  {}".format(st, y, name, v, exp, "MATCH" if ok else "MISMATCH"))
+    nbadm = sum(1 for c in mchk if not c[5])
+    L += ["   -> {}".format("no run with a record was found" if not mchk else ("all {} match".format(len(mchk)) if nbadm == 0 else
+          "{} of {} do NOT match: a model file, a clock or the hourly mean differs from the earlier scoring. Do not use the results until this is explained.".format(nbadm, len(mchk)))), ""]
     main_cols = ["window", "gauge_class", "vol_gauge_Mm3", "vol_model_Mm3", "vol_diff_Mm3", "pbias_pct", "kge_prime", "kge_r", "kge_beta", "kge_gamma"]
     pt_cols = ["window", "peak_gauge_cfs", "peak_model_cfs", "peak_diff_cfs", "peak_ratio", "dt_peak_h", "dt10_h", "dt50_h", "dt90_h", "arr20_diff_h", "arr50_diff_h", "lag_h", "tail_vol_ratio"]
     for st in [s for s in settings if s.replace("_old", "") in ("Retuned", "Original")]:
@@ -1131,11 +1470,39 @@ def cmd_score(a) -> int:
                 r[w + " KGE'"] = x.iloc[0]["kge_prime"]
         tab.append(r)
     L += [fmt_df(pd.DataFrame(tab), ["setting"] + [c for w in key for c in (w + " PBIAS", w + " KGE'")], nd=2), ""]
+    if len(ve_t):
+        L += ["=" * 110, "TOTAL VOLUME ERROR over two FIXED window sets (percent of the gauge volume in the set; matched hours; both years pooled)",
+              "  Storms12 = the 12 scored storm windows ({} pieces). Season = Oct-May of both years cut into every storm of 5 mm or more and the dry stretches between them ({} pieces).".format(
+                  int(ve_t[(ve_t['window_set'] == 'Storms12') & (ve_t['scope'] == 'both')]['n_pieces'].max()), int(ve_t[(ve_t['window_set'] == 'Season') & (ve_t['scope'] == 'both')]['n_pieces'].max())),
+              "  too_high = model volume above the gauge, added over the pieces where it is above; too_low = the same where it is below; net = too_high - too_low (the PBIAS of the set);",
+              "  total = too_high + too_low (cannot cancel). A model that never makes any flow has total = 100 %; over-prediction is not capped. VE = 1 - total/100.",
+              "  hourly = the same total added over single hours: it grows as the cut gets finer, so compare totals only between runs scored on the same windows.", ""]
+        tb = ve_t[ve_t["scope"] == "both"].copy()
+        tb["_o"] = tb["setting"].map({s_: i for i, s_ in enumerate(settings)})
+        tb["_w"] = (tb["window_set"] != "Storms12").astype(int)
+        tb = tb.sort_values(["_w", "_o"])
+        tb = tb.rename(columns={"over_pct": "too_high_pct", "under_pct": "too_low_pct", "volumetric_efficiency": "VE", "total_abs_pct_hourly": "hourly_pct", "total_abs_pct": "total_pct"})
+        tb["VE"] = tb["VE"].map(lambda x: "{:.2f}".format(x) if isnum(x) else "-")
+        L += [fmt_df(tb, ["window_set", "setting", "gauge_Mm3", "too_high_pct", "too_low_pct", "net_pct", "total_pct", "VE", "hourly_pct"], nd=1), ""]
+        if ve_chk is not None:
+            L += ["  CHECK: net_pct equals the PBIAS of AllStorms (Storms12) and of Both (Season): largest difference {:.4f} percentage points{}".format(
+                ve_chk, "" if ve_chk < 0.01 else "   <-- MISMATCH: explain before using"), ""]
+        for st in [s for s in settings if s in ("Retuned", "Original")]:
+            pp = ve_p[ve_p["setting"] == st].copy()
+            pp["abs"] = pp["diff_Mm3"].abs()
+            pp = pp.sort_values("abs", ascending=False).head(8)
+            L += ["Largest single pieces of the Season total error, {} (M m3; diff = model - gauge)".format(st),
+                  fmt_df(pp, ["piece", "kind", "name", "gauge_Mm3", "model_Mm3", "diff_Mm3", "abs_share_of_season_error_pct"], nd=2), ""]
+    for n in ve_notes:
+        L += ["  NOTE: " + n]
     if len(spin):
         L += ["=" * 110, "SPIN-UP CHECK: new Sep-1-start WY2017 runs vs old Oct-1-start WY2017 runs (same 2017 windows, same clock; new minus old)", ""]
         L += [fmt_df(spin, ["setting", "window", "metric", "new_Sep1_start", "old_Oct1_start", "new_minus_old"], nd=3), ""]
     else:
         L += ["SPIN-UP CHECK: not possible (the old W5 runs or the new WY2017sep Re-tuned/Original runs were not found).", ""]
+    if len(conv):
+        L += ["SPIN-UP CONVERGENCE, month by month (outlet volume in M m3; MDGW = mean depth to the water table in mm at the first hour of the month; the gauge file has no September 2016, so that month is blank)", ""]
+        L += [fmt_df(conv, ["setting", "month", "rain_mm", "gauge_Mm3", "model_new_Sep1_Mm3", "model_old_Oct1_Mm3", "new_minus_old_Mm3", "MDGW_new_mm", "MDGW_old_mm", "MDGW_new_minus_old_mm"], nd=3), ""]
     blanks = df[(df["blank_reasons"].astype(str).str.len() > 0) & (df["kind"] == "storm")]
     L += ["BLANK VALUES AND NOTES (storm windows of Re-tuned and Original; every blank has its reason in the CSV)"]
     for _, r in blanks[blanks["setting"].isin(["Retuned", "Original"])].iterrows():
@@ -1148,9 +1515,17 @@ def cmd_score(a) -> int:
     write_csv(out / "window_mechanisms.csv", ["runoff the model MADE on the land, by type, from the .rft file (M m3; all cells added; before routing); rain_mm = basin-mean rain from the .mrf file",
                                               "pct columns = share of the four types added; made_over_rain_pct = runoff made / rain volume over {:g} km2".format(BASIN_KM2)], mech)
     write_csv(out / "spinup_check.csv", ["new = Sycamore_WY2017sep_* (Time_hr 0 = Sep 1 2016); old = the Oct-1-start W5 run; same 2017 windows; new_minus_old"], spin if len(spin) else pd.DataFrame(columns=["setting", "window", "metric", "new_Sep1_start", "old_Oct1_start", "new_minus_old"]))
+    write_csv(out / "spinup_convergence.csv", ["month by month, new (Sep 1 start) vs old (Oct 1 start) WY2017 runs; MDGW_mm = mean depth to the water table (mm) at the first hour of the month; the gauge file has no September 2016"],
+              conv if len(conv) else pd.DataFrame(columns=["setting", "month"]))
+    write_csv(out / "volume_error_totals.csv", ["total volume error over two FIXED window sets, one row per setting, window set and scope (percent of the gauge volume in the set; matched hours)",
+                                                "Storms12 = the 12 scored storm windows; Season = Oct-May cut into every storm of 5 mm or more and the dry stretches between them",
+                                                "over = model above gauge (summed over pieces); under = gauge above model; net = over - under (the set's PBIAS); total_abs = over + under; volumetric_efficiency = 1 - total_abs/gauge",
+                                                "total_abs_pct_if_one_window = |net_pct|; total_abs_pct_hourly = same sum over single hours. The total grows as the cut gets finer: compare only totals made with the same windows"], ve_t)
+    write_csv(out / "volume_error_pieces.csv", ["every piece of the Season cut (storm windows and dry stretches) with its volume error, one row per setting and piece; diff = model - gauge (M m3)",
+                                                "abs_share_of_season_error_pct = this piece's |diff| as a percent of the setting's total absolute error over all pieces of the years it has"], ve_p)
     write_text(out / "score_report.txt", report)
     print(report)
-    log("WROTE {}".format(", ".join(str(out / f) for f in ("window_scores.csv", "window_mechanisms.csv", "spinup_check.csv", "score_report.txt"))))
+    log("WROTE {}".format(", ".join(str(out / f) for f in ("window_scores.csv", "window_mechanisms.csv", "volume_error_totals.csv", "volume_error_pieces.csv", "spinup_check.csv", "spinup_convergence.csv", "score_report.txt"))))
     return 0
 
 
@@ -1213,10 +1588,18 @@ def _build_world(root: Path):
         idx = pd.date_range(lo, PERIODS[year][1], freq="15min", inclusive="left")
         q = truth_cms(idx, year)
         q = np.where(q < 1e-4, 0.0, q)
-        g = pd.DataFrame({"datetime": idx, "q_cms": q, "q_cfs": q / CFS, "tier": "A"})
+        g = pd.DataFrame({"datetime": idx, "q_cms": q, "q_cfs": q / CFS, "tier": "measured", "note": ""})
         if year == 2017:
-            g.loc[(idx >= "2017-01-01") & (idx < "2017-01-02"), "q_cms"] = np.nan
+            out = (idx >= "2017-01-01") & (idx < "2017-01-02")
+            g.loc[out, "q_cms"] = np.nan
+            g.loc[out, "q_cfs"] = np.nan
+            g.loc[out, "tier"] = "missing"
+            g.loc[(idx >= "2017-02-18") & (idx < "2017-02-20"), "tier"] = "estimated"       # the whole Feb 18-19 storm is USGS-estimated
+            g.loc[(idx >= "2017-03-01") & (idx < "2017-03-02"), "tier"] = "filled_interp"
         g.to_csv(root / "gauge" / fname, index=False)
+        # the real folder also holds *_fills.csv files with other columns; the scorer must not mistake them for gauge data
+        pd.DataFrame({"gap": [1], "last_reading_before": ["x"], "next_reading_after": ["y"], "hours": [1.0], "slots": [4], "tier": ["filled_zero"], "reason": ["test"]}).to_csv(
+            root / "gauge" / fname.replace(".csv", "_fills.csv").replace("_Sep2019_to_May2020", "_WY2020"), index=False)
 
     def model_variant(kind, ts_index, year):
         q = truth_cms(ts_index, year)
@@ -1249,10 +1632,12 @@ def _build_world(root: Path):
         hidx = start + pd.to_timedelta(hr.astype(int), unit="h") - HOUR
         rs = rain_series(start, end)
         rain = rs.reindex(hidx).fillna(0.0).to_numpy()
-        mrf = pd.DataFrame({"Time_hr": hr, "RainMin_mm_hr": 0.0, "MAP_mm_hr": rain, "Srf_m3_s": 0.0, "ChannelPerc_m3": 0.0, "MDGW_mm": 1300.0, "AvSWE_cm": 0.0})
-        mrf = pd.concat([mrf, pd.DataFrame({"Time_hr": [hr[-1] + 1], "RainMin_mm_hr": 9999.0, "MAP_mm_hr": 0.0, "Srf_m3_s": 0.0, "ChannelPerc_m3": 0.0, "MDGW_mm": 0.0, "AvSWE_cm": 0.0})])
-        mrf.to_csv(root / "results" / "{}{}_00.mrf".format(stem, runtime), index=False)
-        pd.DataFrame({"Time_hr": hr, "Hsrf_m3_s": 3.0, "Sbsrf_m3_s": 1.0, "Psrf_m3_s": 0.0, "Satsrf_m3_s": 0.0}).to_csv(root / "results" / "{}{}_00.rft".format(stem, runtime), index=False)
+        # like the real files: a '-nan' column, and one extra row at hour RUNTIME + 1 (flagged 9999.99 in RainMin in the .mrf; plain zeros in the .rft)
+        mrf = pd.DataFrame({"Time_hr": hr, "Srf_m3_s": 0.0, "MAP_mm_hr": rain, "RainMax_mm_hr": rain, "RainMin_mm_hr": 0.0, "MSMU_[]": np.nan, "MDGW_mm": 1300.0, "AvSWE_cm": 0.0})
+        mrf = pd.concat([mrf, pd.DataFrame({"Time_hr": [hr[-1] + 1], "Srf_m3_s": 0.0, "MAP_mm_hr": 7.0, "RainMax_mm_hr": 0.0, "RainMin_mm_hr": 9999.99, "MSMU_[]": 0.0, "MDGW_mm": 0.0, "AvSWE_cm": 0.0})])
+        mrf.to_csv(root / "results" / "{}{}_00.mrf".format(stem, runtime), index=False, na_rep="-nan")
+        rft = pd.DataFrame({"Time_hr": np.r_[hr, hr[-1] + 1], "Hsrf_m3_s": 3.0, "Sbsrf_m3_s": 1.0, "Psrf_m3_s": 0.0, "Satsrf_m3_s": 0.0})
+        rft.to_csv(root / "results" / "{}{}_00.rft".format(stem, runtime), index=False)
         if with_in:
             (root / "inputs" / "{}.in".format(stem)).write_text("STARTDATE:  # c\n{:%m/%d/%Y/%H/%M}\nRUNTIME:  # c\n{}\nOUTFILENAME:\nresults/{}\n".format(start, runtime, stem))
 
@@ -1308,6 +1693,10 @@ def do_self_test() -> int:
         check(int(row["named_one_cluster"]) == 12, "grid test: all 12 named storms are one cluster at THR 0.1, GAP 12")
         row6 = sw2[(sw2["thr_mm_h"] == 0.1) & (sw2["gap_h"] == 6)].iloc[0]
         check(int(row6["named_split"]) >= 1, "grid test: GAP 6 splits the storm with the 10-hour break ({} split)".format(int(row6["named_split"])))
+        check(int(row["table_storms_merged"]) == 0, "grid test: no two different table storms are merged at THR 0.1, GAP 12")
+        check("INSIDE a named storm (THR 0.1): 10 h" in wtxt and "BETWEEN two different storms of the table: 38 h" in wtxt,
+              "dry-gap summary: longest break inside a named storm 10 h, shortest gap between storms 38 h (the fake world's known values)")
+        check((out / "windows_threshold_test.csv").exists() and "start@" in wtxt, "threshold sensitivity table written and printed")
 
         sargs = argparse.Namespace(data=str(bundle), windows=str(out / "storm_windows.csv"), out_dir=str(out), kge_basis="hourly", settings=None,
                                    old_retuned=None, old_original=None, gauge_2017=None, gauge_2020=None)
@@ -1372,6 +1761,26 @@ def do_self_test() -> int:
         jj = st[st["name"] == "Dec 30-Jan 2"].iloc[0]
         check(int(jj["gauge_hours"]) == int(jj["n_hours"]) - 24 and near(jj["pbias_pct"], 0.0, 1.0), "Jan 1 outage: gauge has {} of {} hours; matched-hour PBIAS {:.2f} still about 0".format(int(jj["gauge_hours"]), int(jj["n_hours"]), jj["pbias_pct"]))
         check(jj["vol_model_allhours_Mm3"] > jj["vol_model_Mm3"], "Jan 1 outage: the all-hours model volume is larger than the matched-hours volume")
+        # model-side check against the record
+        rep_txt = (out / "score_report.txt").read_text()
+        check("MODEL-SIDE CHECK" in rep_txt and "MISMATCH" in rep_txt, "model-side check is in the report and reports MISMATCH on the fake model files (it must not pass by accident)")
+        import types
+        idx = pd.date_range("2016-12-01", "2017-02-01", freq="60min", inclusive="left")
+        q = 1.1794e6 / (192 * 3600)          # constant flow that gives exactly 1.1794 M m3 over the old Dec 21-25 window (Dec 21 00:00 to Dec 29 00:00)
+        fake = types.SimpleNamespace(h=pd.Series(q, index=idx))
+        res = {(r_[0], r_[2]): r_[5] for r_ in model_record_check({("Retuned_old", 2017): fake})}
+        check(res.get(("Retuned_old", "Dec 21-25")) is True and res.get(("Retuned_old", "Jan 19-21")) is False,
+              "model_record_check: a flow built to give 1.1794 M m3 matches the Dec 21-25 record and not the Jan 19-21 one")
+        # gauge tiers (Feb 18-19 2017 is all 'estimated'; Dec 30-Jan 2 has the Jan 1 outage; Mar 1 2017 is 'filled_interp')
+        fe = st[st["name"] == "Feb 18-19"].iloc[0]
+        check(fe["gauge_pct_vol_estimated"] > 70 and near(st[st["name"] == "Jan 19-21"].iloc[0]["gauge_pct_vol_estimated"], 0.0, 1e-9),
+              "gauge tiers: Feb 18-19 volume is {:.0f} % 'estimated'; Jan 19-21 is 0 %".format(fe["gauge_pct_vol_estimated"]))
+        check(near(jj["gauge_pct_missing"], 100.0 * 96 / (4 * 180), 0.05), "gauge tiers: Dec 30-Jan 2 has {:.2f} % of its 15-minute slots missing (96 of 720 = 13.33)".format(jj["gauge_pct_missing"]))
+        f5 = st[st["name"] == "Feb 27-28"].iloc[0]
+        check(f5["gauge_pct_vol_filled"] > 0, "gauge tiers: Feb 27-28 window (to Mar 4) carries a 'filled_interp' day: {:.1f} % of its volume".format(f5["gauge_pct_vol_filled"]))
+        # a real-format .mrf: the extra last row (MAP 7.0, flagged in RainMin) must not add rain, and '-nan' columns must not drop every row
+        check(near(g("Retuned", "OctMay2017")["n_hours"], 5831, 0) and me[(me["setting"] == "Retuned") & (me["window"] == "OctMay2017")].iloc[0]["rain_mm"] < 870,
+              "real-format .mrf: '-nan' column kept, extra flagged row dropped (OctMay2017 rain {:.1f} mm, not inflated by 7 mm/h)".format(me[(me["setting"] == "Retuned") & (me["window"] == "OctMay2017")].iloc[0]["rain_mm"]))
         # mechanisms
         m = me[(me["setting"] == "Retuned") & (me["window"] == "OctMay2017")].iloc[0]
         check(near(m["Hsrf_pct"], 75.0, 1e-6) and near(m["Sbsrf_pct"], 25.0, 1e-6) and near(m["made_total_Mm3"], 4 * 3600 * m_hours(sc) / 1e6, 1e-3), "mechanisms: Hsrf 75 %, Sbsrf 25 %, total {:.3f} M m3 = 4 m3/s x hours".format(m["made_total_Mm3"]))
@@ -1384,6 +1793,60 @@ def do_self_test() -> int:
         so = sp[(sp["setting"] == "Original") & (sp["metric"] == "model volume, every hour (M m3)") & (sp["window"] == "OctMay2017")].iloc[0]
         check(so["new_minus_old"] < 0 and near(so["new_Sep1_start"] / so["old_Oct1_start"], 1.2 / 1.25, 1e-3), "spin-up: Original new (x1.2) / old (x1.25) = {:.4f}, new minus old is negative".format(so["new_Sep1_start"] / so["old_Oct1_start"]))
         check("PBIAS (%)" in set(sp["metric"]) and "old_Oct1_start" in sp.columns, "spin-up table has PBIAS and the old-start column")
+        cv = pd.read_csv(out / "spinup_convergence.csv", comment="#")
+        cr, co = cv[cv["setting"] == "Retuned"], cv[cv["setting"] == "Original"]
+        check(len(cr) == 9 and len(co) == 9 and cr["month"].iloc[0] == "2016-09" and cr["month"].iloc[-1] == "2017-05", "spin-up convergence: 9 months (Sep 2016 to May 2017) for each setting")
+        check(cr["new_minus_old_Mm3"].iloc[1:].abs().max() < 1e-6 and np.isnan(cr["new_minus_old_Mm3"].iloc[0]), "spin-up convergence: identical new and old runs differ by 0 from October on; September has no old run")
+        check(co[co["month"] == "2017-01"].iloc[0]["new_minus_old_Mm3"] < 0 and near(co[co["month"] == "2017-01"].iloc[0]["MDGW_new_minus_old_mm"], 0.0, 1e-9),
+              "spin-up convergence: Original new (x1.2) is below old (x1.25) in January; water-table depth difference is 0")
+        # total volume error
+        vt = pd.read_csv(out / "volume_error_totals.csv", comment="#")
+        vp = pd.read_csv(out / "volume_error_pieces.csv", comment="#", parse_dates=["start", "end"])
+
+        def vrow(setting, wset, scope="both"):
+            x = vt[(vt["setting"] == setting) & (vt["window_set"] == wset) & (vt["scope"] == scope)]
+            return x.iloc[0] if len(x) else None
+
+        for y in (2017, 2020):
+            pcs = vp[(vp["setting"] == "Retuned") & (vp["year"] == y)].sort_values("start")
+            tiles = (pcs["start"].iloc[0] == PERIODS[y][0] and pcs["end"].iloc[-1] == PERIODS[y][1]
+                     and all(pcs["end"].iloc[i] == pcs["start"].iloc[i + 1] for i in range(len(pcs) - 1)))
+            check(tiles, "whole-season pieces {}: {} pieces tile Oct 1 to May 31 23:00 with no gap and no overlap ({} storm windows, {} scored)".format(
+                y, len(pcs), int((pcs["kind"] == "storm").sum()), int(pcs["scored"].sum())))
+        pc17 = vp[(vp["setting"] == "Retuned") & (vp["year"] == 2017)]
+        pc20 = vp[(vp["setting"] == "Retuned") & (vp["year"] == 2020)]
+        check(int((pc17["kind"] == "storm").sum()) == 14 and int((pc20["kind"] == "storm").sum()) == 10 and int(vp[(vp["setting"] == "Retuned")]["scored"].sum()) == 12,
+              "whole-season pieces: 14 + 10 = 24 storm windows, 12 of them the scored storms")
+        for st_ in ("Retuned", "Original", "S1", "S5", "S6"):
+            r1, r2 = vrow(st_, "Storms12"), vrow(st_, "Season")
+            check(near(r1["over_pct"] - r1["under_pct"], r1["net_pct"], 2e-3) and near(r1["over_pct"] + r1["under_pct"], r1["total_abs_pct"], 2e-3) and r1["total_abs_pct"] >= abs(r1["net_pct"]) - 2e-3
+                  and near(r2["over_pct"] - r2["under_pct"], r2["net_pct"], 2e-3) and near(r2["over_pct"] + r2["under_pct"], r2["total_abs_pct"], 2e-3),
+                  "{}: over - under = net and over + under = total in both window sets".format(st_))
+            ap, bo = g(st_, "AllStorms")["pbias_pct"], g(st_, "Both")["pbias_pct"]
+            check(near(r1["net_pct"], ap, 2e-3) and near(r2["net_pct"], bo, 2e-3),
+                  "{}: Storms12 net {:.3f} = AllStorms PBIAS {:.3f}; Season net {:.3f} = Both PBIAS {:.3f}".format(st_, r1["net_pct"], ap, r2["net_pct"], bo))
+        r = vrow("Retuned", "Season")
+        check(r["total_abs_pct"] < 1.0 and r["total_abs_pct_hourly"] < 2.0, "perfect run: total error {:.3f} % (pieces) and {:.3f} % (hourly)".format(r["total_abs_pct"], r["total_abs_pct_hourly"]))
+        for wset in ("Storms12", "Season"):
+            r = vrow("Original", wset)
+            check(near(r["over_pct"], 20.0, 0.5) and r["under_pct"] < 0.5 and near(r["total_abs_pct"], 20.0, 0.5) and near(r["volumetric_efficiency"], 0.8, 0.005),
+                  "x1.2 run, {}: too high {:.2f} %, too low {:.2f} %, total {:.2f} %, VE {:.3f}".format(wset, r["over_pct"], r["under_pct"], r["total_abs_pct"], r["volumetric_efficiency"]))
+        for wset in ("Storms12", "Season"):
+            r = vrow("S5", wset)
+            check(near(r["total_abs_pct"], 100.0, 1e-6) and near(r["under_pct"], 100.0, 1e-6) and near(r["over_pct"], 0.0, 1e-9) and near(r["volumetric_efficiency"], 0.0, 1e-9),
+                  "zero-flow model, {}: total error exactly 100 % and VE 0 (too low {:.4f} %)".format(wset, r["under_pct"]))
+        inj = (30.0 * 5.0 / 2.0 + 30.0 / 0.05) * 3600.0 / 1e6                       # M m3 of the false storm in the Dec 21-25 2016 window
+        inj_oct = 0.05 * 31 * 86400.0 / 1e6                                            # M m3 of the false October flow (outside the 12 storms)
+        for wset, expect in (("Storms12", inj), ("Season", inj + inj_oct)):
+            r = vrow("S6", wset)
+            check(near(r["over_Mm3"], expect, 0.05) and r["under_pct"] < 1.0,
+                  "false-flow run, {}: too high {:.3f} M m3 (injected {:.3f}); too low only {:.2f} %".format(wset, r["over_Mm3"], expect, r["under_pct"]))
+        s1 = vrow("S1", "Season")
+        check(s1["total_abs_pct"] < 1.0 and s1["total_abs_pct_hourly"] > 5.0 and s1["total_abs_pct_if_one_window"] <= s1["total_abs_pct"] + 2e-3,
+              "2-hour-late run: right volume but wrong timing, so the total grows with finer cutting: one window {:.2f} <= pieces {:.2f} < hourly {:.2f} %".format(s1["total_abs_pct_if_one_window"], s1["total_abs_pct"], s1["total_abs_pct_hourly"]))
+        sh = vp[vp["setting"] == "Original"]
+        check(near(sh["abs_share_of_season_error_pct"].sum(), 100.0, 2e-3), "piece shares of the Original's total error add to 100 %")
+        check(set(vt["scope"]) == {"2017", "2020", "both"} and len(vt) == 2 * 3 * 5, "totals file: Storms12 and Season x 2017, 2020, both x 5 settings = 30 rows ({})".format(len(vt)))
         # the old run's clock: Time_hr 0 = Oct 1, so its Oct 1 flow must line up with the new run's
         # 15-minute basis
         sargs.kge_basis = "15min"
